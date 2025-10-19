@@ -141,14 +141,54 @@ class Bitboard {
     m_bb &= other.m_bb;
     return *this;
   }
-
-  // NOT TESTED
   constexpr operator bool() const noexcept { return m_bb != 0ULL; }
 
-  // NOT TESTED
+  /**
+   * @brief Counts the number of set bits in the bitboard.
+   *
+   * @return The number of bits set to 1.
+   *
+   * @note Uses std::popcount (C++20 and later).
+   */
   constexpr int count() const noexcept { return std::popcount(m_bb); }
 
-  // NOT TESTED
+  /**
+   * @brief Removes and returns the least significant set bit (LSB) from the bitboard.
+   *
+   * This method identifies the lowest-index bit currently set to 1 (the least significant bit),
+   * converts it to a Square object, clears that bit from the bitboard, and returns the square.
+   *
+   * ### Example
+   *
+   * Suppose the bitboard has bits set for A1 (index 0) and C5 (index 34):
+   *
+   * ```
+   * m_bb (binary) = 000...01000000000000000000000000000001
+   * pop_lsb() → returns Square(0)  // A1
+   * m_bb (after) = 000...01000000000000000000000000000000  // only C5 remains
+   * ```
+   *
+   * ### Implementation Details
+   *
+   * - `std::countr_zero(m_bb)` efficiently finds the index of the lowest set bit.
+   * - The expression `m_bb &= (m_bb - 1)` clears that bit in constant time.
+   *
+   * The reason `m_bb &= (m_bb - 1)` works is due to binary subtraction:
+   * when subtracting 1 from a binary number, the rightmost set bit turns to 0,
+   * and all bits to its right become 1. Bits to the left of the LSB stay unchanged:
+   *
+   * m_bb                 = 0b10110000
+   * m_bb - 1             = 0b10101111
+   * m_bb &= (m_bb - 1)   = 0b10100000
+   *
+   * ### Return Value
+   *
+   * - `std::optional<Square>` containing the lowest set square if one exists.
+   * - `std::nullopt` if the bitboard is empty.
+   *
+   * @note This method **modifies** the bitboard by clearing the bit that it returns.
+   *       Use `lsb()` if you want to inspect the least significant bit *without* modification.
+   */
   constexpr std::optional<Square> pop_lsb() noexcept {
     if (!*this) return std::nullopt;
     int index = std::countr_zero(m_bb);
@@ -157,7 +197,19 @@ class Bitboard {
     return sq;
   }
 
-  // NOT TESTED
+  /**
+   * @brief Returns the least significant set bit (LSB) without modifying the bitboard.
+   *
+   * This function behaves like pop_lsb(), but it only reads the lowest set bit without clearing it.
+   *
+   * For example, if bits are set at C5 and A1, lsb() will return Square(0) (A1),
+   * but the bitboard will remain unchanged.
+   *
+   * @return std::optional<Square> — the square corresponding to the least significant bit,
+   *         or std::nullopt if the bitboard is empty.
+   *
+   * @note This method is const and does not modify the underlying bitboard.
+   */
   constexpr std::optional<Square> lsb() const noexcept {
     if (!*this) return std::nullopt;
     int index = std::countr_zero(m_bb);
@@ -165,19 +217,82 @@ class Bitboard {
     return sq;
   }
 
-  // NOT TESTED
+  /**
+   * @brief Iterator for traversing all set bits (squares) in a Bitboard.
+   *
+   * This iterator provides a clean, efficient way to loop through all squares
+   * where the bitboard has a 1 bit set — from least significant bit (A1) upward.
+   *
+   * Example:
+   * @code
+   * Bitboard bb;
+   * bb.set(Square::A1);
+   * bb.set(Square::C3);
+   * bb.set(Square::H8);
+   * for (Square sq : bb) {
+   *   std::cout << sq << "\n"; // Iterates A1, C3, H8 (in LSB order)
+   * }
+   * @endcode
+   *
+   * Internally, iteration uses `std::countr_zero()` to find the index of the
+   * least significant set bit (LSB), and the idiom `bits &= (bits - 1)` to
+   * clear it efficiently.
+   *
+   * The iterator is designed to be lightweight and constexpr-compatible.
+   */
   class Iterator {
-    uint64_t bits;
+    uint64_t bits;  ///< Internal copy of the bitboard bits being iterated.
 
    public:
+    /**
+     * @brief Constructs an iterator for a given bit pattern.
+     * @param b The 64-bit bitboard value to iterate over.
+     */
     constexpr Iterator(uint64_t b) noexcept : bits(b) {}
+
+    /**
+     * @brief Inequality comparison for iterators.
+     * @param other Another iterator to compare to.
+     * @return true if this iterator does not equal `other`.
+     */
     constexpr bool operator!=(const Iterator& other) const noexcept { return bits != other.bits; }
+
+    /**
+     * @brief Equality comparison for iterators.
+     * @param other Another iterator to compare to.
+     * @return true if this iterator equals `other`.
+     */
+    constexpr bool operator==(const Iterator& other) const noexcept { return bits == other.bits; }
+
+    /**
+     * @brief Dereferences the iterator to return the current square.
+     * @return A `Square` corresponding to the current least significant set bit.
+     */
     constexpr Square operator*() const noexcept { return Square(std::countr_zero(bits)); }
+
+    /**
+     * @brief Advances the iterator to the next set bit.
+     *
+     * Uses the fast bit trick `bits &= (bits - 1)` to clear the lowest set bit
+     * and move to the next one.
+     *
+     * @return Reference to the incremented iterator.
+     */
     constexpr Iterator& operator++() noexcept {
       bits &= (bits - 1);
       return *this;
     }
   };
+
+  /**
+   * @brief Returns an iterator pointing to the first set bit (if any).
+   * @return Iterator positioned at the first set bit.
+   */
   constexpr Iterator begin() const noexcept { return Iterator(m_bb); }
+
+  /**
+   * @brief Returns an iterator representing the end (no bits set).
+   * @return Iterator with no bits remaining.
+   */
   constexpr Iterator end() const noexcept { return Iterator(0ULL); }
 };

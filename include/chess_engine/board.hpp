@@ -1,5 +1,6 @@
 #pragma once
 #include <chess_engine/bitboard.hpp>
+#include <chess_engine/color.hpp>
 #include <chess_engine/piece.hpp>
 #include <chess_engine/square.hpp>
 #include <optional>

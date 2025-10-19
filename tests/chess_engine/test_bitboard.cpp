@@ -244,3 +244,234 @@ TEST(BitboardTest, ShiftRight) {
   Bitboard b2(0x1000);                     // binary: ...0001 0000 0000 0000  (only bit 12 set -> square E2)
   EXPECT_EQ((b2 >> 4).value(), 0x100ULL);  // binary: ...0000 0001 0000 0000  (only bit 8 set -> square A2)
 }
+
+/**
+ * @test bool operator
+ * @brief Confirms boolean works as intended when no square is populated.
+ */
+TEST(BitboardTest, BoolOperatorFalseWhenEmpty) {
+  Bitboard bb;
+
+  EXPECT_FALSE(static_cast<bool>(bb));
+}
+
+/**
+ * @test bool operator
+ * @brief Confirms boolean works as intended when one square is populated.
+ */
+TEST(BitboardTest, BoolOperatorTrueWhenSingleBit) {
+  Bitboard bb;
+  bb.set(Square::C4);
+
+  EXPECT_TRUE(static_cast<bool>(bb));
+}
+
+/**
+ * @test bool operator
+ * @brief Confirms boolean works as intended when multiple squares are populated.
+ */
+TEST(BitboardTest, BoolOperatorTrueWhenMultipleBits) {
+  Bitboard bb;
+  bb.set(Square::C5);
+  bb.set(Square::H2);
+  bb.set(Square::A1);
+
+  EXPECT_TRUE(static_cast<bool>(bb));
+}
+
+/**
+ * @test Count operator for bits set to one
+ * @brief Confirms count works as intended on an empty bitboard.
+ */
+TEST(BitboardTest, CountEmptyBitboardIsZero) {
+  Bitboard bb;
+
+  EXPECT_EQ(bb.count(), 0);
+}
+
+/**
+ * @test Count operator for bits set to one
+ * @brief Confirms count works as intended on a bitboard populated with one element.
+ */
+TEST(BitboardTest, CountSingleBitIsOne) {
+  Bitboard bb;
+
+  bb.set(Square::C5);
+
+  EXPECT_EQ(bb.count(), 1);
+}
+
+/**
+ * @test Bitboard::count() with multiple bits set
+ * @brief Verifies that count() returns the correct number of set bits (3) on a bitboard with multiple elements.
+ */
+TEST(BitboardTest, CountMultipleBits) {
+  Bitboard bb;
+  bb.set(Square::C5);
+  bb.set(Square::H2);
+  bb.set(Square::A1);
+
+  EXPECT_EQ(bb.count(), 3);
+}
+
+/**
+ * @test Bitboard::lsb() on an empty bitboard
+ * @brief Ensures lsb() returns std::nullopt when called on an empty bitboard.
+ */
+TEST(BitboardTest, LsbOnEmptyReturnsNullopt) {
+  Bitboard bb;
+
+  EXPECT_FALSE(bb.lsb().has_value());
+}
+
+/**
+ * @test Bitboard::lsb() returns the lowest set bit
+ * @brief Confirms lsb() returns the index of the lowest set bit without modifying the bitboard.
+ */
+TEST(BitboardTest, LsbReturnsLowestBitIndex) {
+  Bitboard bb;
+  bb.set(Square::C5);  // 34
+  bb.set(Square::H2);  // 15
+  bb.set(Square::A1);  // 0
+
+  auto result = bb.lsb();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->value(), Square::A1);
+}
+
+/**
+ * @test Bitboard::lsb() does not modify the bitboard
+ * @brief Verifies that calling lsb() does not change the state of the bitboard.
+ */
+TEST(BitboardTest, LsbDoesNotModifyBitboard) {
+  Bitboard bb;
+  bb.set(Square::C5);  // 34
+  bb.set(Square::H2);  // 15
+  bb.set(Square::A1);  // 0
+
+  auto before = bb.count();
+  auto _ = bb.lsb();
+  EXPECT_EQ(bb.count(), before);
+}
+
+/**
+ * @test Bitboard::pop_lsb() on an empty bitboard
+ * @brief Ensures pop_lsb() returns std::nullopt when called on an empty bitboard.
+ */
+TEST(BitboardTest, PopLsbOnEmptyReturnsNullopt) {
+  Bitboard bb;
+
+  EXPECT_FALSE(bb.pop_lsb().has_value());
+}
+
+/**
+ * @test Bitboard::pop_lsb() returns and clears the lowest set bit
+ * @brief Confirms pop_lsb() returns the index of the lowest set bit and clears it from the bitboard.
+ */
+TEST(BitboardTest, PopLsbReturnsAndClearsLowestBit) {
+  Bitboard bb;
+  bb.set(Square::C5);  // 34
+  bb.set(Square::H2);  // 15
+  bb.set(Square::A1);  // 0
+
+  EXPECT_TRUE(bb.test(Square::A1));
+  auto first = bb.pop_lsb();
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(first->value(), Square::A1);
+  EXPECT_FALSE(bb.test(Square::A1));
+
+  // Check that the least significant bit has now changed to H2
+  auto second = bb.lsb();
+  ASSERT_TRUE(second.has_value());
+  EXPECT_EQ(second->value(), Square::H2);
+}
+
+/**
+ * @test Bitboard::pop_lsb() decreases the bit count
+ * @brief Verifies that pop_lsb() reduces the bit count by one.
+ */
+TEST(BitboardTest, PopLsbDecreasesCount) {
+  Bitboard bb;
+  bb.set(Square::A1);  // 0
+  bb.set(Square::C5);  // 34
+
+  int before = bb.count();
+  bb.pop_lsb();
+  EXPECT_EQ(bb.count(), before - 1);
+}
+
+/**
+ * @test Bitboard::pop_lsb() eventually empties the bitboard
+ * @brief Ensures repeated calls to pop_lsb() eventually empty the bitboard.
+ */
+TEST(BitboardTest, PopLsbEventuallyEmptiesBoard) {
+  Bitboard bb;
+  bb.set(Square::H2);  // 15
+  bb.set(Square::A1);  // 0
+
+  auto first = bb.pop_lsb();
+  auto second = bb.pop_lsb();
+  auto third = bb.pop_lsb();
+
+  EXPECT_TRUE(first.has_value());
+  EXPECT_TRUE(second.has_value());
+  EXPECT_FALSE(third.has_value());
+}
+
+TEST(BitboardIteratorTest, IteratesOverAllSetBitsInOrder) {
+  Bitboard bb;
+  bb.set(Square::A1);  // bit 0
+  bb.set(Square::H2);  // bit 15
+  bb.set(Square::C5);  // bit 34
+
+  std::vector<Square::Value> squares;
+  for (Square sq : bb) {
+    squares.push_back(sq.value());
+  }
+
+  ASSERT_EQ(squares.size(), 3);
+  // Expected in increasing bit-index (LSB → MSB) order:
+  EXPECT_EQ(squares[0], Square::A1);
+  EXPECT_EQ(squares[1], Square::H2);
+  EXPECT_EQ(squares[2], Square::C5);
+}
+
+TEST(BitboardIteratorTest, EmptyBitboardYieldsNoIteration) {
+  Bitboard bb;
+  std::vector<Square::Value> squares;
+  for (Square sq : bb) {
+    squares.push_back(sq.value());
+  }
+  EXPECT_TRUE(squares.empty());
+}
+
+TEST(BitboardIteratorTest, SingleBitIteration) {
+  Bitboard bb;
+  bb.set(Square::D4);
+
+  auto it = bb.begin();
+  auto end = bb.end();
+
+  ASSERT_NE(it, end);
+  EXPECT_EQ(*it, Square(Square::D4));
+
+  ++it;
+  EXPECT_EQ(it, end);  // should be at the end after one increment
+}
+
+TEST(BitboardIteratorTest, IteratorDereferenceIsConstexprCompatible) {
+  constexpr Bitboard bb_constexpr = [] {
+    Bitboard bb;
+    bb.set(Square::A1);
+    bb.set(Square::B1);
+    return bb;
+  }();
+
+  std::vector<int> indices;
+  for (Square sq : bb_constexpr) {
+    indices.push_back(sq.value());
+  }
+
+  ASSERT_EQ(indices.size(), 2);
+  EXPECT_LT(indices[0], indices[1]);  // Should iterate in ascending order
+}
