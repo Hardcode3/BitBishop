@@ -146,3 +146,91 @@ TEST(BoardTest, PrintBoard) {
 
   EXPECT_EQ(output, expected);
 }
+
+/**
+ * @test BoardTest.PawnsBitboard
+ * @brief Ensures that pawns() correctly returns the bitboard for each side.
+ */
+TEST(BoardTest, PawnsBitboard) {
+  Board board;
+  board.set_piece(Square(Square::A2), Piece('P'));
+  board.set_piece(Square(Square::H7), Piece('p'));
+
+  Bitboard white_pawns = board.pawns(Color::WHITE);
+  Bitboard black_pawns = board.pawns(Color::BLACK);
+
+  EXPECT_TRUE(white_pawns.test(Square::A2));
+  EXPECT_FALSE(white_pawns.test(Square::H7));
+  EXPECT_TRUE(black_pawns.test(Square::H7));
+  EXPECT_FALSE(black_pawns.test(Square::A2));
+}
+
+/**
+ * @test BoardTest.EnemyBitboard
+ * @brief Confirms that enemy() returns the opposing side’s occupied squares.
+ */
+TEST(BoardTest, EnemyBitboard) {
+  Board board;
+
+  board.set_piece(Square(Square::E4), Piece('Q'));  // white queen
+  board.set_piece(Square(Square::D5), Piece('n'));  // black knight
+
+  Bitboard white_enemy = board.enemy(Color::WHITE);
+  Bitboard black_enemy = board.enemy(Color::BLACK);
+
+  // For white, enemy should include black pieces
+  EXPECT_TRUE(white_enemy.test(Square::D5));
+  EXPECT_FALSE(white_enemy.test(Square::E4));
+
+  // For black, enemy should include white pieces
+  EXPECT_TRUE(black_enemy.test(Square::E4));
+  EXPECT_FALSE(black_enemy.test(Square::D5));
+}
+
+/**
+ * @test BoardTest.EmptyBitboard
+ * @brief Validates that empty() returns all unoccupied squares.
+ */
+TEST(BoardTest, EmptyBitboard) {
+  Board board;
+
+  board.set_piece(Square(Square::A1), Piece('R'));
+  board.set_piece(Square(Square::B2), Piece('p'));
+
+  Bitboard occupied = board.occupied();
+  Bitboard empty = board.empty();
+
+  // All occupied squares should be false in the empty bitboard
+  EXPECT_FALSE(empty.test(Square::A1));
+  EXPECT_FALSE(empty.test(Square::B2));
+
+  // Some random empty squares should be true
+  EXPECT_TRUE(empty.test(Square::C3));
+  EXPECT_TRUE(empty.test(Square::H8));
+
+  // Union of occupied and empty should be all ones
+  EXPECT_EQ((occupied | empty).count(), 64);
+}
+
+/**
+ * @test BoardTest.EnPassantSquare
+ * @brief Ensures en_passant_square() works as intented when en passant square is set.
+ */
+TEST(BoardTest, EnPassantSquareIsAvailable) {
+  // FEN: White just played d2-d4, en passant target on d3
+  Board board("8/8/8/8/3P4/8/8/8 b - d3 0 1");
+
+  auto sq = board.en_passant_square();
+  ASSERT_TRUE(sq.has_value());
+  EXPECT_EQ(*sq, Square(Square::D3));
+}
+
+/**
+ * @test BoardTest.EnPassantSquare
+ * @brief Ensures en_passant_square() works as intented when en passant square is not set.
+ */
+TEST(BoardTest, EnPassantSquareNotAvailable) {
+  // FEN with no en passant
+  Board board2("8/8/8/8/8/8/8/8 w - - 0 1");
+  EXPECT_FALSE(board2.en_passant_square().has_value());
+}
