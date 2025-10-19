@@ -114,4 +114,13 @@ class Board {
    * @endcode
    */
   void print() const;
+
+  // NOT TESTED
+  Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
+  // NOT TESTED
+  Bitboard enemy(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
+  // NOT TESTED
+  Bitboard empty() const { return ~occupied(); }
+  // NOT TESTED
+  std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
 };

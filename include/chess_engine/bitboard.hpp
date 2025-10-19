@@ -1,7 +1,9 @@
 #pragma once
+#include <bit>
 #include <chess_engine/square.hpp>
 #include <cstdint>
 #include <iostream>
+#include <optional>
 
 /**
  * @class Bitboard
@@ -139,4 +141,43 @@ class Bitboard {
     m_bb &= other.m_bb;
     return *this;
   }
+
+  // NOT TESTED
+  constexpr operator bool() const noexcept { return m_bb != 0ULL; }
+
+  // NOT TESTED
+  constexpr int count() const noexcept { return std::popcount(m_bb); }
+
+  // NOT TESTED
+  constexpr std::optional<Square> pop_lsb() noexcept {
+    if (!*this) return std::nullopt;
+    int index = std::countr_zero(m_bb);
+    const Square sq(index);
+    clear(sq);
+    return sq;
+  }
+
+  // NOT TESTED
+  constexpr std::optional<Square> lsb() const noexcept {
+    if (!*this) return std::nullopt;
+    int index = std::countr_zero(m_bb);
+    const Square sq(index);
+    return sq;
+  }
+
+  // NOT TESTED
+  class Iterator {
+    uint64_t bits;
+
+   public:
+    constexpr Iterator(uint64_t b) noexcept : bits(b) {}
+    constexpr bool operator!=(const Iterator& other) const noexcept { return bits != other.bits; }
+    constexpr Square operator*() const noexcept { return Square(std::countr_zero(bits)); }
+    constexpr Iterator& operator++() noexcept {
+      bits &= (bits - 1);
+      return *this;
+    }
+  };
+  constexpr Iterator begin() const noexcept { return Iterator(m_bb); }
+  constexpr Iterator end() const noexcept { return Iterator(0ULL); }
 };
