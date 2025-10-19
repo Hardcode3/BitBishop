@@ -152,8 +152,8 @@ class Bitboard {
   constexpr std::optional<Square> pop_lsb() noexcept {
     if (!*this) return std::nullopt;
     int index = std::countr_zero(m_bb);
+    m_bb &= (m_bb - 1);
     const Square sq(index);
-    clear(sq);
     return sq;
   }
 
