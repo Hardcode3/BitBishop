@@ -64,21 +64,6 @@ class Board {
   Board(const std::string& fen);
 
   /**
-   * @brief Returns a bitboard containing all white pieces.
-   */
-  Bitboard white_pieces() const;
-
-  /**
-   * @brief Returns a bitboard containing all black pieces.
-   */
-  Bitboard black_pieces() const;
-
-  /**
-   * @brief Returns a bitboard containing all occupied squares (both sides).
-   */
-  Bitboard occupied() const;
-
-  /**
    * @brief Retrieves the piece on a given square.
    * @param sq The square to query.
    * @return Piece located on `sq' of NO_PIECE ('.').
@@ -117,6 +102,28 @@ class Board {
   void print() const;
 
   /**
+   * @brief Returns a bitboard containing all white pieces.
+   */
+  Bitboard white_pieces() const;
+
+  /**
+   * @brief Returns a bitboard containing all black pieces.
+   */
+  Bitboard black_pieces() const;
+
+  /**
+   * @brief Returns a bitboard containing all occupied squares (both sides).
+   */
+  Bitboard occupied() const;
+
+  /**
+   * @brief Returns a bitboard of all empty squares on the board.
+   *
+   * @return Bitboard with bits set where no piece occupies a square.
+   */
+  Bitboard unoccupied() const { return ~occupied(); }
+
+  /**
    * @brief Returns a bitboard representing all pawns belonging to the given side to move.
    *
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
@@ -133,11 +140,12 @@ class Board {
   Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
 
   /**
-   * @brief Returns a bitboard of all empty squares on the board.
+   * @brief Returns a bitboard of all friendly pieces relative to the given side to move.
    *
-   * @return Bitboard with bits set where no piece occupies a square.
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard of all friendly pieces.
    */
-  Bitboard unoccupied() const { return ~occupied(); }
+  Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
   /**
    * @brief Returns the current en passant target square, if any.
