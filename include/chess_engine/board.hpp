@@ -130,14 +130,14 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard of all opposing pieces.
    */
-  Bitboard enemy(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
+  Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
 
   /**
    * @brief Returns a bitboard of all empty squares on the board.
    *
    * @return Bitboard with bits set where no piece occupies a square.
    */
-  Bitboard empty() const { return ~occupied(); }
+  Bitboard unoccupied() const { return ~occupied(); }
 
   /**
    * @brief Returns the current en passant target square, if any.

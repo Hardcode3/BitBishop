@@ -10,7 +10,7 @@ std::vector<Move> PawnMoveGenerator::generate_pseudo_legal_moves(const Board& b,
   std::vector<Move> moves;
 
   Bitboard pawns = b.pawns(side);
-  Bitboard empty = b.empty();
+  Bitboard empty = b.unoccupied();
   Bitboard enemy = b.enemy(side);
 
   // warning: this loop is destructive on Bitboard pawns

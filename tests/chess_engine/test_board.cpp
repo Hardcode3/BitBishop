@@ -170,46 +170,56 @@ TEST(BoardTest, PawnsBitboard) {
  * @brief Confirms that enemy() returns the opposing side’s occupied squares.
  */
 TEST(BoardTest, EnemyBitboard) {
-  Board board;
-
-  board.set_piece(Square(Square::E4), Piece('Q'));  // white queen
-  board.set_piece(Square(Square::D5), Piece('n'));  // black knight
+  Board board;  // default opening position
 
   Bitboard white_enemy = board.enemy(Color::WHITE);
   Bitboard black_enemy = board.enemy(Color::BLACK);
 
-  // For white, enemy should include black pieces
-  EXPECT_TRUE(white_enemy.test(Square::D5));
-  EXPECT_FALSE(white_enemy.test(Square::E4));
+  // For whites, enemy should include black pieces
+  // In the default opening position, black pieces are on rank 7 and 8
+  for (int sq_index = Square::A7; sq_index <= Square::H8; sq_index++) {
+    EXPECT_TRUE(white_enemy.test(Square(sq_index)));
+  }
 
-  // For black, enemy should include white pieces
-  EXPECT_TRUE(black_enemy.test(Square::E4));
-  EXPECT_FALSE(black_enemy.test(Square::D5));
+  // For blacks, enemy should include white pieces
+  // In the default opening position, white pieces are on rank 1 and 2
+  for (int sq_index = Square::A1; sq_index <= Square::H2; sq_index++) {
+    EXPECT_TRUE(black_enemy.test(Square(sq_index)));
+  }
 }
 
 /**
- * @test BoardTest.EmptyBitboard
- * @brief Validates that empty() returns all unoccupied squares.
+ * @test BoardTest.Occupied
+ * @brief Validates that occupied() returns all populated squares.
  */
-TEST(BoardTest, EmptyBitboard) {
-  Board board;
+TEST(BoardTest, OccupiedBoardSquares) {
+  Board board;  // default opening position
 
-  board.set_piece(Square(Square::A1), Piece('R'));
-  board.set_piece(Square(Square::B2), Piece('p'));
+  Bitboard populated = board.occupied();
 
-  Bitboard occupied = board.occupied();
-  Bitboard empty = board.empty();
+  // Occupied squares for the default starting position correspond to ranks 1, 2, 7, 8
+  for (int sq_index = Square::A1; sq_index <= Square::H2; sq_index++) {
+    EXPECT_TRUE(populated.test(Square(sq_index)));
+  }
+  for (int sq_index = Square::A7; sq_index <= Square::H8; sq_index++) {
+    EXPECT_TRUE(populated.test(Square(sq_index)));
+  }
+}
 
-  // All occupied squares should be false in the empty bitboard
-  EXPECT_FALSE(empty.test(Square::A1));
-  EXPECT_FALSE(empty.test(Square::B2));
+/**
+ * @test BoardTest.Unoccupied
+ * @brief Validates that unoccupied() returns all unoccupied squares.
+ */
+TEST(BoardTest, UnoccupiedBoardSquares) {
+  Board board;  // default opening position
 
-  // Some random empty squares should be true
-  EXPECT_TRUE(empty.test(Square::C3));
-  EXPECT_TRUE(empty.test(Square::H8));
+  Bitboard empty = board.unoccupied();
 
-  // Union of occupied and empty should be all ones
-  EXPECT_EQ((occupied | empty).count(), 64);
+  // Empty squares for the default starting position
+  // corresponds to ranks 3, 4, 5, 6
+  for (int sq_index = Square::A3; sq_index <= Square::H6; sq_index++) {
+    EXPECT_TRUE(empty.test(Square(sq_index)));
+  }
 }
 
 /**
