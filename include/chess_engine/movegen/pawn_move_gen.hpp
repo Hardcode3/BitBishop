@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chess_engine/attacks/pawn.hpp>
 #include <chess_engine/movegen/piece_move_gen.hpp>
 
 class PawnMoveGenerator : public PieceMoveGenerator {
