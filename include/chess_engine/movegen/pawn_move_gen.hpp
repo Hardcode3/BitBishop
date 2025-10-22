@@ -8,18 +8,25 @@ class PawnMoveGenerator : public PieceMoveGenerator {
   std::vector<Move> generate_pseudo_legal_moves(const Board& board, Color side) const override;
   std::vector<Move> generate_legal_moves(const Board& board, Color side) const override;
 
- private:
   // NOT TESTED
   static void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color side, bool is_capture);
 
   // NOT TESTED
-  static constexpr bool is_starting_pawn_rank(Square sq, Color c) {
+  static constexpr bool is_starting_rank(Square sq, Color c) {
     return c == Color::WHITE ? (sq.rank() == 1) : (sq.rank() == 6);
   }
 
   // NOT TESTED
   static constexpr bool is_promotion_rank(Square sq, Color c) {
     return c == Color::WHITE ? (sq.rank() == 7) : (sq.rank() == 0);
+  }
+
+  static constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
+    int df = std::abs(int(from.file()) - int(epsq.file()));
+    if (df != 1) return false;
+    if (side == Color::WHITE && from.rank() == 4 && epsq.rank() == 5) return true;
+    if (side == Color::BLACK && from.rank() == 3 && epsq.rank() == 2) return true;
+    return false;
   }
 
   // NOT TESTED
@@ -56,13 +63,5 @@ class PawnMoveGenerator : public PieceMoveGenerator {
       default:
         throw std::runtime_error("Invalid color");
     }
-  }
-
-  static constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
-    int df = std::abs(int(from.file()) - int(epsq.file()));
-    if (df != 1) return false;
-    if (side == Color::WHITE && from.rank() == 4) return true;
-    if (side == Color::BLACK && from.rank() == 3) return true;
-    return false;
   }
 };
