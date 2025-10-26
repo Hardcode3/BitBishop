@@ -153,6 +153,15 @@ class Bitboard {
   constexpr int count() const noexcept { return std::popcount(m_bb); }
 
   /**
+   * @brief Tells if any bit in the bitboard is set to one.
+   *
+   * @return True if at least one bit is set to one in the bitboard.
+   *
+   * @note Equivalent to `cout() > 0` and `bool()`
+   */
+  constexpr bool any() const noexcept { return m_bb != 0ULL; }
+
+  /**
    * @brief Removes and returns the least significant set bit (LSB) from the bitboard.
    *
    * This method identifies the lowest-index bit currently set to 1 (the least significant bit),
