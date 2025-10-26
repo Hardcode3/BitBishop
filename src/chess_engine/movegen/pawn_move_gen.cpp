@@ -31,9 +31,10 @@ std::vector<Move> PawnMoveGenerator::generate_pseudo_legal_moves(const Board& b,
     // Double push
     Bitboard double_pushes = double_push(side)[from.value()];
     double_pushes &= empty;
-    double_pushes &= single_push(side)[from.value()];
-    for (Square to : double_pushes) {
-      moves.emplace_back(from, to, std::nullopt, false, false, false);
+    if (single_pushes.any()) {
+      for (Square to : double_pushes) {
+        moves.emplace_back(from, to, std::nullopt, false, false, false);
+      }
     }
 
     // Classic capture

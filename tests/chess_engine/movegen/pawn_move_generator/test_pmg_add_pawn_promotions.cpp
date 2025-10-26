@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/helpers/moves.cpp>
+#include <chess_engine/helpers/moves.hpp>
 #include <chess_engine/movegen/pawn_move_gen.hpp>
 
 class PawnPromotionTest : public ::testing::Test {
