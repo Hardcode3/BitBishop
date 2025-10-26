@@ -37,9 +37,9 @@ std::vector<Move> PawnMoveGenerator::generate_pseudo_legal_moves(const Board& b,
     }
 
     // Classic capture
-    Bitboard captures = attacks(side)[from.value()];
-    captures &= enemy;
-    for (Square to : captures) {
+    Bitboard cap = captures(side)[from.value()];
+    cap &= enemy;
+    for (Square to : cap) {
       if (is_promotion_rank(to, side)) {
         add_pawn_promotions(moves, from, to, side, true);
       } else {
@@ -60,9 +60,9 @@ void PawnMoveGenerator::add_pawn_promotions(std::vector<Move>& moves, Square fro
                                             bool capture) {
   std::array<Piece, 4> promotion_pieces;
   if (side == Color::WHITE) {
-    promotion_pieces = {Piece(Piece::Q), Piece(Piece::R), Piece(Piece::B), Piece(Piece::N)};
+    promotion_pieces = {Piece('Q'), Piece('R'), Piece('B'), Piece('N')};
   } else {
-    promotion_pieces = {Piece(Piece::q), Piece(Piece::r), Piece(Piece::b), Piece(Piece::n)};
+    promotion_pieces = {Piece('q'), Piece('r'), Piece('b'), Piece('n')};
   }
 
   for (auto piece : promotion_pieces) {
