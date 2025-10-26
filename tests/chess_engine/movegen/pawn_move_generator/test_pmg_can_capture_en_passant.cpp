@@ -2,6 +2,9 @@
 
 #include <chess_engine/movegen/pawn_move_gen.hpp>
 
+/**
+ * @brief Test case structure for en passant validation.
+ */
 struct EnPassantCase {
   Square from;
   Square en_passant;
@@ -9,6 +12,12 @@ struct EnPassantCase {
   bool expected;
 };
 
+/**
+ * @test Verifies can_capture_en_passant returns true for all valid White en passant captures.
+ *
+ * White pawns on rank 5 can capture en passant to rank 6 if the target square is
+ * diagonally adjacent (one file away).
+ */
 TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
   std::vector<EnPassantCase> cases{
       {Square(Square::A5), Square(Square::B6), Color::WHITE, true},
@@ -29,10 +38,16 @@ TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
 
   for (const EnPassantCase& c : cases) {
     ASSERT_EQ(PawnMoveGenerator::can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
-        << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=BLACK";
+        << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=WHITE";
   }
 }
 
+/**
+ * @test Verifies can_capture_en_passant returns true for all valid Black en passant captures.
+ *
+ * Black pawns on rank 4 can capture en passant to rank 3 if the target square is
+ * diagonally adjacent (one file away).
+ */
 TEST(PawnMoveGeneratorTest, BlackCanCaptureEnPassant) {
   std::vector<EnPassantCase> cases{
       {Square(Square::A4), Square(Square::B3), Color::BLACK, true},
@@ -57,32 +72,38 @@ TEST(PawnMoveGeneratorTest, BlackCanCaptureEnPassant) {
   }
 }
 
+/**
+ * @test Verifies can_capture_en_passant returns false for invalid Black en passant scenarios.
+ *
+ * Tests edge cases: wrong ranks, same file (non-diagonal), too far away,
+ * wrong direction, and board edges.
+ */
 TEST(PawnMoveGeneratorTest, BlackCannotCaptureEnPassant_InvalidCombinations) {
   std::vector<EnPassantCase> cases{
-      // Wrong rank (should only be from rank 4 for black)
+      // Wrong rank (must be rank 4 for Black)
       {Square(Square::E5), Square(Square::D4), Color::BLACK, false},
       {Square(Square::E3), Square(Square::D2), Color::BLACK, false},
       {Square(Square::E2), Square(Square::F1), Color::BLACK, false},
       {Square(Square::D6), Square(Square::C5), Color::BLACK, false},
 
-      // Correct rank, but same file (not diagonal)
+      // Same file (not diagonal)
       {Square(Square::E4), Square(Square::E3), Color::BLACK, false},
       {Square(Square::C4), Square(Square::C3), Color::BLACK, false},
 
-      // Correct rank, but en passant square too far away
+      // Too far away (more than one file)
       {Square(Square::E4), Square(Square::C3), Color::BLACK, false},
       {Square(Square::E4), Square(Square::G3), Color::BLACK, false},
 
-      // Edge of board (no capture possible)
+      // Board edges (no adjacent file)
       {Square(Square::A4), Square(Square::A3), Color::BLACK, false},
       {Square(Square::H4), Square(Square::H3), Color::BLACK, false},
       {Square(Square::A4), Square(Square::H3), Color::BLACK, false},
 
-      // Wrong direction (moving up instead of down)
+      // Wrong direction (backward move)
       {Square(Square::E4), Square(Square::D5), Color::BLACK, false},
       {Square(Square::E4), Square(Square::F5), Color::BLACK, false},
 
-      // White pawn positions (rank 5/6, not valid for black)
+      // Wrong color's rank (White positions)
       {Square(Square::E5), Square(Square::F6), Color::BLACK, false},
       {Square(Square::C5), Square(Square::B6), Color::BLACK, false},
   };

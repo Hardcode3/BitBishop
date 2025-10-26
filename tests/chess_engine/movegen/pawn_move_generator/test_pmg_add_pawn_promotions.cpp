@@ -3,6 +3,11 @@
 #include <chess_engine/helpers/moves.hpp>
 #include <chess_engine/movegen/pawn_move_gen.hpp>
 
+/**
+ * @brief Test fixture for pawn promotion move generation.
+ *
+ * Provides a clean move vector for each test case.
+ */
 class PawnPromotionTest : public ::testing::Test {
  protected:
   std::vector<Move> moves;
@@ -12,6 +17,9 @@ class PawnPromotionTest : public ::testing::Test {
   void TearDown() override { moves.clear(); }
 };
 
+/**
+ * @test Verifies White promotion generates exactly 4 moves (Q, R, B, N).
+ */
 TEST_F(PawnPromotionTest, WhitePromotionAdds4Moves) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -21,6 +29,9 @@ TEST_F(PawnPromotionTest, WhitePromotionAdds4Moves) {
   EXPECT_EQ(moves.size(), 4);
 }
 
+/**
+ * @test Verifies White promotion includes all four piece types.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionContainsAllPieces) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -35,6 +46,9 @@ TEST_F(PawnPromotionTest, WhitePromotionContainsAllPieces) {
   EXPECT_EQ(count_promotions_to(moves, Piece('N')), 1);
 }
 
+/**
+ * @test Verifies White promotion generates correct move objects for each piece type.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionContainsSpecificMoves) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -52,6 +66,9 @@ TEST_F(PawnPromotionTest, WhitePromotionContainsSpecificMoves) {
   EXPECT_TRUE(contains_move(moves, knight_promo));
 }
 
+/**
+ * @test Verifies all White promotion moves have correct source and destination squares.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionHasCorrectSquares) {
   Square from = Square(Square::A7);
   Square to = Square(Square::A8);
@@ -66,6 +83,9 @@ TEST_F(PawnPromotionTest, WhitePromotionHasCorrectSquares) {
   }
 }
 
+/**
+ * @test Verifies White non-capture promotions have correct flags.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionNonCaptureFlags) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -82,6 +102,9 @@ TEST_F(PawnPromotionTest, WhitePromotionNonCaptureFlags) {
   }
 }
 
+/**
+ * @test Verifies White capture promotions have is_capture flag set.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionCaptureFlags) {
   Square from = Square(Square::E7);
   Square to = Square(Square::F8);
@@ -98,6 +121,9 @@ TEST_F(PawnPromotionTest, WhitePromotionCaptureFlags) {
   }
 }
 
+/**
+ * @test Verifies White capture promotions generate correct move objects.
+ */
 TEST_F(PawnPromotionTest, WhitePromotionCaptureContainsSpecificMoves) {
   Square from = Square(Square::E7);
   Square to = Square(Square::F8);
@@ -115,6 +141,9 @@ TEST_F(PawnPromotionTest, WhitePromotionCaptureContainsSpecificMoves) {
   EXPECT_TRUE(contains_move(moves, knight_promo));
 }
 
+/**
+ * @test Verifies Black promotion generates exactly 4 moves (q, r, b, n).
+ */
 TEST_F(PawnPromotionTest, BlackPromotionAdds4Moves) {
   Square from = Square(Square::A2);
   Square to = Square(Square::A1);
@@ -124,6 +153,9 @@ TEST_F(PawnPromotionTest, BlackPromotionAdds4Moves) {
   EXPECT_EQ(moves.size(), 4);
 }
 
+/**
+ * @test Verifies Black promotion includes all four piece types.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionContainsAllPieces) {
   Square from = Square(Square::A2);
   Square to = Square(Square::A1);
@@ -138,6 +170,9 @@ TEST_F(PawnPromotionTest, BlackPromotionContainsAllPieces) {
   EXPECT_EQ(count_promotions_to(moves, Piece('n')), 1);
 }
 
+/**
+ * @test Verifies Black promotion generates correct move objects for each piece type.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionContainsSpecificMoves) {
   Square from = Square(Square::E2);
   Square to = Square(Square::E1);
@@ -155,6 +190,9 @@ TEST_F(PawnPromotionTest, BlackPromotionContainsSpecificMoves) {
   EXPECT_TRUE(contains_move(moves, knight_promo));
 }
 
+/**
+ * @test Verifies all Black promotion moves have correct source and destination squares.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionHasCorrectSquares) {
   Square from = Square(Square::H2);
   Square to = Square(Square::H1);
@@ -169,6 +207,9 @@ TEST_F(PawnPromotionTest, BlackPromotionHasCorrectSquares) {
   }
 }
 
+/**
+ * @test Verifies Black non-capture promotions have correct flags.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionNonCaptureFlags) {
   Square from = Square(Square::E2);
   Square to = Square(Square::E1);
@@ -185,6 +226,9 @@ TEST_F(PawnPromotionTest, BlackPromotionNonCaptureFlags) {
   }
 }
 
+/**
+ * @test Verifies Black capture promotions have is_capture flag set.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionCaptureFlags) {
   Square from = Square(Square::E2);
   Square to = Square(Square::D1);
@@ -201,6 +245,9 @@ TEST_F(PawnPromotionTest, BlackPromotionCaptureFlags) {
   }
 }
 
+/**
+ * @test Verifies Black capture promotions generate correct move objects.
+ */
 TEST_F(PawnPromotionTest, BlackPromotionCaptureContainsSpecificMoves) {
   Square from = Square(Square::E2);
   Square to = Square(Square::D1);
@@ -218,6 +265,9 @@ TEST_F(PawnPromotionTest, BlackPromotionCaptureContainsSpecificMoves) {
   EXPECT_TRUE(contains_move(moves, knight_promo));
 }
 
+/**
+ * @test Verifies promotions are appended to existing moves without clearing the vector.
+ */
 TEST_F(PawnPromotionTest, PromotionAppendsToExistingMoves) {
   moves.push_back({Square(Square::E2), Square(Square::E4), std::nullopt, false, false, false});
   moves.push_back({Square(Square::D2), Square(Square::D4), std::nullopt, false, false, false});
@@ -229,15 +279,20 @@ TEST_F(PawnPromotionTest, PromotionAppendsToExistingMoves) {
   EXPECT_EQ(moves.size(), initial_size + 4);
 }
 
+/**
+ * @test Verifies multiple promotion calls accumulate correctly (3 × 4 = 12 moves).
+ */
 TEST_F(PawnPromotionTest, MultiplePromotionCalls) {
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::E7), Square(Square::E8), Color::WHITE, false);
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::F7), Square(Square::G8), Color::WHITE, true);
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::E2), Square(Square::E1), Color::BLACK, false);
 
-  // Should have 12 total moves (3 calls × 4 promotions each)
   EXPECT_EQ(moves.size(), 12);
 }
 
+/**
+ * @test Verifies promotions work correctly for various square combinations.
+ */
 TEST_F(PawnPromotionTest, PromotionWithDifferentSquareCombinations) {
   std::vector<std::pair<Square, Square>> white_test_cases = {
       {Square(Square::A7), Square(Square::A8)},
@@ -252,20 +307,23 @@ TEST_F(PawnPromotionTest, PromotionWithDifferentSquareCombinations) {
     EXPECT_EQ(temp_moves.size(), 4);
   }
 
-  std::vector<std::pair<Square, Square>> black_test_cases = {
-      {Square(Square::A2), Square(Square::A1)},
-      {Square(Square::E2), Square(Square::E1)},
-      {Square(Square::H2), Square(Square::H1)},
-      {Square(Square::F2), Square(Square::E1)}  // capture
-  };
+    std::vector<std::pair<Square, Square>> black_test_cases = {
+        {Square(Square::A2), Square(Square::A1)},
+        {Square(Square::E2), Square(Square::E1)},
+        {Square(Square::H2), Square(Square::H1)},
+        {Square(Square::F2), Square(Square::E1)}  // capture
+    };
 
-  for (const auto& [from, to] : black_test_cases) {
-    std::vector<Move> temp_moves;
-    PawnMoveGenerator::add_pawn_promotions(temp_moves, from, to, Color::BLACK, false);
-    EXPECT_EQ(temp_moves.size(), 4);
-  }
+    for (const auto& [from, to] : black_test_cases) {
+      std::vector<Move> temp_moves;
+      PawnMoveGenerator::add_pawn_promotions(temp_moves, from, to, Color::BLACK, false);
+      EXPECT_EQ(temp_moves.size(), 4);
+    }
 }
 
+/**
+ * @test Verifies all four promotion moves share the same source square.
+ */
 TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameFromSquare) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -277,6 +335,9 @@ TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameFromSquare) {
   }
 }
 
+/**
+ * @test Verifies all four promotion moves share the same destination square.
+ */
 TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameToSquare) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -288,6 +349,9 @@ TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameToSquare) {
   }
 }
 
+/**
+ * @test Verifies all four promotion moves share the same capture flag value.
+ */
 TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameCaptureFlag) {
   Square from = Square(Square::E7);
   Square to = Square(Square::E8);
@@ -297,16 +361,19 @@ TEST_F(PawnPromotionTest, AllPromotionMovesHaveSameCaptureFlag) {
     EXPECT_FALSE(move.is_capture);
   }
 
-  moves.clear();
+    moves.clear();
 
-  Square cap_from = Square(Square::E7);
-  Square cap_to = Square(Square::F8);
-  PawnMoveGenerator::add_pawn_promotions(moves, cap_from, cap_to, Color::WHITE, true);
-  for (const auto& move : moves) {
-    EXPECT_TRUE(move.is_capture);
-  }
+    Square cap_from = Square(Square::E7);
+    Square cap_to = Square(Square::F8);
+    PawnMoveGenerator::add_pawn_promotions(moves, cap_from, cap_to, Color::WHITE, true);
+    for (const auto& move : moves) {
+      EXPECT_TRUE(move.is_capture);
+    }
 }
 
+/**
+ * @test Verifies promotion moves never have en passant flag set.
+ */
 TEST_F(PawnPromotionTest, NoPromotionMovesAreEnPassant) {
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::E7), Square(Square::E8), Color::WHITE, false);
 
@@ -315,6 +382,9 @@ TEST_F(PawnPromotionTest, NoPromotionMovesAreEnPassant) {
   }
 }
 
+/**
+ * @test Verifies promotion moves never have castling flag set.
+ */
 TEST_F(PawnPromotionTest, NoPromotionMovesAreCastles) {
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::E7), Square(Square::E8), Color::WHITE, false);
 
@@ -323,6 +393,9 @@ TEST_F(PawnPromotionTest, NoPromotionMovesAreCastles) {
   }
 }
 
+/**
+ * @test Verifies all promotion moves have a promotion piece specified.
+ */
 TEST_F(PawnPromotionTest, AllPromotionMovesHavePromotionPiece) {
   PawnMoveGenerator::add_pawn_promotions(moves, Square(Square::E7), Square(Square::E8), Color::WHITE, false);
 
