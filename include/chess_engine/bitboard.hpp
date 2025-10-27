@@ -215,7 +215,7 @@ class Bitboard {
    * but the bitboard will remain unchanged.
    *
    * @return std::optional<Square> — the square corresponding to the least significant bit,
-   *         or std::nullopt if the bitboard is empty.
+   * or std::nullopt if the bitboard is empty.
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
