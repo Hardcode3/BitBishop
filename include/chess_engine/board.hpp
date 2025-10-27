@@ -151,7 +151,7 @@ class Board {
    * @brief Returns the current en passant target square, if any.
    *
    * @return Optional square indicating where an en passant capture is possible,
-   *         or `std::nullopt` if no en passant square is available.
+   * or `std::nullopt` if no en passant square is available.
    *
    * Example:
    * @code
