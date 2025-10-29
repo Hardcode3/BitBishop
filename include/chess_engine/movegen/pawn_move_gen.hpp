@@ -1,6 +1,7 @@
 #pragma once
 #include <chess_engine/attacks/pawn.hpp>
 #include <chess_engine/movegen/piece_move_gen.hpp>
+#include <utility>
 
 /**
  * @brief Generates pawn moves including pushes, captures, promotions, and en passant.
