@@ -402,7 +402,9 @@ TEST(BitboardTest, PopLsbDecreasesCount) {
 
 /**
  * @test Bitboard::pop_lsb() eventually empties the bitboard
- * @brief Ensures repeated calls to pop_lsb() eventually empty the bitboard.
+ * @brief Ensures that repeated calls to pop_lsb() on a bitboard with two set bits
+ *        will return each bit in LSB order and eventually return std::nullopt
+ *        when the bitboard is empty.
  */
 TEST(BitboardTest, PopLsbEventuallyEmptiesBoard) {
   Bitboard bb;
@@ -418,6 +420,11 @@ TEST(BitboardTest, PopLsbEventuallyEmptiesBoard) {
   EXPECT_FALSE(third.has_value());
 }
 
+/**
+ * @test Bitboard iterator iterates over all set bits in order
+ * @brief Verifies that iterating over a bitboard with multiple set bits
+ *        yields squares in increasing bit-index (LSB → MSB) order.
+ */
 TEST(BitboardIteratorTest, IteratesOverAllSetBitsInOrder) {
   Bitboard bb;
   bb.set(Square::A1);  // bit 0
@@ -436,6 +443,10 @@ TEST(BitboardIteratorTest, IteratesOverAllSetBitsInOrder) {
   EXPECT_EQ(squares[2], Square::C5);
 }
 
+/**
+ * @test Bitboard iterator handles empty bitboard
+ * @brief Ensures that iterating over an empty bitboard results in no iterations.
+ */
 TEST(BitboardIteratorTest, EmptyBitboardYieldsNoIteration) {
   Bitboard bb;
   std::vector<Square::Value> squares;
@@ -445,6 +456,11 @@ TEST(BitboardIteratorTest, EmptyBitboardYieldsNoIteration) {
   EXPECT_TRUE(squares.empty());
 }
 
+/**
+ * @test Bitboard iterator handles single bit
+ * @brief Verifies that a bitboard with a single set bit can be iterated over exactly once,
+ *        and that the iterator correctly reaches the end after one increment.
+ */
 TEST(BitboardIteratorTest, SingleBitIteration) {
   Bitboard bb;
   bb.set(Square::D4);
@@ -459,6 +475,11 @@ TEST(BitboardIteratorTest, SingleBitIteration) {
   EXPECT_EQ(it, end);  // should be at the end after one increment
 }
 
+/**
+ * @test Bitboard iterator is constexpr-compatible
+ * @brief Ensures that a constexpr bitboard can be iterated over at compile time,
+ *        and that the iteration order is ascending by bit index.
+ */
 TEST(BitboardIteratorTest, IteratorDereferenceIsConstexprCompatible) {
   constexpr Bitboard bb_constexpr = [] {
     Bitboard bb;
