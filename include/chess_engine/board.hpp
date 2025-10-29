@@ -1,5 +1,6 @@
 #pragma once
 #include <chess_engine/bitboard.hpp>
+#include <chess_engine/color.hpp>
 #include <chess_engine/piece.hpp>
 #include <chess_engine/square.hpp>
 #include <optional>
@@ -63,21 +64,6 @@ class Board {
   Board(const std::string& fen);
 
   /**
-   * @brief Returns a bitboard containing all white pieces.
-   */
-  Bitboard white_pieces() const;
-
-  /**
-   * @brief Returns a bitboard containing all black pieces.
-   */
-  Bitboard black_pieces() const;
-
-  /**
-   * @brief Returns a bitboard containing all occupied squares (both sides).
-   */
-  Bitboard occupied() const;
-
-  /**
    * @brief Retrieves the piece on a given square.
    * @param sq The square to query.
    * @return Piece located on `sq' of NO_PIECE ('.').
@@ -114,4 +100,65 @@ class Board {
    * @endcode
    */
   void print() const;
+
+  /**
+   * @brief Returns a bitboard containing all white pieces.
+   */
+  Bitboard white_pieces() const;
+
+  /**
+   * @brief Returns a bitboard containing all black pieces.
+   */
+  Bitboard black_pieces() const;
+
+  /**
+   * @brief Returns a bitboard containing all occupied squares (both sides).
+   */
+  Bitboard occupied() const;
+
+  /**
+   * @brief Returns a bitboard of all empty squares on the board.
+   *
+   * @return Bitboard with bits set where no piece occupies a square.
+   */
+  Bitboard unoccupied() const { return ~occupied(); }
+
+  /**
+   * @brief Returns a bitboard representing all pawns belonging to the given side to move.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's pawns.
+   */
+  Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
+
+  /**
+   * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard of all opposing pieces.
+   */
+  Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
+
+  /**
+   * @brief Returns a bitboard of all friendly pieces relative to the given side to move.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard of all friendly pieces.
+   */
+  Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
+
+  /**
+   * @brief Returns the current en passant target square, if any.
+   *
+   * @return Optional square indicating where an en passant capture is possible,
+   * or `std::nullopt` if no en passant square is available.
+   *
+   * Example:
+   * @code
+   * if (auto sq = board.en_passant_square()) {
+   *     std::cout << "En passant possible at " << *sq << "\n";
+   * }
+   * @endcode
+   */
+  std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
 };
