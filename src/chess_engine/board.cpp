@@ -1,6 +1,5 @@
-#include <fmt/core.h>
-
 #include <chess_engine/board.hpp>
+#include <format>
 #include <sstream>
 
 Board::Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {}
@@ -150,7 +149,7 @@ void Board::set_piece(Square sq, Piece p) {
     // clang-format on
     default:
       const std::string msg =
-          fmt::format("Piece {} does not exist, cannot set a piece on square {}", p.to_char(), sq.to_string());
+          std::format("Piece {} does not exist, cannot set a piece on square {}", p.to_char(), sq.to_string());
       throw std::invalid_argument(msg);
   }
 }

@@ -1,7 +1,6 @@
 #pragma once
-#include <fmt/core.h>
-
 #include <cctype>
+#include <format>
 #include <stdexcept>
 
 /**
@@ -47,7 +46,7 @@ class Piece {
       case 'k': m_type = k; break;
       case '.': m_type = NO_PIECE; break;  // clang-format on
       default:
-        const std::string msg = fmt::format("Invalid piece character {}", c);
+        const std::string msg = std::format("Invalid piece character {}", c);
         throw std::invalid_argument(msg);
     }
   }
