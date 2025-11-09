@@ -132,6 +132,14 @@ class Board {
   Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
 
   /**
+   * @brief Returns a bitboard representing the king belonging to the given side to move.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's king.
+   */
+  Bitboard king(Color side) const { return (side == Color::WHITE) ? m_w_king : m_b_king; }
+
+  /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
    *
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).

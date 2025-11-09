@@ -166,6 +166,24 @@ TEST(BoardTest, PawnsBitboard) {
 }
 
 /**
+ * @test BoardTest.KingBitboard
+ * @brief Ensures that king() correctly returns the bitboard for each side.
+ */
+TEST(BoardTest, KingBitboard) {
+  Board board;
+  board.set_piece(Square(Square::A2), Piece('K'));
+  board.set_piece(Square(Square::H7), Piece('k'));
+
+  Bitboard white_king = board.king(Color::WHITE);
+  Bitboard black_king = board.king(Color::BLACK);
+
+  EXPECT_TRUE(white_king.test(Square::A2));
+  EXPECT_FALSE(white_king.test(Square::H7));
+  EXPECT_TRUE(black_king.test(Square::H7));
+  EXPECT_FALSE(black_king.test(Square::A2));
+}
+
+/**
  * @test BoardTest.GetWhitePieces
  * @brief Confirms that white_pieces() returns the right squares using the standard fen opening.
  */
