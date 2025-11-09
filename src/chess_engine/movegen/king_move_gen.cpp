@@ -7,36 +7,34 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
   std::vector<Move> moves;
 
   Bitboard king = b.king(side);
-  Bitboard empty = b.unoccupied();
-  Bitboard enemy = b.enemy(side);
-
-  const std::optional<Square> opt_sq = king.pop_lsb();
   const uint8_t nb_kings = king.count();
 
-  if (nb_kings != 1 || !opt_sq.has_value()) {
-    // clang-format off
-    const std::string msg = std::format(
-      "Failed to generate king pseudo-legal moves for {} pieces, expected 1 king, got {}",
-      side, nb_kings
-    );
-    // clang-format on
-    throw std::runtime_error(msg);
+  if (nb_kings != 1) {
+    throw std::runtime_error(std::format(
+        "Failed to generate king pseudo-legal moves for {} pieces, expected 1 king, got {}", side, nb_kings));
+  }
+
+  const std::optional<Square> opt_sq = king.pop_lsb();
+  if (!opt_sq.has_value()) {
+    throw std::runtime_error(std::format("Failed to extract king square for {} side", side));
   }
 
   const Square from = opt_sq.value();
-
   Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
 
-  Bitboard pushes = Bitboard(king_moves);
-  pushes &= empty;
-  for (Square to : king_moves) {
+  Bitboard empty = b.unoccupied();
+  Bitboard enemy = b.enemy(side);
+
+  // Silent moves (pushes)
+  Bitboard pushes = king_moves & empty;
+  for (Square to : pushes) {
     moves.emplace_back(from, to, std::nullopt, false, false, false);
   }
 
-  Bitboard captures = Bitboard(king_moves);
-  captures &= enemy;
-  for (Square to : king_moves) {
-    moves.emplace_back(from, to, std::nullopt, false, false, false);
+  // Captures
+  Bitboard captures = king_moves & enemy;
+  for (Square to : captures) {
+    moves.emplace_back(from, to, std::nullopt, true, false, false);
   }
 
   return moves;
