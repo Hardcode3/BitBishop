@@ -1,5 +1,7 @@
+#include <chess_engine/attacks/king.hpp>
 #include <chess_engine/movegen/king_move_gen.hpp>
 #include <format>
+#include <optional>
 
 std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b, Color side) const {
   std::vector<Move> moves;
@@ -8,8 +10,10 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
   Bitboard empty = b.unoccupied();
   Bitboard enemy = b.enemy(side);
 
+  const std::optional<Square> opt_sq = king.pop_lsb();
   const uint8_t nb_kings = king.count();
-  if (nb_kings != 1) {
+
+  if (nb_kings != 1 || !opt_sq.has_value()) {
     // clang-format off
     const std::string msg = std::format(
       "Failed to generate king pseudo-legal moves for {} pieces, expected 1 king, got {}",
@@ -19,8 +23,20 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
     throw std::runtime_error(msg);
   }
 
-  // warning: this loop is destructive on Bitboard pawns
-  while (auto from_opt = king.pop_lsb()) {
+  const Square from = opt_sq.value();
+
+  Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
+
+  Bitboard pushes = Bitboard(king_moves);
+  pushes &= empty;
+  for (Square to : king_moves) {
+    moves.emplace_back(from, to, std::nullopt, false, false, false);
+  }
+
+  Bitboard captures = Bitboard(king_moves);
+  captures &= enemy;
+  for (Square to : king_moves) {
+    moves.emplace_back(from, to, std::nullopt, false, false, false);
   }
 
   return moves;
