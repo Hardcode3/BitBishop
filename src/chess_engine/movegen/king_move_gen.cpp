@@ -20,10 +20,9 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
   }
 
   const Square from = opt_sq.value();
-  Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
-
-  Bitboard empty = b.unoccupied();
-  Bitboard enemy = b.enemy(side);
+  const Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
+  const Bitboard empty = b.unoccupied();
+  const Bitboard enemy = b.enemy(side);
 
   // Silent moves (pushes)
   Bitboard pushes = king_moves & empty;
@@ -37,11 +36,92 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
     moves.emplace_back(from, to, std::nullopt, true, false, false);
   }
 
+  // Castling moves (pseudo-legal only checks piece positions, not attacks)
+  add_king_castling(moves, from, side, b);
+
   return moves;
 }
 
 std::vector<Move> KingMoveGenerator::generate_legal_moves(const Board& board, Color side) const {
   std::vector<Move> moves;
+
+  // Check casting moves and classic moves separately
+  // Check if the king is under attack
+  // Check if the square the king passes through are under attack
   // TODO
+
   return moves;
+}
+
+void KingMoveGenerator::add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board) {
+  // Kingside castling
+  if (can_castle_kingside(board, side)) {
+    Square to = (side == Color::WHITE) ? Square(Square::G1) : Square(Square::G8);
+    moves.emplace_back(from, to, std::nullopt, false, false, true);
+  }
+
+  // Queenside castling
+  if (can_castle_queenside(board, side)) {
+    Square to = (side == Color::WHITE) ? Square(Square::C1) : Square(Square::C8);
+    moves.emplace_back(from, to, std::nullopt, false, false, true);
+  }
+}
+
+bool KingMoveGenerator::can_castle_kingside(const Board& board, Color side) {
+  if (!board.has_kingside_castling_rights(side)) {
+    return false;
+  }
+
+  Square king_sq = (side == Color::WHITE) ? Square(Square::E1) : Square(Square::E8);
+  Square rook_sq = (side == Color::WHITE) ? Square(Square::H1) : Square(Square::H8);
+  Square f_sq = (side == Color::WHITE) ? Square(Square::F1) : Square(Square::F8);
+  Square g_sq = (side == Color::WHITE) ? Square(Square::G1) : Square(Square::G8);
+
+  // Check if king is on the starting square
+  if (!board.king(side).test(king_sq)) {
+    return false;
+  }
+
+  // Check if rook is on the starting square
+  if (!board.rook(side).test(rook_sq)) {
+    return false;
+  }
+
+  // Check if squares between king and rook are empty
+  const Bitboard occupied = board.occupied();
+  if (occupied.test(f_sq) || occupied.test(g_sq)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
+  if (!board.has_queenside_castling_rights(side)) {
+    return false;
+  }
+
+  Square king_sq = (side == Color::WHITE) ? Square(Square::E1) : Square(Square::E8);
+  Square rook_sq = (side == Color::WHITE) ? Square(Square::A1) : Square(Square::A8);
+  Square b_sq = (side == Color::WHITE) ? Square(Square::B1) : Square(Square::B8);
+  Square c_sq = (side == Color::WHITE) ? Square(Square::C1) : Square(Square::C8);
+  Square d_sq = (side == Color::WHITE) ? Square(Square::D1) : Square(Square::D8);
+
+  // Check that the king is on the starting square
+  if (!board.king(side).test(king_sq)) {
+    return false;
+  }
+
+  // Check if the rook is on the starting square
+  if (!board.rook(side).test(rook_sq)) {
+    return false;
+  }
+
+  // Check if the squares between king and rook are empty
+  const Bitboard occupied = board.occupied();
+  if (occupied.test(b_sq) || occupied.test(c_sq) || occupied.test(d_sq)) {
+    return false;
+  }
+
+  return true;
 }
