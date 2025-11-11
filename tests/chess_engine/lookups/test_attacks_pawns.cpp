@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/attacks/pawn.hpp>
 #include <chess_engine/bitboard.hpp>
+#include <chess_engine/lookups/pawn.hpp>
 #include <chess_engine/square.hpp>
 
 using namespace Attacks;

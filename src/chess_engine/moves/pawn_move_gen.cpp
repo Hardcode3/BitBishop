@@ -1,17 +1,16 @@
-#include <chess_engine/attacks/pawn.hpp>
 #include <chess_engine/bitboard.hpp>
+#include <chess_engine/board.hpp>
 #include <chess_engine/color.hpp>
-#include <chess_engine/movegen/pawn_move_gen.hpp>
+#include <chess_engine/lookups/pawn.hpp>
+#include <chess_engine/moves/pawn_move_gen.hpp>
 #include <optional>
 
-std::vector<Move> PawnMoveGenerator::generate_pseudo_legal_moves(const Board& b, Color side) const {
+void PawnMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {
   // NOTE: Possible optimization here: there are faster alternatives to an iterator over the Bitboard object
 
-  std::vector<Move> moves;
-
-  Bitboard pawns = b.pawns(side);
-  Bitboard empty = b.unoccupied();
-  Bitboard enemy = b.enemy(side);
+  Bitboard pawns = board.pawns(side);
+  Bitboard empty = board.unoccupied();
+  Bitboard enemy = board.enemy(side);
 
   // warning: this loop is destructive on Bitboard pawns
   while (auto from_opt = pawns.pop_lsb()) {
@@ -49,12 +48,10 @@ std::vector<Move> PawnMoveGenerator::generate_pseudo_legal_moves(const Board& b,
     }
 
     // En passant capture
-    if (b.en_passant_square() && can_capture_en_passant(from, *b.en_passant_square(), side)) {
-      moves.emplace_back(from, *b.en_passant_square(), std::nullopt, true, true, false);
+    if (board.en_passant_square() && can_capture_en_passant(from, *board.en_passant_square(), side)) {
+      moves.emplace_back(from, *board.en_passant_square(), std::nullopt, true, true, false);
     }
   }
-
-  return moves;
 }
 
 void PawnMoveGenerator::add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color side,
@@ -71,8 +68,6 @@ void PawnMoveGenerator::add_pawn_promotions(std::vector<Move>& moves, Square fro
   }
 }
 
-std::vector<Move> PawnMoveGenerator::generate_legal_moves(const Board& board, Color side) const {
-  std::vector<Move> moves;
+void PawnMoveGenerator::generate_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {
   // TODO
-  return moves;
 }

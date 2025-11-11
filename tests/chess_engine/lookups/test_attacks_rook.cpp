@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/attacks/rook.hpp>
 #include <chess_engine/bitboard.hpp>
+#include <chess_engine/lookups/rook.hpp>
 #include <chess_engine/square.hpp>
 
 TEST(RookAttacksTest, CornerA1) {

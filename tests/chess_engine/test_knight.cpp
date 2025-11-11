@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/attacks/knight.hpp>
 #include <chess_engine/bitboard.hpp>
 #include <chess_engine/bitmasks.hpp>
+#include <chess_engine/lookups/knight.hpp>
 #include <chess_engine/square.hpp>
 
 using namespace Attacks;

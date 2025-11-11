@@ -1,15 +1,13 @@
 #include <gtest/gtest.h>
 
 #include <chess_engine/board.hpp>
-#include <chess_engine/movegen/king_move_gen.hpp>
+#include <chess_engine/moves/king_move_gen.hpp>
 
 /**
  * @brief Test fixture for king pseudo-legal move generation.
  */
 class KingPseudoLegalMovesTest : public ::testing::Test {
  protected:
-  KingMoveGenerator generator;
-
   void SetUp() override {}
 
   void TearDown() override {}

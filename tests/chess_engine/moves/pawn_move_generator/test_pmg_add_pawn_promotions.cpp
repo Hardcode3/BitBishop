@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <chess_engine/helpers/moves.hpp>
-#include <chess_engine/movegen/pawn_move_gen.hpp>
+#include <chess_engine/moves/pawn_move_gen.hpp>
 
 /**
  * @brief Test fixture for pawn promotion move generation.

@@ -1,14 +1,15 @@
 #include <gtest/gtest.h>
 
 #include <chess_engine/helpers/moves.hpp>
-#include <chess_engine/movegen/pawn_move_gen.hpp>
+#include <chess_engine/move.hpp>
+#include <chess_engine/moves/pawn_move_gen.hpp>
 
 /**
  * @brief Test fixture for pawn pseudo-legal move generation.
  */
 class PawnPseudoLegalMovesTest : public ::testing::Test {
  protected:
-  PawnMoveGenerator generator;
+  std::vector<Move> moves;
 
   void SetUp() override {}
 
@@ -21,7 +22,7 @@ class PawnPseudoLegalMovesTest : public ::testing::Test {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHas16Moves) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 16);
 }
@@ -32,7 +33,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHas16Moves) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHas16Moves) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 16);
 }
@@ -43,7 +44,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHas16Moves) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasNoCaptures) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(count_captures(moves), 0);
 }
@@ -54,7 +55,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasNoCaptures) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasNoCaptures) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(count_captures(moves), 0);
 }
@@ -65,7 +66,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasNoCaptures) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasNoPromotions) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(count_promotions(moves), 0);
 }
@@ -76,7 +77,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasNoPromotions) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasNoPromotions) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(count_promotions(moves), 0);
 }
@@ -87,7 +88,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasNoPromotions) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectSinglePushes) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::B3), std::nullopt, false, false, false}));
@@ -105,7 +106,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectSinglePushes) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectSinglePushes) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A7), Square(Square::A6), std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::B7), Square(Square::B6), std::nullopt, false, false, false}));
@@ -123,7 +124,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectSinglePushes) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectDoublePushes) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::B4), std::nullopt, false, false, false}));
@@ -141,7 +142,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectDoublePushes) {
 TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectDoublePushes) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A7), Square(Square::A5), std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::B7), Square(Square::B5), std::nullopt, false, false, false}));
@@ -159,7 +160,7 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectDoublePushes) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushBlockedByOwnPiece) {
   Board board("8/8/8/8/8/P7/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 1);
 }
@@ -170,7 +171,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushBlockedByOwnPiece) {
 TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushBlockedByOwnPiece) {
   Board board("8/p7/p7/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 1);
 }
@@ -181,7 +182,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushBlockedByOwnPiece) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushBlockedByEnemyPiece) {
   Board board("8/8/8/8/8/p7/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -192,7 +193,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushBlockedByEnemyPiece) {
 TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushBlockedByEnemyPiece) {
   Board board("8/p7/P7/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -203,7 +204,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushBlockedByEnemyPiece) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushToEmptySquare) {
   Board board("8/8/8/8/8/8/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
 }
@@ -214,7 +215,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushToEmptySquare) {
 TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushToEmptySquare) {
   Board board("8/7p/8/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H6), std::nullopt, false, false, false}));
 }
@@ -225,7 +226,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushToEmptySquare) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushFromStartingRank) {
   Board board("8/8/8/8/8/8/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
 }
@@ -236,7 +237,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushFromStartingRank) {
 TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushFromStartingRank) {
   Board board("8/7p/8/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
 }
@@ -247,7 +248,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushFromStartingRank) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnThirdRank) {
   Board board("8/8/8/8/8/P7/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_FALSE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
 }
@@ -258,7 +259,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnThirdRank) {
 TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnThirdRank) {
   Board board("8/7p/7p/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_FALSE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
 }
@@ -269,7 +270,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnThirdRank) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnFourthRank) {
   Board board("8/8/8/8/P7/8/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
   EXPECT_FALSE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
@@ -281,7 +282,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnFourthRank) {
 TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnFourthRank) {
   Board board("8/7p/8/7p/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H6), std::nullopt, false, false, false}));
   EXPECT_FALSE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
@@ -293,7 +294,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnFourthRank) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushNotAvailableFromThirdRank) {
   Board board("8/8/8/8/8/P7/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 1);
   EXPECT_TRUE(contains_move(moves, {Square(Square::A3), Square(Square::A4), std::nullopt, false, false, false}));
@@ -305,7 +306,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushNotAvailableFromThirdRank) {
 TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushNotAvailableFromSixthRank) {
   Board board("8/8/7p/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 1);
   EXPECT_TRUE(contains_move(moves, {Square(Square::H6), Square(Square::H5), std::nullopt, false, false, false}));
@@ -317,7 +318,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushNotAvailableFromSixthRank) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureDiagonally) {
   Board board("8/8/8/8/8/1p6/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::B3), std::nullopt, true, false, false}));
 }
@@ -328,7 +329,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureDiagonally) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureDiagonally) {
   Board board("8/7p/6P1/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::G6), std::nullopt, true, false, false}));
 }
@@ -339,7 +340,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureDiagonally) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureBothDiagonals) {
   Board board("8/8/8/8/8/pPp5/1P6/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::A3), std::nullopt, true, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::C3), std::nullopt, true, false, false}));
@@ -351,7 +352,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureBothDiagonals) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureBothDiagonals) {
   Board board("8/6p1/5PpP/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::H6), std::nullopt, true, false, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::F6), std::nullopt, true, false, false}));
@@ -363,7 +364,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureBothDiagonals) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnCannotCaptureOwnPieces) {
   Board board("8/8/8/8/8/PPP5/1P6/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(count_captures(moves), 0);
 }
@@ -374,7 +375,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCannotCaptureOwnPieces) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnCannotCaptureOwnPieces) {
   Board board("8/5ppp/6p1/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(count_captures(moves), 0);
 }
@@ -385,7 +386,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCannotCaptureOwnPieces) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnCannotCaptureForward) {
   Board board("8/8/8/8/8/p7/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -396,7 +397,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCannotCaptureForward) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnCannotCaptureForward) {
   Board board("8/7p/7P/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -407,7 +408,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCannotCaptureForward) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotesOnEighthRank) {
   Board board("8/P7/8/8/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 4);
   EXPECT_EQ(count_promotions(moves), 4);
@@ -419,7 +420,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotesOnEighthRank) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotesOnFirstRank) {
   Board board("8/8/8/8/8/8/p7/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 4);
   EXPECT_EQ(count_promotions(moves), 4);
@@ -431,7 +432,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotesOnFirstRank) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotesWithCapture) {
   Board board("1p6/P7/8/8/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 8);
   EXPECT_EQ(count_promotions(moves), 8);
@@ -444,7 +445,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotesWithCapture) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotesWithCapture) {
   Board board("8/8/8/8/8/8/p7/1P6 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 8);
   EXPECT_EQ(count_promotions(moves), 8);
@@ -457,7 +458,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotesWithCapture) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotionBlockedByPiece) {
   Board board("R7/P7/8/8/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -468,7 +469,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnPromotionBlockedByPiece) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotionBlockedByPiece) {
   Board board("8/8/8/8/8/8/7P/7R b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -479,7 +480,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnPromotionBlockedByPiece) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureEnPassant) {
   Board board("8/8/8/3Pp3/8/8/8/8 w - e6 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::D5), Square(Square::E6), std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 1);
@@ -491,7 +492,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureEnPassant) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureEnPassant) {
   Board board("8/8/8/8/3pP3/8/8/8 b - e3 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::D4), Square(Square::E3), std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 1);
@@ -503,7 +504,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureEnPassant) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteEnPassantNotAvailableWhenNoTarget) {
   Board board("8/8/8/3Pp3/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(count_en_passant(moves), 0);
 }
@@ -514,7 +515,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteEnPassantNotAvailableWhenNoTarget) {
 TEST_F(PawnPseudoLegalMovesTest, BlackEnPassantNotAvailableWhenNoTarget) {
   Board board("8/8/8/8/3pP3/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(count_en_passant(moves), 0);
 }
@@ -525,7 +526,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackEnPassantNotAvailableWhenNoTarget) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteEnPassantBothSidesCanCapture) {
   Board board("8/8/8/3PpP2/8/8/8/8 w - e6 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::D5), Square(Square::E6), std::nullopt, true, true, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::F5), Square(Square::E6), std::nullopt, true, true, false}));
@@ -538,7 +539,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteEnPassantBothSidesCanCapture) {
 TEST_F(PawnPseudoLegalMovesTest, BlackEnPassantBothSidesCanCapture) {
   Board board("8/8/8/8/3pPp2/8/8/8 b - e3 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_TRUE(contains_move(moves, {Square(Square::D4), Square(Square::E3), std::nullopt, true, true, false}));
   EXPECT_TRUE(contains_move(moves, {Square(Square::F4), Square(Square::E3), std::nullopt, true, true, false}));
@@ -551,7 +552,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackEnPassantBothSidesCanCapture) {
 TEST_F(PawnPseudoLegalMovesTest, WhiteEmptyBoardGeneratesNoMoves) {
   Board board("8/8/8/8/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -562,7 +563,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteEmptyBoardGeneratesNoMoves) {
 TEST_F(PawnPseudoLegalMovesTest, BlackEmptyBoardGeneratesNoMoves) {
   Board board("8/8/8/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -573,7 +574,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackEmptyBoardGeneratesNoMoves) {
 TEST_F(PawnPseudoLegalMovesTest, NoWhitePawnsGeneratesNoMoves) {
   Board board("rnbqkbnr/8/8/1p6/8/8/8/RNBQKBNR w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -584,7 +585,7 @@ TEST_F(PawnPseudoLegalMovesTest, NoWhitePawnsGeneratesNoMoves) {
 TEST_F(PawnPseudoLegalMovesTest, NoBlackPawnsGeneratesNoMoves) {
   Board board("rnbqkbnr/8/8/1P6/8/8/8/RNBQKBNR b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -595,7 +596,7 @@ TEST_F(PawnPseudoLegalMovesTest, NoBlackPawnsGeneratesNoMoves) {
 TEST_F(PawnPseudoLegalMovesTest, ComplexPositionWhitePawns) {
   Board board("8/8/8/8/1p1p1p2/P1P1P3/1P1P4/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_GT(moves.size(), 0);
 
@@ -612,7 +613,7 @@ TEST_F(PawnPseudoLegalMovesTest, ComplexPositionWhitePawns) {
 TEST_F(PawnPseudoLegalMovesTest, ComplexPositionBlackPawns) {
   Board board("8/8/8/8/1p1p1p2/P1P1P3/1P1P4/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_GT(moves.size(), 0);
 
@@ -629,7 +630,7 @@ TEST_F(PawnPseudoLegalMovesTest, ComplexPositionBlackPawns) {
 TEST_F(PawnPseudoLegalMovesTest, MultipleWhitePawnsGenerateMultipleMoves) {
   Board board("8/8/8/8/8/8/PPPPPPPP/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 16);
 }
@@ -640,7 +641,7 @@ TEST_F(PawnPseudoLegalMovesTest, MultipleWhitePawnsGenerateMultipleMoves) {
 TEST_F(PawnPseudoLegalMovesTest, MultipleBlackPawnsGenerateMultipleMoves) {
   Board board("8/pppppppp/8/8/8/8/8/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 16);
 }
@@ -651,7 +652,7 @@ TEST_F(PawnPseudoLegalMovesTest, MultipleBlackPawnsGenerateMultipleMoves) {
 TEST_F(PawnPseudoLegalMovesTest, WhitePawnOnSeventhRankMultiplePromotions) {
   Board board("8/PPP5/8/8/8/8/8/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 12);
   EXPECT_EQ(count_promotions(moves), 12);
@@ -663,7 +664,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnOnSeventhRankMultiplePromotions) {
 TEST_F(PawnPseudoLegalMovesTest, BlackPawnOnSeventhRankMultiplePromotions) {
   Board board("8/8/8/8/8/8/ppp5/8 b - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::BLACK);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 12);
   EXPECT_EQ(count_promotions(moves), 12);
@@ -675,7 +676,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnOnSeventhRankMultiplePromotions) {
 TEST_F(PawnPseudoLegalMovesTest, PawnOnEdgeFileAFile) {
   Board board("8/8/8/8/8/p7/P7/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -686,7 +687,7 @@ TEST_F(PawnPseudoLegalMovesTest, PawnOnEdgeFileAFile) {
 TEST_F(PawnPseudoLegalMovesTest, PawnOnEdgeFileHFile) {
   Board board("8/8/8/8/8/7p/7P/8 w - - 0 1");
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -697,7 +698,7 @@ TEST_F(PawnPseudoLegalMovesTest, PawnOnEdgeFileHFile) {
 TEST_F(PawnPseudoLegalMovesTest, AllMovesHaveNoCastlingFlag) {
   Board board;
 
-  auto moves = generator.generate_pseudo_legal_moves(board, Color::WHITE);
+  PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   for (const auto& move : moves) {
     EXPECT_FALSE(move.is_castling) << "Pawn moves should never have castling flag";

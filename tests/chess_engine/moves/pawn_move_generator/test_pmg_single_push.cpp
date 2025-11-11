@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/movegen/pawn_move_gen.hpp>
+#include <chess_engine/moves/pawn_move_gen.hpp>
 
 /**
  * @test Verifies single_push returns the correct pre-computed array for White pawns.

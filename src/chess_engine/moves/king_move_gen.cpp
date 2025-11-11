@@ -1,12 +1,10 @@
-#include <chess_engine/attacks/king.hpp>
-#include <chess_engine/movegen/king_move_gen.hpp>
+#include <chess_engine/lookups/king.hpp>
+#include <chess_engine/moves/king_move_gen.hpp>
 #include <format>
 #include <optional>
 
-std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b, Color side) const {
-  std::vector<Move> moves;
-
-  Bitboard king = b.king(side);
+void KingMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {
+  Bitboard king = board.king(side);
   const uint8_t nb_kings = king.count();
 
   if (nb_kings != 1) {
@@ -21,8 +19,8 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
 
   const Square from = opt_sq.value();
   const Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
-  const Bitboard empty = b.unoccupied();
-  const Bitboard enemy = b.enemy(side);
+  const Bitboard empty = board.unoccupied();
+  const Bitboard enemy = board.enemy(side);
 
   // Silent moves (pushes)
   Bitboard pushes = king_moves & empty;
@@ -37,20 +35,14 @@ std::vector<Move> KingMoveGenerator::generate_pseudo_legal_moves(const Board& b,
   }
 
   // Castling moves (pseudo-legal only checks piece positions, not attacks)
-  add_king_castling(moves, from, side, b);
-
-  return moves;
+  add_king_castling(moves, from, side, board);
 }
 
-std::vector<Move> KingMoveGenerator::generate_legal_moves(const Board& board, Color side) const {
-  std::vector<Move> moves;
-
+void KingMoveGenerator::generate_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {
   // Check casting moves and classic moves separately
   // Check if the king is under attack
   // Check if the square the king passes through are under attack
   // TODO
-
-  return moves;
 }
 
 void KingMoveGenerator::add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board) {

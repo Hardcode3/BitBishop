@@ -1,9 +1,9 @@
 #pragma once
 #include <array>
-#include <chess_engine/attacks/bishop.hpp>
-#include <chess_engine/attacks/rook.hpp>
 #include <chess_engine/bitboard.hpp>
 #include <chess_engine/bitmasks.hpp>
+#include <chess_engine/lookups/bishop.hpp>
+#include <chess_engine/lookups/rook.hpp>
 #include <cstdint>
 
 namespace Attacks {

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <chess_engine/movegen/pawn_move_gen.hpp>
+#include <chess_engine/moves/pawn_move_gen.hpp>
 
 /**
  * @test Verifies is_promotion_rank returns true for White pawns on rank 8 (A8-H8).
