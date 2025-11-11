@@ -9,70 +9,80 @@
 /**
  * @brief Generates king moves.
  *
- * King can move to each available adjacent square.
+ * The king can move one square in any direction (horizontally, vertically, or diagonally).
+ * This namespace provides functions for generating both pseudo-legal and legal king moves,
+ * including castling moves.
  */
 namespace KingMoveGenerator {
+
 /**
  * @brief Generates all pseudo-legal king moves for a given side.
  *
- * Pseudo-legal means the move is valid according to piece movement rules,
- * but may leave the king in check. These moves must be validated separately.
+ * Pseudo-legal moves follow piece movement rules but may leave the king in check.
+ * These moves must be validated separately to ensure legality.
  *
+ * @param moves Vector to append generated moves to
  * @param board Current board state
  * @param side Color of the side to generate moves for
- * @return Vector of all pseudo-legal king moves
  */
 void generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, Color side);
 
 /**
  * @brief Generates all legal king moves for a given side.
  *
- * Legal moves are pseudo-legal moves that don't leave the king in check.
+ * Legal moves are pseudo-legal moves that have been validated to ensure
+ * the king is not left in check after the move.
  *
+ * @param moves Vector to append generated moves to
  * @param board Current board state
  * @param side Color of the side to generate moves for
- * @return Vector of all legal king moves
  */
 void generate_legal_moves(std::vector<Move>& moves, const Board& board, Color side);
 
 /**
- * @brief Adds king_castling moves to the move list.
+ * @brief Adds castling moves to the move list if conditions are met.
  *
- * Ensurue castling conditions are met before adding castling moves to the move list.
+ * Validates castling legality and adds both kingside and queenside castling
+ * moves when available. Castling requires that the king and rook haven't moved,
+ * squares between them are empty, and the king doesn't move through check.
  *
- * https://www.chess.com/article/view/kingside-castling-or-queenside-castling
+ * @param moves Vector to append castling moves to
+ * @param from Square the king is currently on
+ * @param side Color of the side attempting to castle
+ * @param board Current board state
+ *
+ * @see https://www.chess.com/article/view/how-to-castle-in-chess
  */
 void add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board);
 
 /**
- * @brief Checks if the king and rook can castle kingside.
+ * @brief Checks if kingside castling is legal.
  *
- * Kingside castling is available when:
- *
- * - Neither the kingside rook nor the king have previously moved
- * - There are no pieces between the king and the kingside rook
+ * Kingside castling (also called short castling or O-O) is legal when:
+ * - Neither the king nor the kingside rook have previously moved
+ * - All squares between the king and the kingside rook are empty
  * - The king is not currently in check
+ * - The king does not pass through or land on a square that is under attack
  *
- * @param board Board The board state in which king and rook state must be checked
- * @param side Color Color of the side to check
- * @return true if Board's state allows for kingside castling, false otherwise
- *
+ * @param board Current board state
+ * @param side Color of the side to check
+ * @return true if kingside castling is legal, false otherwise
  */
 bool can_castle_kingside(const Board& board, Color side);
 
 /**
- * @brief Checks if the king and rook can castle queenside.
+ * @brief Checks if queenside castling is legal.
  *
- * queenside castling is available when:
- *
- * - Neither the queenside rook nor the king have previously moved
- * - There are no pieces between the king and the queenside rook
+ * Queenside castling (also called long castling or O-O-O) is legal when:
+ * - Neither the king nor the queenside rook have previously moved
+ * - All squares between the king and the queenside rook are empty
  * - The king is not currently in check
+ * - The king does not pass through or land on a square that is under attack
  *
- * @param board Board The board state in which king and rook state must be checked
- * @param side Color Color of the side to check
- * @return true if Board's state allows for queenside castling, false otherwise
- *
+ * @param board Current board state
+ * @param side Color of the side to check
+ * @return true if queenside castling is legal, false otherwise
  */
 bool can_castle_queenside(const Board& board, Color side);
+
 };  // namespace KingMoveGenerator
