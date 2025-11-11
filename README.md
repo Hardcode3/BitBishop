@@ -49,7 +49,7 @@ This project is currently 🚧 **under active development** 🚧 and aims to imp
 ### Building
 
 - [CMake Guide](./docs/cmake.md) - Build system configuration and usage
-  
+
 ## Documentation
 
 The project includes comprehensive documentation to support learning.
@@ -72,9 +72,9 @@ ChessEngine/
 ├── build/                       # Build artifacts
 ├── cmake/                       # Cmake scripts
 ├── docs/                        # Documentation and guides
-├── src/chess_engine/            # Sources (cpp)
-├── include/chess_engine/        # Headers (hpp)
-├── tests/chess_engine           # Unit tests
+├── src/bitbishop/            # Sources (cpp)
+├── include/bitbishop/        # Headers (hpp)
+├── tests/bitbishop           # Unit tests
 ├── CMakeLists.txt               # Build configuration
 └── ...
 ```

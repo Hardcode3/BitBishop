@@ -1,1 +1,1 @@
-add_subdirectory(chess_engine)
+add_subdirectory(bitbishop)
