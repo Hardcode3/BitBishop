@@ -23,8 +23,6 @@ TEST_F(KingPseudoLegalMovesTest, WhiteStartingPositionHasNoCapture) {}
 
 TEST_F(KingPseudoLegalMovesTest, BlackStartingPositionHasNoCapture) {}
 
-TEST_F(KingPseudoLegalMovesTest, WhiteStartingPositionHasNoCapture) {}
-
 TEST_F(KingPseudoLegalMovesTest, WhitePushBlockedByOwnPiece) {}
 
 TEST_F(KingPseudoLegalMovesTest, BlackPushBlockedByOwnPiece) {}
