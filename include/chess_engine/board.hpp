@@ -140,6 +140,14 @@ class Board {
   Bitboard king(Color side) const { return (side == Color::WHITE) ? m_w_king : m_b_king; }
 
   /**
+   * @brief Returns a bitboard representing all rooks belonging to the given side.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's rooks.
+   */
+  Bitboard rook(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
+
+  /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
    *
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
@@ -169,4 +177,22 @@ class Board {
    * @endcode
    */
   std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
+
+  /**
+   * @brief Checks if the given side has kingside castling rights.
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return true if kingside castling rights is available, false otherwise
+   */
+  bool has_kingside_castling_rights(Color side) const {
+    return (side == Color::WHITE) ? m_white_castle_kingside : m_black_castle_kingside;
+  }
+
+  /**
+   * @brief Checks if the given side has queenside castling rights.
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return true if queenside castling rights is available, false otherwise
+   */
+  bool has_queenside_castling_rights(Color side) const {
+    return (side == Color::WHITE) ? m_white_castle_queenside : m_black_castle_queenside;
+  }
 };

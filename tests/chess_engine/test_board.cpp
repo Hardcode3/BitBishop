@@ -184,6 +184,40 @@ TEST(BoardTest, KingBitboard) {
 }
 
 /**
+ * @test BoardTest.RookBitboard
+ * @brief Ensures that king() correctly returns the bitboard for each side.
+ */
+TEST(BoardTest, RookBitboard) {
+  Board board;
+  board.set_piece(Square(Square::A2), Piece('R'));
+  board.set_piece(Square(Square::H7), Piece('r'));
+
+  Bitboard white_rooks = board.rook(Color::WHITE);
+  Bitboard black_rooks = board.rook(Color::BLACK);
+
+  EXPECT_TRUE(white_rooks.test(Square::A2));
+  EXPECT_FALSE(white_rooks.test(Square::H7));
+  EXPECT_TRUE(black_rooks.test(Square::H7));
+  EXPECT_FALSE(black_rooks.test(Square::A2));
+}
+
+TEST(BoardTest, WhiteKingsideCastlingRights) {
+  // TODO
+}
+
+TEST(BoardTest, WhiteQueensideCastlingRights) {
+  // TODO
+}
+
+TEST(BoardTest, BlackKingsideCastlingRights) {
+  // TODO
+}
+
+TEST(BoardTest, BlackQueensideCastlingRights) {
+  // TODO
+}
+
+/**
  * @test BoardTest.GetWhitePieces
  * @brief Confirms that white_pieces() returns the right squares using the standard fen opening.
  */
