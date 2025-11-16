@@ -48,13 +48,13 @@ void KingMoveGenerator::generate_legal_moves(std::vector<Move>& moves, const Boa
 void KingMoveGenerator::add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board) {
   // Kingside castling
   if (can_castle_kingside(board, side)) {
-    Square to = (side == Color::WHITE) ? Square(Square::G1) : Square(Square::G8);
+    Square to = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
 
   // Queenside castling
   if (can_castle_queenside(board, side)) {
-    Square to = (side == Color::WHITE) ? Square(Square::C1) : Square(Square::C8);
+    Square to = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
 }
@@ -64,10 +64,10 @@ bool KingMoveGenerator::can_castle_kingside(const Board& board, Color side) {
     return false;
   }
 
-  Square king_sq = (side == Color::WHITE) ? Square(Square::E1) : Square(Square::E8);
-  Square rook_sq = (side == Color::WHITE) ? Square(Square::H1) : Square(Square::H8);
-  Square f_sq = (side == Color::WHITE) ? Square(Square::F1) : Square(Square::F8);
-  Square g_sq = (side == Color::WHITE) ? Square(Square::G1) : Square(Square::G8);
+  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
+  Square rook_sq = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
+  Square f_sq = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
+  Square g_sq = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
 
   // Check if king is on the starting square
   if (!board.king(side).test(king_sq)) {
@@ -93,11 +93,11 @@ bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
     return false;
   }
 
-  Square king_sq = (side == Color::WHITE) ? Square(Square::E1) : Square(Square::E8);
-  Square rook_sq = (side == Color::WHITE) ? Square(Square::A1) : Square(Square::A8);
-  Square b_sq = (side == Color::WHITE) ? Square(Square::B1) : Square(Square::B8);
-  Square c_sq = (side == Color::WHITE) ? Square(Square::C1) : Square(Square::C8);
-  Square d_sq = (side == Color::WHITE) ? Square(Square::D1) : Square(Square::D8);
+  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
+  Square rook_sq = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
+  Square b_sq = (side == Color::WHITE) ? Squares::B1 : Squares::B8;
+  Square c_sq = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
+  Square d_sq = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
 
   // Check that the king is on the starting square
   if (!board.king(side).test(king_sq)) {

@@ -20,20 +20,13 @@ struct EnPassantCase {
  */
 TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
   std::vector<EnPassantCase> cases{
-      {Square(Square::A5), Square(Square::B6), Color::WHITE, true},
-      {Square(Square::B5), Square(Square::A6), Color::WHITE, true},
-      {Square(Square::B5), Square(Square::C6), Color::WHITE, true},
-      {Square(Square::C5), Square(Square::B6), Color::WHITE, true},
-      {Square(Square::C5), Square(Square::D6), Color::WHITE, true},
-      {Square(Square::D5), Square(Square::C6), Color::WHITE, true},
-      {Square(Square::D5), Square(Square::E6), Color::WHITE, true},
-      {Square(Square::E5), Square(Square::D6), Color::WHITE, true},
-      {Square(Square::E5), Square(Square::F6), Color::WHITE, true},
-      {Square(Square::F5), Square(Square::E6), Color::WHITE, true},
-      {Square(Square::F5), Square(Square::G6), Color::WHITE, true},
-      {Square(Square::G5), Square(Square::F6), Color::WHITE, true},
-      {Square(Square::G5), Square(Square::H6), Color::WHITE, true},
-      {Square(Square::H5), Square(Square::G6), Color::WHITE, true},
+      {Squares::A5, Squares::B6, Color::WHITE, true},  {Squares::B5, Squares::A6, Color::WHITE, true},
+      {Squares::B5, Squares::C6, Color::WHITE, true},  {Squares::C5, Squares::B6, Color::WHITE, true},
+      {Squares::C5, Squares::D6, Color::WHITE, true},  {Squares::D5, Squares::C6, Color::WHITE, true},
+      {Squares::D5, Squares::E6, Color::WHITE, true},  {Squares::E5, Squares::D6, Color::WHITE, true},
+      {Squares::E5, Squares::F6, Color::WHITE, true},  {Squares::F5, Squares::E6, Color::WHITE, true},
+      {Squares::F5, Squares::G6, Color::WHITE, true},  {Squares::G5, Squares::F6, Color::WHITE, true},
+      {Squares::G5, Squares::H6, Color::WHITE, true}, {Squares::H5, Squares::G6, Color::WHITE, true},
   };
 
   for (const EnPassantCase& c : cases) {
@@ -50,20 +43,13 @@ TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
  */
 TEST(PawnMoveGeneratorTest, BlackCanCaptureEnPassant) {
   std::vector<EnPassantCase> cases{
-      {Square(Square::A4), Square(Square::B3), Color::BLACK, true},
-      {Square(Square::B4), Square(Square::A3), Color::BLACK, true},
-      {Square(Square::B4), Square(Square::C3), Color::BLACK, true},
-      {Square(Square::C4), Square(Square::B3), Color::BLACK, true},
-      {Square(Square::C4), Square(Square::D3), Color::BLACK, true},
-      {Square(Square::D4), Square(Square::C3), Color::BLACK, true},
-      {Square(Square::D4), Square(Square::E3), Color::BLACK, true},
-      {Square(Square::E4), Square(Square::D3), Color::BLACK, true},
-      {Square(Square::E4), Square(Square::F3), Color::BLACK, true},
-      {Square(Square::F4), Square(Square::E3), Color::BLACK, true},
-      {Square(Square::F4), Square(Square::G3), Color::BLACK, true},
-      {Square(Square::G4), Square(Square::F3), Color::BLACK, true},
-      {Square(Square::G4), Square(Square::H3), Color::BLACK, true},
-      {Square(Square::H4), Square(Square::G3), Color::BLACK, true},
+      {Squares::A4, Squares::B3, Color::BLACK, true}, {Squares::B4, Squares::A3, Color::BLACK, true},
+      {Squares::B4, Squares::C3, Color::BLACK, true}, {Squares::C4, Squares::B3, Color::BLACK, true},
+      {Squares::C4, Squares::D3, Color::BLACK, true}, {Squares::D4, Squares::C3, Color::BLACK, true},
+      {Squares::D4, Squares::E3, Color::BLACK, true}, {Squares::E4, Squares::D3, Color::BLACK, true},
+      {Squares::E4, Squares::F3, Color::BLACK, true}, {Squares::F4, Squares::E3, Color::BLACK, true},
+      {Squares::F4, Squares::G3, Color::BLACK, true}, {Squares::G4, Squares::F3, Color::BLACK, true},
+      {Squares::G4, Squares::H3, Color::BLACK, true}, {Squares::H4, Squares::G3, Color::BLACK, true},
   };
 
   for (const EnPassantCase& c : cases) {
@@ -81,31 +67,31 @@ TEST(PawnMoveGeneratorTest, BlackCanCaptureEnPassant) {
 TEST(PawnMoveGeneratorTest, BlackCannotCaptureEnPassant_InvalidCombinations) {
   std::vector<EnPassantCase> cases{
       // Wrong rank (must be rank 4 for Black)
-      {Square(Square::E5), Square(Square::D4), Color::BLACK, false},
-      {Square(Square::E3), Square(Square::D2), Color::BLACK, false},
-      {Square(Square::E2), Square(Square::F1), Color::BLACK, false},
-      {Square(Square::D6), Square(Square::C5), Color::BLACK, false},
+      {Squares::E5, Squares::D4, Color::BLACK, false},
+      {Squares::E3, Squares::D2, Color::BLACK, false},
+      {Squares::E2, Squares::F1, Color::BLACK, false},
+      {Squares::D6, Squares::C5, Color::BLACK, false},
 
       // Same file (not diagonal)
-      {Square(Square::E4), Square(Square::E3), Color::BLACK, false},
-      {Square(Square::C4), Square(Square::C3), Color::BLACK, false},
+      {Squares::E4, Squares::E3, Color::BLACK, false},
+      {Squares::C4, Squares::C3, Color::BLACK, false},
 
       // Too far away (more than one file)
-      {Square(Square::E4), Square(Square::C3), Color::BLACK, false},
-      {Square(Square::E4), Square(Square::G3), Color::BLACK, false},
+      {Squares::E4, Squares::C3, Color::BLACK, false},
+      {Squares::E4, Squares::G3, Color::BLACK, false},
 
       // Board edges (no adjacent file)
-      {Square(Square::A4), Square(Square::A3), Color::BLACK, false},
-      {Square(Square::H4), Square(Square::H3), Color::BLACK, false},
-      {Square(Square::A4), Square(Square::H3), Color::BLACK, false},
+      {Squares::A4, Squares::A3, Color::BLACK, false},
+      {Squares::H4, Squares::H3, Color::BLACK, false},
+      {Squares::A4, Squares::H3, Color::BLACK, false},
 
       // Wrong direction (backward move)
-      {Square(Square::E4), Square(Square::D5), Color::BLACK, false},
-      {Square(Square::E4), Square(Square::F5), Color::BLACK, false},
+      {Squares::E4, Squares::D5, Color::BLACK, false},
+      {Squares::E4, Squares::F5, Color::BLACK, false},
 
       // Wrong color's rank (White positions)
-      {Square(Square::E5), Square(Square::F6), Color::BLACK, false},
-      {Square(Square::C5), Square(Square::B6), Color::BLACK, false},
+      {Squares::E5, Squares::F6, Color::BLACK, false},
+      {Squares::C5, Squares::B6, Color::BLACK, false},
   };
 
   for (const EnPassantCase& c : cases) {

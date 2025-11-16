@@ -153,8 +153,8 @@ TEST(BoardTest, PrintBoard) {
  */
 TEST(BoardTest, PawnsBitboard) {
   Board board;
-  board.set_piece(Square(Square::A2), Piece('P'));
-  board.set_piece(Square(Square::H7), Piece('p'));
+  board.set_piece(Squares::A2, Piece('P'));
+  board.set_piece(Squares::H7, Piece('p'));
 
   Bitboard white_pawns = board.pawns(Color::WHITE);
   Bitboard black_pawns = board.pawns(Color::BLACK);
@@ -171,8 +171,8 @@ TEST(BoardTest, PawnsBitboard) {
  */
 TEST(BoardTest, KingBitboard) {
   Board board;
-  board.set_piece(Square(Square::A2), Piece('K'));
-  board.set_piece(Square(Square::H7), Piece('k'));
+  board.set_piece(Squares::A2, Piece('K'));
+  board.set_piece(Squares::H7, Piece('k'));
 
   Bitboard white_king = board.king(Color::WHITE);
   Bitboard black_king = board.king(Color::BLACK);
@@ -189,8 +189,8 @@ TEST(BoardTest, KingBitboard) {
  */
 TEST(BoardTest, RookBitboard) {
   Board board;
-  board.set_piece(Square(Square::A2), Piece('R'));
-  board.set_piece(Square(Square::H7), Piece('r'));
+  board.set_piece(Squares::A2, Piece('R'));
+  board.set_piece(Squares::H7, Piece('r'));
 
   Bitboard white_rooks = board.rook(Color::WHITE);
   Bitboard black_rooks = board.rook(Color::BLACK);
@@ -333,7 +333,7 @@ TEST(BoardTest, EnPassantSquareIsAvailable) {
 
   auto sq = board.en_passant_square();
   ASSERT_TRUE(sq.has_value());
-  EXPECT_EQ(*sq, Square(Square::D3));
+  EXPECT_EQ(*sq, Squares::D3);
 }
 
 /**

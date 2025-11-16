@@ -90,14 +90,14 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectSinglePushes) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::B3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::C2), Square(Square::C3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D2), Square(Square::D3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E2), Square(Square::E3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F2), Square(Square::F3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G2), Square(Square::G3), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H2), Square(Square::H3), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::A3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B2, Squares::B3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::C2, Squares::C3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D2, Squares::D3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E2, Squares::E3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F2, Squares::F3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G2, Squares::G3, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H2, Squares::H3, std::nullopt, false, false, false}));
 }
 
 /**
@@ -108,14 +108,14 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectSinglePushes) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A7), Square(Square::A6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B7), Square(Square::B6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::C7), Square(Square::C6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D7), Square(Square::D6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E7), Square(Square::E6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F7), Square(Square::F6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::G6), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H6), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A7, Squares::A6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B7, Squares::B6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::C7, Squares::C6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D7, Squares::D6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E7, Squares::E6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F7, Squares::F6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G7, Squares::G6, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::H6, std::nullopt, false, false, false}));
 }
 
 /**
@@ -126,14 +126,14 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionWhiteHasCorrectDoublePushes) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::B4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::C2), Square(Square::C4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D2), Square(Square::D4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E2), Square(Square::E4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F2), Square(Square::F4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G2), Square(Square::G4), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H2), Square(Square::H4), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::A4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B2, Squares::B4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::C2, Squares::C4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D2, Squares::D4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E2, Squares::E4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F2, Squares::F4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G2, Squares::G4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H2, Squares::H4, std::nullopt, false, false, false}));
 }
 
 /**
@@ -144,14 +144,14 @@ TEST_F(PawnPseudoLegalMovesTest, StartingPositionBlackHasCorrectDoublePushes) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A7), Square(Square::A5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B7), Square(Square::B5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::C7), Square(Square::C5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D7), Square(Square::D5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E7), Square(Square::E5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F7), Square(Square::F5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::G5), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A7, Squares::A5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B7, Squares::B5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::C7, Squares::C5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D7, Squares::D5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E7, Squares::E5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F7, Squares::F5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G7, Squares::G5, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::H5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -206,7 +206,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteSinglePushToEmptySquare) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::A3, std::nullopt, false, false, false}));
 }
 
 /**
@@ -217,7 +217,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackSinglePushToEmptySquare) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H6), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::H6, std::nullopt, false, false, false}));
 }
 
 /**
@@ -228,7 +228,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushFromStartingRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::A4, std::nullopt, false, false, false}));
 }
 
 /**
@@ -239,7 +239,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushFromStartingRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::H5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -250,7 +250,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnThirdRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
+  EXPECT_FALSE(contains_move(moves, {Squares::A2, Squares::A4, std::nullopt, false, false, false}));
 }
 
 /**
@@ -261,7 +261,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnThirdRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
+  EXPECT_FALSE(contains_move(moves, {Squares::H7, Squares::H5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -272,8 +272,8 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushBlockedByPieceOnFourthRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::A3), std::nullopt, false, false, false}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::A2), Square(Square::A4), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::A3, std::nullopt, false, false, false}));
+  EXPECT_FALSE(contains_move(moves, {Squares::A2, Squares::A4, std::nullopt, false, false, false}));
 }
 
 /**
@@ -284,8 +284,8 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushBlockedByPieceOnFourthRank) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::H6), std::nullopt, false, false, false}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::H7), Square(Square::H5), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::H6, std::nullopt, false, false, false}));
+  EXPECT_FALSE(contains_move(moves, {Squares::H7, Squares::H5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -297,7 +297,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteDoublePushNotAvailableFromThirdRank) {
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 1);
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A3), Square(Square::A4), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A3, Squares::A4, std::nullopt, false, false, false}));
 }
 
 /**
@@ -309,7 +309,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackDoublePushNotAvailableFromSixthRank) {
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 1);
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H6), Square(Square::H5), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H6, Squares::H5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -320,7 +320,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureDiagonally) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A2), Square(Square::B3), std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A2, Squares::B3, std::nullopt, true, false, false}));
 }
 
 /**
@@ -331,7 +331,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureDiagonally) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::H7), Square(Square::G6), std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::H7, Squares::G6, std::nullopt, true, false, false}));
 }
 
 /**
@@ -342,8 +342,8 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureBothDiagonals) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::A3), std::nullopt, true, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::B2), Square(Square::C3), std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B2, Squares::A3, std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::B2, Squares::C3, std::nullopt, true, false, false}));
 }
 
 /**
@@ -354,8 +354,8 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureBothDiagonals) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::H6), std::nullopt, true, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::G7), Square(Square::F6), std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G7, Squares::H6, std::nullopt, true, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::G7, Squares::F6, std::nullopt, true, false, false}));
 }
 
 /**
@@ -482,7 +482,7 @@ TEST_F(PawnPseudoLegalMovesTest, WhitePawnCanCaptureEnPassant) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D5), Square(Square::E6), std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D5, Squares::E6, std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 1);
 }
 
@@ -494,7 +494,7 @@ TEST_F(PawnPseudoLegalMovesTest, BlackPawnCanCaptureEnPassant) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D4), Square(Square::E3), std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D4, Squares::E3, std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 1);
 }
 
@@ -528,8 +528,8 @@ TEST_F(PawnPseudoLegalMovesTest, WhiteEnPassantBothSidesCanCapture) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D5), Square(Square::E6), std::nullopt, true, true, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F5), Square(Square::E6), std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D5, Squares::E6, std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F5, Squares::E6, std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 2);
 }
 
@@ -541,8 +541,8 @@ TEST_F(PawnPseudoLegalMovesTest, BlackEnPassantBothSidesCanCapture) {
 
   PawnMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::D4), Square(Square::E3), std::nullopt, true, true, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::F4), Square(Square::E3), std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::D4, Squares::E3, std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::F4, Squares::E3, std::nullopt, true, true, false}));
   EXPECT_EQ(count_en_passant(moves), 2);
 }
 

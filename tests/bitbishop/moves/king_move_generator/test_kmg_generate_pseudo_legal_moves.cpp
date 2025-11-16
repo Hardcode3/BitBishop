@@ -93,9 +93,9 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingInCornerHas3Moves) {
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_EQ(moves.size(), 3);
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A1), Square(Square::A2), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A1), Square(Square::B1), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A1), Square(Square::B2), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A1, Squares::A2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A1, Squares::B1, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A1, Squares::B2, std::nullopt, false, false, false}));
 }
 
 /**
@@ -107,9 +107,9 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingInCornerHas3Moves) {
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
   EXPECT_EQ(moves.size(), 3);
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A8), Square(Square::A7), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A8), Square(Square::B8), std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::A8), Square(Square::B7), std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A8, Squares::A7, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A8, Squares::B8, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {Squares::A8, Squares::B7, std::nullopt, false, false, false}));
 }
 
 /**
@@ -214,7 +214,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingsideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -225,7 +225,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -236,7 +236,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingsideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -247,7 +247,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -258,7 +258,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingsideCastlingBlockedNoRook) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -269,7 +269,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingBlockedNoRook) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -280,7 +280,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingsideCastlingBlockedNoRook) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -291,7 +291,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingBlockedNoRook) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -302,7 +302,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingsideCastlingBlockedByPieceOnF1) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -313,7 +313,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingsideCastlingBlockedByPieceOnG1) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -324,7 +324,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingBlockedByPieceOnD1) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -335,7 +335,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingBlockedByPieceOnC1) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -346,7 +346,7 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingBlockedByPieceOnB1) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -357,7 +357,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingsideCastlingBlockedByPieceOnF8) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -368,7 +368,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingsideCastlingBlockedByPieceOnG8) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -379,7 +379,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingBlockedByPieceOnD8) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -390,7 +390,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingBlockedByPieceOnC8) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -401,7 +401,7 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingBlockedByPieceOnB8) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -412,8 +412,8 @@ TEST_F(KingPseudoLegalMovesTest, WhiteCastlingUnavailableWithoutRights) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -424,8 +424,8 @@ TEST_F(KingPseudoLegalMovesTest, BlackCastlingUnavailableWithoutRights) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -436,8 +436,8 @@ TEST_F(KingPseudoLegalMovesTest, WhiteOnlyKingsideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -448,8 +448,8 @@ TEST_F(KingPseudoLegalMovesTest, WhiteOnlyQueensideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::WHITE);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E1), Square(Square::G1), std::nullopt, false, false, true}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E1), Square(Square::C1), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E1, Squares::G1, std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E1, Squares::C1, std::nullopt, false, false, true}));
 }
 
 /**
@@ -460,8 +460,8 @@ TEST_F(KingPseudoLegalMovesTest, BlackOnlyKingsideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -472,8 +472,8 @@ TEST_F(KingPseudoLegalMovesTest, BlackOnlyQueensideCastlingAvailable) {
 
   KingMoveGenerator::generate_pseudo_legal_moves(moves, board, Color::BLACK);
 
-  EXPECT_FALSE(contains_move(moves, {Square(Square::E8), Square(Square::G8), std::nullopt, false, false, true}));
-  EXPECT_TRUE(contains_move(moves, {Square(Square::E8), Square(Square::C8), std::nullopt, false, false, true}));
+  EXPECT_FALSE(contains_move(moves, {Squares::E8, Squares::G8, std::nullopt, false, false, true}));
+  EXPECT_TRUE(contains_move(moves, {Squares::E8, Squares::C8, std::nullopt, false, false, true}));
 }
 
 /**
@@ -558,8 +558,8 @@ TEST_F(KingPseudoLegalMovesTest, OnlyCastlingMovesHaveCastlingFlag) {
 
   for (const auto& move : moves) {
     if (move.is_castling) {
-      EXPECT_TRUE(move.from == Square(Square::E1));
-      EXPECT_TRUE(move.to == Square(Square::G1) || move.to == Square(Square::C1));
+      EXPECT_TRUE(move.from == Squares::E1);
+      EXPECT_TRUE(move.to == Squares::G1 || move.to == Squares::C1);
     }
   }
 }
@@ -602,8 +602,8 @@ TEST_F(KingPseudoLegalMovesTest, WhiteKingsideCastlingCorrectSquares) {
 
   bool found_kingside = false;
   for (const auto& move : moves) {
-    if (move.is_castling && move.to == Square(Square::G1)) {
-      EXPECT_EQ(move.from, Square(Square::E1));
+    if (move.is_castling && move.to == Squares::G1) {
+      EXPECT_EQ(move.from, Squares::E1);
       EXPECT_FALSE(move.is_capture);
       EXPECT_FALSE(move.is_en_passant);
       EXPECT_FALSE(move.promotion.has_value());
@@ -623,8 +623,8 @@ TEST_F(KingPseudoLegalMovesTest, WhiteQueensideCastlingCorrectSquares) {
 
   bool found_queenside = false;
   for (const auto& move : moves) {
-    if (move.is_castling && move.to == Square(Square::C1)) {
-      EXPECT_EQ(move.from, Square(Square::E1));
+    if (move.is_castling && move.to == Squares::C1) {
+      EXPECT_EQ(move.from, Squares::E1);
       EXPECT_FALSE(move.is_capture);
       EXPECT_FALSE(move.is_en_passant);
       EXPECT_FALSE(move.promotion.has_value());
@@ -644,8 +644,8 @@ TEST_F(KingPseudoLegalMovesTest, BlackKingsideCastlingCorrectSquares) {
 
   bool found_kingside = false;
   for (const auto& move : moves) {
-    if (move.is_castling && move.to == Square(Square::G8)) {
-      EXPECT_EQ(move.from, Square(Square::E8));
+    if (move.is_castling && move.to == Squares::G8) {
+      EXPECT_EQ(move.from, Squares::E8);
       EXPECT_FALSE(move.is_capture);
       EXPECT_FALSE(move.is_en_passant);
       EXPECT_FALSE(move.promotion.has_value());
@@ -665,8 +665,8 @@ TEST_F(KingPseudoLegalMovesTest, BlackQueensideCastlingCorrectSquares) {
 
   bool found_queenside = false;
   for (const auto& move : moves) {
-    if (move.is_castling && move.to == Square(Square::C8)) {
-      EXPECT_EQ(move.from, Square(Square::E8));
+    if (move.is_castling && move.to == Squares::C8) {
+      EXPECT_EQ(move.from, Squares::E8);
       EXPECT_FALSE(move.is_capture);
       EXPECT_FALSE(move.is_en_passant);
       EXPECT_FALSE(move.promotion.has_value());
