@@ -520,7 +520,7 @@ TEST(BitboardIteratorTest, SingleBitIteration) {
   auto end = bb.end();
 
   ASSERT_NE(it, end);
-  EXPECT_EQ(*it, Square(Square::D4));
+  EXPECT_EQ(*it, Squares::D4);
 
   ++it;
   EXPECT_EQ(it, end);  // should be at the end after one increment

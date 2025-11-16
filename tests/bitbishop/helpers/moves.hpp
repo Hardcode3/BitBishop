@@ -176,7 +176,7 @@ int count_quiet_moves(const std::vector<Move>& moves) {
  * @brief Counts kingside castling moves for the given side.
  */
 int count_kingside_castling(const std::vector<Move>& moves, Color side) {
-  Square target = (side == Color::WHITE) ? Square(Square::G1) : Square(Square::G8);
+  Square target = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target; });
 }
 
@@ -184,7 +184,7 @@ int count_kingside_castling(const std::vector<Move>& moves, Color side) {
  * @brief Counts queenside castling moves for the given side.
  */
 int count_queenside_castling(const std::vector<Move>& moves, Color side) {
-  Square target = (side == Color::WHITE) ? Square(Square::C1) : Square(Square::C8);
+  Square target = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target; });
 }
 
