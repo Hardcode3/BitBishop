@@ -20,12 +20,12 @@ struct EnPassantCase {
  */
 TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
   std::vector<EnPassantCase> cases{
-      {Squares::A5, Squares::B6, Color::WHITE, true},  {Squares::B5, Squares::A6, Color::WHITE, true},
-      {Squares::B5, Squares::C6, Color::WHITE, true},  {Squares::C5, Squares::B6, Color::WHITE, true},
-      {Squares::C5, Squares::D6, Color::WHITE, true},  {Squares::D5, Squares::C6, Color::WHITE, true},
-      {Squares::D5, Squares::E6, Color::WHITE, true},  {Squares::E5, Squares::D6, Color::WHITE, true},
-      {Squares::E5, Squares::F6, Color::WHITE, true},  {Squares::F5, Squares::E6, Color::WHITE, true},
-      {Squares::F5, Squares::G6, Color::WHITE, true},  {Squares::G5, Squares::F6, Color::WHITE, true},
+      {Squares::A5, Squares::B6, Color::WHITE, true}, {Squares::B5, Squares::A6, Color::WHITE, true},
+      {Squares::B5, Squares::C6, Color::WHITE, true}, {Squares::C5, Squares::B6, Color::WHITE, true},
+      {Squares::C5, Squares::D6, Color::WHITE, true}, {Squares::D5, Squares::C6, Color::WHITE, true},
+      {Squares::D5, Squares::E6, Color::WHITE, true}, {Squares::E5, Squares::D6, Color::WHITE, true},
+      {Squares::E5, Squares::F6, Color::WHITE, true}, {Squares::F5, Squares::E6, Color::WHITE, true},
+      {Squares::F5, Squares::G6, Color::WHITE, true}, {Squares::G5, Squares::F6, Color::WHITE, true},
       {Squares::G5, Squares::H6, Color::WHITE, true}, {Squares::H5, Squares::G6, Color::WHITE, true},
   };
 
