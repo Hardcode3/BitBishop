@@ -131,27 +131,40 @@ void Board::set_piece(Square sq, Piece p) {
     remove_piece(sq);
   }
 
-  switch (p.type()) {
-      // clang-format off
-      case Piece::P:  m_w_pawns.set(sq);   return;
-      case Piece::N:  m_w_knights.set(sq); return;
-      case Piece::B:  m_w_bishops.set(sq); return;
-      case Piece::R:  m_w_rooks.set(sq);   return;
-      case Piece::Q:  m_w_queen.set(sq);   return;
-      case Piece::K:  m_w_king.set(sq);    return;
-      case Piece::p:  m_b_pawns.set(sq);   return;
-      case Piece::n:  m_b_knights.set(sq); return;
-      case Piece::b:  m_b_bishops.set(sq); return;
-      case Piece::r:  m_b_rooks.set(sq);   return;
-      case Piece::q:  m_b_queen.set(sq);   return;
-      case Piece::k:  m_b_king.set(sq);    return;
-      case Piece::NO_PIECE:                return;
-    // clang-format on
-    default:
-      const std::string msg =
-          std::format("Piece {} does not exist, cannot set a piece on square {}", p.to_char(), sq.to_string());
-      throw std::invalid_argument(msg);
+  if (p.is_none()) {
+    return;  // NO_PIECE case
   }
+
+  // Use color to select white or black bitboards, then type for the specific piece
+  if (p.is_white()) {
+    switch (p.type()) {
+        // clang-format off
+    case Piece::PAWN:   m_w_pawns.set(sq);   return;
+    case Piece::KNIGHT: m_w_knights.set(sq); return;
+    case Piece::BISHOP: m_w_bishops.set(sq); return;
+    case Piece::ROOK:   m_w_rooks.set(sq);   return;
+    case Piece::QUEEN:  m_w_queen.set(sq);   return;
+    case Piece::KING:   m_w_king.set(sq);    return;
+    default: break; // clang-format off
+  }
+  } else {  // is_black()
+    switch (p.type()) {
+      // clang-format off
+      case Piece::PAWN:   m_b_pawns.set(sq);   return;
+      case Piece::KNIGHT: m_b_knights.set(sq); return;
+      case Piece::BISHOP: m_b_bishops.set(sq); return;
+      case Piece::ROOK:   m_b_rooks.set(sq);   return;
+      case Piece::QUEEN:  m_b_queen.set(sq);   return;
+      case Piece::KING:   m_b_king.set(sq);    return;
+      default: break; // clang-format off
+    }
+  }
+
+  // If we get here, something went wrong
+  throw std::invalid_argument(
+    std::format("Invalid piece type for piece {} on square {}",
+                p.to_char(), sq.to_string())
+  );
 }
 
 void Board::remove_piece(Square sq) {

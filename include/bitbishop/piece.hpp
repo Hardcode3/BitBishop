@@ -1,4 +1,5 @@
 #pragma once
+#include <bitbishop/color.hpp>
 #include <cctype>
 #include <format>
 #include <stdexcept>
@@ -17,34 +18,44 @@
 class Piece {
  public:
   /** @brief Enum for piece types */
-  enum Type : int { P, N, B, R, Q, K, p, n, b, r, q, k, NO_PIECE };
+  enum Type : int { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, NONE };
 
  private:
   Type m_type;
+  Color m_color;
   char m_symbol;
 
  public:
   /**
+   * @brief Constructs a piece from a type and color.
+   * @param t Piece type
+   * @param c Piece color
+   */
+  constexpr Piece(Type t, Color c) : m_type(t), m_color(c) { ; }
+
+  /**
    * @brief Constructs a piece.
-   * @param c Type of the piece to build
+   * @param c Type of the piece to build in character notation
    * @throw std::invalid_argument when the Piece character is invalid
+   *
+   * Default Piece is a "NONE" piece with color WHITE (char '.').
    */
   constexpr Piece(char c = '.') {
     m_symbol = c;
     switch (c) {  // clang-format off
-      case 'P': m_type = P; break;
-      case 'N': m_type = N; break;
-      case 'B': m_type = B; break;
-      case 'R': m_type = R; break;
-      case 'Q': m_type = Q; break;
-      case 'K': m_type = K; break;
-      case 'p': m_type = p; break;
-      case 'n': m_type = n; break;
-      case 'b': m_type = b; break;
-      case 'r': m_type = r; break;
-      case 'q': m_type = q; break;
-      case 'k': m_type = k; break;
-      case '.': m_type = NO_PIECE; break;  // clang-format on
+      case 'P': m_type = PAWN; m_color = Color::WHITE; break;
+      case 'N': m_type = KNIGHT; m_color = Color::WHITE; break;
+      case 'B': m_type = BISHOP; m_color = Color::WHITE; break;
+      case 'R': m_type = ROOK; m_color = Color::WHITE; break;
+      case 'Q': m_type = QUEEN; m_color = Color::WHITE; break;
+      case 'K': m_type = KING; m_color = Color::WHITE; break;
+      case 'p': m_type = PAWN; m_color = Color::BLACK; break;
+      case 'n': m_type = KNIGHT; m_color = Color::BLACK; break;
+      case 'b': m_type = BISHOP; m_color = Color::BLACK; break;
+      case 'r': m_type = ROOK; m_color = Color::BLACK; break;
+      case 'q': m_type = QUEEN; m_color = Color::BLACK; break;
+      case 'k': m_type = KING; m_color = Color::BLACK; break;
+      case '.': m_type = NONE; m_color = Color::WHITE; break;  // clang-format on
       default:
         const std::string msg = std::format("Invalid piece character {}", c);
         throw std::invalid_argument(msg);
@@ -58,22 +69,28 @@ class Piece {
   constexpr Type type() const { return m_type; }
 
   /**
+   * @brief Returns the underlying enum color of the piece.
+   * @return Color of the piece
+   */
+  constexpr Color color() const { return m_color; }
+
+  /**
    * @brief Checks if the piece is white.
    * @return true if the piece is white, false otherwise
    */
-  constexpr bool is_white() const { return m_type >= P && m_type <= K; }
+  constexpr bool is_white() const { return m_color == Color::WHITE; }
 
   /**
    * @brief Checks if the piece is black.
    * @return true if the piece is black, false otherwise
    */
-  constexpr bool is_black() const { return m_type >= p && m_type <= k; }
+  constexpr bool is_black() const { return m_color == Color::BLACK; }
 
   /**
    * @brief Checks if the piece represents no piece.
    * @return true if NO_PIECE, false otherwise
    */
-  constexpr bool is_none() const { return m_type == NO_PIECE; }
+  constexpr bool is_none() const { return m_type == NONE; }
 
   /**
    * @brief Converts the piece to a printable character.
@@ -81,6 +98,32 @@ class Piece {
    */
   constexpr char to_char() const { return m_symbol; };
 
-  constexpr bool operator==(const Piece& other) const { return m_type == other.m_type; }
-  constexpr bool operator!=(const Piece& other) const { return m_type != other.m_type; }
+  constexpr bool operator==(const Piece& other) const { return m_type == other.m_type && m_color == other.m_color; }
+  constexpr bool operator!=(const Piece& other) const { return m_type != other.m_type || m_color != other.m_color; }
 };
+
+namespace Pieces {
+#define DEFINE_PIECE(name, ch) \
+  constexpr inline Piece name { ch }
+
+// White pieces
+DEFINE_PIECE(WHITE_PAWN, 'P');
+DEFINE_PIECE(WHITE_KNIGHT, 'N');
+DEFINE_PIECE(WHITE_BISHOP, 'B');
+DEFINE_PIECE(WHITE_ROOK, 'R');
+DEFINE_PIECE(WHITE_QUEEN, 'Q');
+DEFINE_PIECE(WHITE_KING, 'K');
+
+// Black pieces
+DEFINE_PIECE(BLACK_PAWN, 'p');
+DEFINE_PIECE(BLACK_KNIGHT, 'n');
+DEFINE_PIECE(BLACK_BISHOP, 'b');
+DEFINE_PIECE(BLACK_ROOK, 'r');
+DEFINE_PIECE(BLACK_QUEEN, 'q');
+DEFINE_PIECE(BLACK_KING, 'k');
+
+// Empty
+DEFINE_PIECE(NONE, '.');
+
+#undef DEFINE_PIECE
+}  // namespace Pieces
