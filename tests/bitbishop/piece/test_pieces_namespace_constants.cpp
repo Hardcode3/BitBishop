@@ -53,16 +53,6 @@ TEST(PieceTest, BlackPieceConstantsAreCorrect) {
 }
 
 /**
- * @test Verifies NONE constant is correctly defined.
- */
-TEST(PieceTest, NoneConstantIsCorrect) {
-  using namespace Pieces;
-
-  EXPECT_EQ(NONE.type(), Piece::NONE);
-  EXPECT_TRUE(NONE.is_none());
-}
-
-/**
  * @test Verifies constants can be used in comparisons.
  */
 TEST(PieceTest, ConstantsCanBeUsedInComparisons) {

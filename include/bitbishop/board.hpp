@@ -66,9 +66,9 @@ class Board {
   /**
    * @brief Retrieves the piece on a given square.
    * @param sq The square to query.
-   * @return Piece located on `sq' of NO_PIECE ('.').
+   * @return Piece located on `sq' or std::nullopt if no piece lays on that square.
    */
-  Piece get_piece(Square sq) const;
+  std::optional<Piece> get_piece(Square sq) const;
 
   /**
    * @brief (Re)Places a piece on a given square.

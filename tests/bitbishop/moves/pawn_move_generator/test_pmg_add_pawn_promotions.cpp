@@ -40,10 +40,10 @@ TEST_F(PawnPromotionTest, WhitePromotionContainsAllPieces) {
 
   ASSERT_EQ(moves.size(), 4);
 
-  EXPECT_EQ(count_promotions_to(moves, Piece('Q')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('R')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('B')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('N')), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::WHITE_QUEEN), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::WHITE_ROOK), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::WHITE_BISHOP), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::WHITE_KNIGHT), 1);
 }
 
 /**
@@ -55,10 +55,10 @@ TEST_F(PawnPromotionTest, WhitePromotionContainsSpecificMoves) {
 
   PawnMoveGenerator::add_pawn_promotions(moves, from, to, Color::WHITE, false);
 
-  Move queen_promo = {from, to, Piece('Q'), false, false, false};
-  Move rook_promo = {from, to, Piece('R'), false, false, false};
-  Move bishop_promo = {from, to, Piece('B'), false, false, false};
-  Move knight_promo = {from, to, Piece('N'), false, false, false};
+  Move queen_promo = {from, to, Pieces::WHITE_QUEEN, false, false, false};
+  Move rook_promo = {from, to, Pieces::WHITE_ROOK, false, false, false};
+  Move bishop_promo = {from, to, Pieces::WHITE_BISHOP, false, false, false};
+  Move knight_promo = {from, to, Pieces::WHITE_KNIGHT, false, false, false};
 
   EXPECT_TRUE(contains_move(moves, queen_promo));
   EXPECT_TRUE(contains_move(moves, rook_promo));
@@ -130,10 +130,10 @@ TEST_F(PawnPromotionTest, WhitePromotionCaptureContainsSpecificMoves) {
 
   PawnMoveGenerator::add_pawn_promotions(moves, from, to, Color::WHITE, true);
 
-  Move queen_promo = {from, to, Piece('Q'), true, false, false};
-  Move rook_promo = {from, to, Piece('R'), true, false, false};
-  Move bishop_promo = {from, to, Piece('B'), true, false, false};
-  Move knight_promo = {from, to, Piece('N'), true, false, false};
+  Move queen_promo = {from, to, Pieces::WHITE_QUEEN, true, false, false};
+  Move rook_promo = {from, to, Pieces::WHITE_ROOK, true, false, false};
+  Move bishop_promo = {from, to, Pieces::WHITE_BISHOP, true, false, false};
+  Move knight_promo = {from, to, Pieces::WHITE_KNIGHT, true, false, false};
 
   EXPECT_TRUE(contains_move(moves, queen_promo));
   EXPECT_TRUE(contains_move(moves, rook_promo));
@@ -164,10 +164,10 @@ TEST_F(PawnPromotionTest, BlackPromotionContainsAllPieces) {
 
   ASSERT_EQ(moves.size(), 4);
 
-  EXPECT_EQ(count_promotions_to(moves, Piece('q')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('r')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('b')), 1);
-  EXPECT_EQ(count_promotions_to(moves, Piece('n')), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::BLACK_QUEEN), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::BLACK_ROOK), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::BLACK_BISHOP), 1);
+  EXPECT_EQ(count_promotions_to(moves, Pieces::BLACK_KNIGHT), 1);
 }
 
 /**
@@ -179,10 +179,10 @@ TEST_F(PawnPromotionTest, BlackPromotionContainsSpecificMoves) {
 
   PawnMoveGenerator::add_pawn_promotions(moves, from, to, Color::BLACK, false);
 
-  Move queen_promo = {from, to, Piece('q'), false, false, false};
-  Move rook_promo = {from, to, Piece('r'), false, false, false};
-  Move bishop_promo = {from, to, Piece('b'), false, false, false};
-  Move knight_promo = {from, to, Piece('n'), false, false, false};
+  Move queen_promo = {from, to, Pieces::BLACK_QUEEN, false, false, false};
+  Move rook_promo = {from, to, Pieces::BLACK_ROOK, false, false, false};
+  Move bishop_promo = {from, to, Pieces::BLACK_BISHOP, false, false, false};
+  Move knight_promo = {from, to, Pieces::BLACK_KNIGHT, false, false, false};
 
   EXPECT_TRUE(contains_move(moves, queen_promo));
   EXPECT_TRUE(contains_move(moves, rook_promo));
@@ -254,10 +254,10 @@ TEST_F(PawnPromotionTest, BlackPromotionCaptureContainsSpecificMoves) {
 
   PawnMoveGenerator::add_pawn_promotions(moves, from, to, Color::BLACK, true);
 
-  Move queen_promo = {from, to, Piece('q'), true, false, false};
-  Move rook_promo = {from, to, Piece('r'), true, false, false};
-  Move bishop_promo = {from, to, Piece('b'), true, false, false};
-  Move knight_promo = {from, to, Piece('n'), true, false, false};
+  Move queen_promo = {from, to, Pieces::BLACK_QUEEN, true, false, false};
+  Move rook_promo = {from, to, Pieces::BLACK_ROOK, true, false, false};
+  Move bishop_promo = {from, to, Pieces::BLACK_BISHOP, true, false, false};
+  Move knight_promo = {from, to, Pieces::BLACK_KNIGHT, true, false, false};
 
   EXPECT_TRUE(contains_move(moves, queen_promo));
   EXPECT_TRUE(contains_move(moves, rook_promo));

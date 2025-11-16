@@ -6,27 +6,25 @@
  * @test Verifies equality operator for same pieces.
  */
 TEST(PieceTest, EqualityOperatorForSamePieces) {
-  EXPECT_EQ(Piece('P'), Piece('P'));
-  EXPECT_EQ(Piece('n'), Piece('n'));
-  EXPECT_EQ(Piece('.'), Piece('.'));
+  EXPECT_EQ(Pieces::WHITE_PAWN, Pieces::WHITE_PAWN);
+  EXPECT_EQ(Pieces::BLACK_KNIGHT, Pieces::BLACK_KNIGHT);
 }
 
 /**
  * @test Verifies equality operator for different pieces.
  */
 TEST(PieceTest, EqualityOperatorForDifferentPieces) {
-  EXPECT_NE(Piece('P'), Piece('N'));
-  EXPECT_NE(Piece('P'), Piece('p'));
-  EXPECT_NE(Piece('K'), Piece('.'));
+  EXPECT_NE(Pieces::WHITE_PAWN, Pieces::WHITE_KNIGHT);
+  EXPECT_NE(Pieces::WHITE_PAWN, Pieces::BLACK_PAWN);
 }
 
 /**
  * @test Verifies inequality operator.
  */
 TEST(PieceTest, InequalityOperator) {
-  EXPECT_TRUE(Piece('P') != Piece('N'));
-  EXPECT_TRUE(Piece('P') != Piece('p'));
-  EXPECT_FALSE(Piece('P') != Piece('P'));
+  EXPECT_TRUE(Pieces::WHITE_PAWN != Pieces::WHITE_KNIGHT);
+  EXPECT_TRUE(Pieces::WHITE_PAWN != Pieces::BLACK_PAWN);
+  EXPECT_FALSE(Pieces::WHITE_PAWN != Pieces::WHITE_PAWN);
 }
 
 /**

@@ -17,6 +17,11 @@
  */
 namespace PawnMoveGenerator {
 
+constexpr std::array<Piece, 4> WHITE_PROMOTIONS = {Pieces::WHITE_QUEEN, Pieces::WHITE_ROOK, Pieces::WHITE_BISHOP,
+                                                   Pieces::WHITE_KNIGHT};
+constexpr std::array<Piece, 4> BLACK_PROMOTIONS = {Pieces::BLACK_QUEEN, Pieces::BLACK_ROOK, Pieces::BLACK_BISHOP,
+                                                   Pieces::BLACK_KNIGHT};
+
 /**
  * @brief Generates all pseudo-legal pawn moves for a given side.
  *

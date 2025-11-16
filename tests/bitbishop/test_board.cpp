@@ -13,15 +13,15 @@ TEST(BoardTest, DefaultStartingPosDefaultConstructor) {
   Board board;
 
   // Check major pieces
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('R'));
-  EXPECT_EQ(board.get_piece(Square(4, 0)), Piece('K'));
-  EXPECT_EQ(board.get_piece(Square(0, 7)), Piece('r'));
-  EXPECT_EQ(board.get_piece(Square(4, 7)), Piece('k'));
+  EXPECT_EQ(board.get_piece(Square(0, 0)), Pieces::WHITE_ROOK);
+  EXPECT_EQ(board.get_piece(Square(4, 0)), Pieces::WHITE_KING);
+  EXPECT_EQ(board.get_piece(Square(0, 7)), Pieces::BLACK_ROOK);
+  EXPECT_EQ(board.get_piece(Square(4, 7)), Pieces::BLACK_KING);
 
   // Pawns
   for (int file = 0; file < 8; ++file) {
-    EXPECT_EQ(board.get_piece(Square(file, 1)), Piece('P'));
-    EXPECT_EQ(board.get_piece(Square(file, 6)), Piece('p'));
+    EXPECT_EQ(board.get_piece(Square(file, 1)), Pieces::WHITE_PAWN);
+    EXPECT_EQ(board.get_piece(Square(file, 6)), Pieces::BLACK_PAWN);
   }
 
   EXPECT_EQ(board.white_pieces().value() & board.black_pieces().value(), 0ULL);  // no overlap
@@ -39,15 +39,15 @@ TEST(BoardTest, FENConstructor) {
   Board board(start_fen);
 
   // Check major pieces
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('R'));
-  EXPECT_EQ(board.get_piece(Square(4, 0)), Piece('K'));
-  EXPECT_EQ(board.get_piece(Square(0, 7)), Piece('r'));
-  EXPECT_EQ(board.get_piece(Square(4, 7)), Piece('k'));
+  EXPECT_EQ(board.get_piece(Square(0, 0)), Pieces::WHITE_ROOK);
+  EXPECT_EQ(board.get_piece(Square(4, 0)), Pieces::WHITE_KING);
+  EXPECT_EQ(board.get_piece(Square(0, 7)), Pieces::BLACK_ROOK);
+  EXPECT_EQ(board.get_piece(Square(4, 7)), Pieces::BLACK_KING);
 
   // Pawns
   for (int file = 0; file < 8; ++file) {
-    EXPECT_EQ(board.get_piece(Square(file, 1)), Piece('P'));
-    EXPECT_EQ(board.get_piece(Square(file, 6)), Piece('p'));
+    EXPECT_EQ(board.get_piece(Square(file, 1)), Pieces::WHITE_PAWN);
+    EXPECT_EQ(board.get_piece(Square(file, 6)), Pieces::BLACK_PAWN);
   }
 
   EXPECT_EQ(board.white_pieces().value() & board.black_pieces().value(), 0ULL);  // no overlap
@@ -67,13 +67,13 @@ TEST(BoardTest, FENConstructor) {
 TEST(BoardTest, SetAndGetPiece) {
   Board board;
 
-  board.set_piece(Square(0, 0), Piece('R'));  // White rook
-  board.set_piece(Square(4, 0), Piece('K'));  // White king
-  board.set_piece(Square(3, 7), Piece('q'));  // Black queen
+  board.set_piece(Square(0, 0), Pieces::WHITE_ROOK);   // White rook
+  board.set_piece(Square(4, 0), Pieces::WHITE_KING);   // White king
+  board.set_piece(Square(3, 7), Pieces::BLACK_QUEEN);  // Black queen
 
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('R'));
-  EXPECT_EQ(board.get_piece(Square(4, 0)), Piece('K'));
-  EXPECT_EQ(board.get_piece(Square(3, 7)), Piece('q'));
+  EXPECT_EQ(board.get_piece(Square(0, 0)), Pieces::WHITE_ROOK);
+  EXPECT_EQ(board.get_piece(Square(4, 0)), Pieces::WHITE_KING);
+  EXPECT_EQ(board.get_piece(Square(3, 7)), Pieces::BLACK_QUEEN);
 
   EXPECT_TRUE(board.white_pieces().test(Square(0, 0)));
   EXPECT_TRUE(board.white_pieces().test(Square(4, 0)));
@@ -90,11 +90,11 @@ TEST(BoardTest, SetAndGetPiece) {
  */
 TEST(BoardTest, RemovePiece) {
   Board board;
-  board.set_piece(Square(0, 0), Piece('R'));
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('R'));
+  board.set_piece(Square(0, 0), Pieces::WHITE_ROOK);
+  EXPECT_EQ(board.get_piece(Square(0, 0)), Pieces::WHITE_ROOK);
 
   board.remove_piece(Square(0, 0));
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('.'));
+  EXPECT_EQ(board.get_piece(Square(0, 0)), std::nullopt);
   EXPECT_FALSE(board.occupied().test(Square(0, 0)));
 }
 
@@ -108,11 +108,9 @@ TEST(BoardTest, RemovePiece) {
  */
 TEST(BoardTest, ReplacePiece) {
   Board board;
-  board.set_piece(Square(0, 0), Piece('R'));
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('R'));
 
-  board.set_piece(Square(0, 0), Piece('n'));  // replace with black knight
-  EXPECT_EQ(board.get_piece(Square(0, 0)), Piece('n'));
+  board.set_piece(Square(0, 0), Pieces::BLACK_KNIGHT);  // replace with black knight
+  EXPECT_EQ(board.get_piece(Square(0, 0)), Pieces::BLACK_KNIGHT);
 
   EXPECT_TRUE(board.black_pieces().test(Square(0, 0)));
   EXPECT_FALSE(board.white_pieces().test(Square(0, 0)));
@@ -153,8 +151,8 @@ TEST(BoardTest, PrintBoard) {
  */
 TEST(BoardTest, PawnsBitboard) {
   Board board;
-  board.set_piece(Squares::A2, Piece('P'));
-  board.set_piece(Squares::H7, Piece('p'));
+  board.set_piece(Squares::A2, Pieces::WHITE_PAWN);
+  board.set_piece(Squares::H7, Pieces::BLACK_PAWN);
 
   Bitboard white_pawns = board.pawns(Color::WHITE);
   Bitboard black_pawns = board.pawns(Color::BLACK);
@@ -171,8 +169,8 @@ TEST(BoardTest, PawnsBitboard) {
  */
 TEST(BoardTest, KingBitboard) {
   Board board;
-  board.set_piece(Squares::A2, Piece('K'));
-  board.set_piece(Squares::H7, Piece('k'));
+  board.set_piece(Squares::A2, Pieces::WHITE_KING);
+  board.set_piece(Squares::H7, Pieces::BLACK_KING);
 
   Bitboard white_king = board.king(Color::WHITE);
   Bitboard black_king = board.king(Color::BLACK);
@@ -189,8 +187,8 @@ TEST(BoardTest, KingBitboard) {
  */
 TEST(BoardTest, RookBitboard) {
   Board board;
-  board.set_piece(Squares::A2, Piece('R'));
-  board.set_piece(Squares::H7, Piece('r'));
+  board.set_piece(Squares::A2, Pieces::WHITE_ROOK);
+  board.set_piece(Squares::H7, Pieces::BLACK_ROOK);
 
   Bitboard white_rooks = board.rook(Color::WHITE);
   Bitboard black_rooks = board.rook(Color::BLACK);

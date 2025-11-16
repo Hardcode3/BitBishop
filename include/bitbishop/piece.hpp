@@ -18,7 +18,7 @@
 class Piece {
  public:
   /** @brief Enum for piece types */
-  enum Type : int { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, NONE };
+  enum Type : int { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 
  private:
   Type m_type;
@@ -37,10 +37,8 @@ class Piece {
    * @brief Constructs a piece.
    * @param c Type of the piece to build in character notation
    * @throw std::invalid_argument when the Piece character is invalid
-   *
-   * Default Piece is a "NONE" piece with color WHITE (char '.').
    */
-  constexpr Piece(char c = '.') {
+  constexpr Piece(char c) {
     m_symbol = c;
     switch (c) {  // clang-format off
       case 'P': m_type = PAWN; m_color = Color::WHITE; break;
@@ -55,7 +53,7 @@ class Piece {
       case 'r': m_type = ROOK; m_color = Color::BLACK; break;
       case 'q': m_type = QUEEN; m_color = Color::BLACK; break;
       case 'k': m_type = KING; m_color = Color::BLACK; break;
-      case '.': m_type = NONE; m_color = Color::WHITE; break;  // clang-format on
+                  // clang-format on
       default:
         const std::string msg = std::format("Invalid piece character {}", c);
         throw std::invalid_argument(msg);
@@ -87,12 +85,6 @@ class Piece {
   constexpr bool is_black() const { return m_color == Color::BLACK; }
 
   /**
-   * @brief Checks if the piece represents no piece.
-   * @return true if NO_PIECE, false otherwise
-   */
-  constexpr bool is_none() const { return m_type == NONE; }
-
-  /**
    * @brief Converts the piece to a printable character.
    * @return 'P','N',...,'k' for pieces, '.' for NO_PIECE
    */
@@ -121,9 +113,6 @@ DEFINE_PIECE(BLACK_BISHOP, 'b');
 DEFINE_PIECE(BLACK_ROOK, 'r');
 DEFINE_PIECE(BLACK_QUEEN, 'q');
 DEFINE_PIECE(BLACK_KING, 'k');
-
-// Empty
-DEFINE_PIECE(NONE, '.');
 
 #undef DEFINE_PIECE
 }  // namespace Pieces

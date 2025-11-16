@@ -106,33 +106,29 @@ Bitboard Board::occupied() const {
   return bb;
 }
 
-Piece Board::get_piece(Square sq) const {
-  if (m_w_pawns.test(sq)) return Piece('P');
-  if (m_w_knights.test(sq)) return Piece('N');
-  if (m_w_bishops.test(sq)) return Piece('B');
-  if (m_w_rooks.test(sq)) return Piece('R');
-  if (m_w_queen.test(sq)) return Piece('Q');
-  if (m_w_king.test(sq)) return Piece('K');
+std::optional<Piece> Board::get_piece(Square sq) const {
+  if (m_w_pawns.test(sq)) return Pieces::WHITE_PAWN;
+  if (m_w_knights.test(sq)) return Pieces::WHITE_KNIGHT;
+  if (m_w_bishops.test(sq)) return Pieces::WHITE_BISHOP;
+  if (m_w_rooks.test(sq)) return Pieces::WHITE_ROOK;
+  if (m_w_queen.test(sq)) return Pieces::WHITE_QUEEN;
+  if (m_w_king.test(sq)) return Pieces::WHITE_KING;
 
-  if (m_b_pawns.test(sq)) return Piece('p');
-  if (m_b_knights.test(sq)) return Piece('n');
-  if (m_b_bishops.test(sq)) return Piece('b');
-  if (m_b_rooks.test(sq)) return Piece('r');
-  if (m_b_queen.test(sq)) return Piece('q');
-  if (m_b_king.test(sq)) return Piece('k');
+  if (m_b_pawns.test(sq)) return Pieces::BLACK_PAWN;
+  if (m_b_knights.test(sq)) return Pieces::BLACK_KNIGHT;
+  if (m_b_bishops.test(sq)) return Pieces::BLACK_BISHOP;
+  if (m_b_rooks.test(sq)) return Pieces::BLACK_ROOK;
+  if (m_b_queen.test(sq)) return Pieces::BLACK_QUEEN;
+  if (m_b_king.test(sq)) return Pieces::BLACK_KING;
 
-  return Piece('.');  // NO_PIECE
+  return std::nullopt;  // NO_PIECE
 }
 
 void Board::set_piece(Square sq, Piece p) {
   // Remove any existing piece if existent
-  const Piece existing_piece = get_piece(sq);
-  if (!existing_piece.is_none()) {
+  const std::optional<Piece> existing_piece = get_piece(sq);
+  if (existing_piece.has_value()) {
     remove_piece(sq);
-  }
-
-  if (p.is_none()) {
-    return;  // NO_PIECE case
   }
 
   // Use color to select white or black bitboards, then type for the specific piece
@@ -189,8 +185,8 @@ void Board::print() const {
     std::cout << (rank + 1) << " ";  // rank numbers on the left
     for (int file = 0; file < 8; ++file) {
       Square sq(file, rank);
-      Piece p = get_piece(sq);
-      char c = p.to_char();
+      std::optional<Piece> opt_p = get_piece(sq);
+      char c = (opt_p.has_value()) ? opt_p.value().to_char(): '.';
       std::cout << c << " ";
     }
     std::cout << "\n";

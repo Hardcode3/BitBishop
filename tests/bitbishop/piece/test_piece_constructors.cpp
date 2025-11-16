@@ -3,17 +3,6 @@
 #include <bitbishop/piece.hpp>
 
 /**
- * @test Verifies default constructor creates NONE piece.
- */
-TEST(PieceTest, DefaultConstructorCreatesNonePiece) {
-  Piece p;
-
-  EXPECT_TRUE(p.is_none());
-  EXPECT_EQ(p.type(), Piece::NONE);
-  EXPECT_EQ(p.to_char(), '.');
-}
-
-/**
  * @test Verifies construction from Type and Color.
  */
 TEST(PieceTest, ConstructFromTypeAndColor) {
@@ -36,7 +25,6 @@ TEST(PieceTest, ConstructWhitePawnFromChar) {
   EXPECT_EQ(p.type(), Piece::PAWN);
   EXPECT_TRUE(p.is_white());
   EXPECT_FALSE(p.is_black());
-  EXPECT_FALSE(p.is_none());
   EXPECT_EQ(p.to_char(), 'P');
 }
 
@@ -104,7 +92,6 @@ TEST(PieceTest, ConstructBlackPawnFromChar) {
   EXPECT_EQ(p.type(), Piece::PAWN);
   EXPECT_TRUE(p.is_black());
   EXPECT_FALSE(p.is_white());
-  EXPECT_FALSE(p.is_none());
   EXPECT_EQ(p.to_char(), 'p');
 }
 
@@ -164,19 +151,6 @@ TEST(PieceTest, ConstructBlackKingFromChar) {
 }
 
 /**
- * @test Verifies NONE piece constructed from '.'.
- */
-TEST(PieceTest, ConstructNonePieceFromChar) {
-  Piece p('.');
-
-  EXPECT_EQ(p.type(), Piece::NONE);
-  EXPECT_TRUE(p.is_none());
-  EXPECT_TRUE(p.is_white());
-  EXPECT_FALSE(p.is_black());
-  EXPECT_EQ(p.to_char(), '.');
-}
-
-/**
  * @test Verifies invalid character throws exception.
  */
 TEST(PieceTest, InvalidCharThrowsException) {
@@ -196,5 +170,4 @@ TEST(PieceTest, TypeColorConstructorSetsCorrectProperties) {
   EXPECT_EQ(white_queen.color(), Color::WHITE);
   EXPECT_TRUE(white_queen.is_white());
   EXPECT_FALSE(white_queen.is_black());
-  EXPECT_FALSE(white_queen.is_none());
 }

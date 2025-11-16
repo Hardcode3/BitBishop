@@ -56,12 +56,7 @@ void PawnMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, co
 
 void PawnMoveGenerator::add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color side,
                                             bool capture) {
-  std::array<Piece, 4> promotion_pieces;
-  if (side == Color::WHITE) {
-    promotion_pieces = {Piece('Q'), Piece('R'), Piece('B'), Piece('N')};
-  } else {
-    promotion_pieces = {Piece('q'), Piece('r'), Piece('b'), Piece('n')};
-  }
+  const auto& promotion_pieces = (side == Color::WHITE) ? WHITE_PROMOTIONS : BLACK_PROMOTIONS;
 
   for (auto piece : promotion_pieces) {
     moves.emplace_back(from, to, piece, capture, false, false);
