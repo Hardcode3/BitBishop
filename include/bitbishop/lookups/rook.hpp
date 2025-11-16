@@ -4,7 +4,7 @@
 #include <bitbishop/bitmasks.hpp>
 #include <cstdint>
 
-namespace Attacks {
+namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack moving north from the given square.
@@ -89,4 +89,4 @@ constexpr std::array<Bitboard, 64> ROOK_ATTACKS = []() constexpr {
   return table;
 }();
 
-}  // namespace Attacks
+}  // namespace Lookups

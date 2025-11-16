@@ -4,7 +4,7 @@
 #include <bitbishop/bitmasks.hpp>
 #include <cstdint>
 
-namespace Attacks {
+namespace Lookups {
 
 /**
  * @brief Precomputed bitboards for white pawn single pushes (1 square forward).
@@ -120,4 +120,4 @@ constexpr std::array<Bitboard, 64> BLACK_PAWN_ATTACKS = []() constexpr {
   return table;
 }();
 
-}  // namespace Attacks
+}  // namespace Lookups

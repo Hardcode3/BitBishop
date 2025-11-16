@@ -4,7 +4,7 @@
 #include <bitbishop/lookups/pawn.hpp>
 #include <bitbishop/square.hpp>
 
-using namespace Attacks;
+using namespace Lookups;
 
 /**
  * @test White pawn single push from A2

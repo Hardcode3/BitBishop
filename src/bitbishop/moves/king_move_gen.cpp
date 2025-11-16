@@ -18,7 +18,7 @@ void KingMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, co
   }
 
   const Square from = opt_sq.value();
-  const Bitboard king_moves = Attacks::KING_ATTACKS[from.value()];
+  const Bitboard king_moves = Lookups::KING_ATTACKS[from.value()];
   const Bitboard empty = board.unoccupied();
   const Bitboard enemy = board.enemy(side);
 

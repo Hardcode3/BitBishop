@@ -5,7 +5,7 @@
 #include <bitbishop/lookups/king.hpp>
 #include <bitbishop/square.hpp>
 
-using namespace Attacks;
+using namespace Lookups;
 
 /**
  * @test King attacks from A1 corner square.

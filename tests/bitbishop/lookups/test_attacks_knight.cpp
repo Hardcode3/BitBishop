@@ -5,7 +5,7 @@
 #include <bitbishop/lookups/knight.hpp>
 #include <bitbishop/square.hpp>
 
-using namespace Attacks;
+using namespace Lookups;
 
 TEST(KnightAttackTest, CornerA1) {
   Bitboard expected;
