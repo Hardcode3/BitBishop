@@ -4,7 +4,7 @@
 #include <bitbishop/bitmasks.hpp>
 #include <cstdint>
 
-namespace Attacks {
+namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack moving northeast from the given square.
@@ -98,4 +98,4 @@ constexpr std::array<Bitboard, 64> BISHOP_ATTACKS = []() constexpr {
   return table;
 }();
 
-}  // namespace Attacks
+}  // namespace Lookups

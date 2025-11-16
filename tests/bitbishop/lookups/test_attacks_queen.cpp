@@ -5,7 +5,7 @@
 #include <bitbishop/square.hpp>
 
 TEST(QueenAttacksTest, CornerA1) {
-  Bitboard bb = Attacks::QUEEN_ATTACKS[Square::A1];
+  Bitboard bb = Lookups::QUEEN_ATTACKS[Square::A1];
 
   Bitboard expected = Bitboard(Bitmasks::FILE_A | Bitmasks::RANK_1);
   expected.clear(Square::A1);
@@ -22,7 +22,7 @@ TEST(QueenAttacksTest, CornerA1) {
 }
 
 TEST(QueenAttacksTest, CornerA8) {
-  Bitboard bb = Attacks::QUEEN_ATTACKS[Square::A8];
+  Bitboard bb = Lookups::QUEEN_ATTACKS[Square::A8];
 
   Bitboard expected = Bitboard(Bitmasks::FILE_A | Bitmasks::RANK_8);
   expected.clear(Square::A8);
@@ -39,7 +39,7 @@ TEST(QueenAttacksTest, CornerA8) {
 }
 
 TEST(QueenAttacksTest, CornerH1) {
-  Bitboard bb = Attacks::QUEEN_ATTACKS[Square::H1];
+  Bitboard bb = Lookups::QUEEN_ATTACKS[Square::H1];
 
   Bitboard expected = Bitboard(Bitmasks::FILE_H | Bitmasks::RANK_1);
   expected.clear(Square::H1);
@@ -56,7 +56,7 @@ TEST(QueenAttacksTest, CornerH1) {
 }
 
 TEST(QueenAttacksTest, CornerH8) {
-  Bitboard bb = Attacks::QUEEN_ATTACKS[Square::H8];
+  Bitboard bb = Lookups::QUEEN_ATTACKS[Square::H8];
 
   Bitboard expected = Bitboard(Bitmasks::FILE_H | Bitmasks::RANK_8);
   expected.clear(Square::H8);
@@ -73,7 +73,7 @@ TEST(QueenAttacksTest, CornerH8) {
 }
 
 TEST(QueenAttacksTest, CenterD4) {
-  Bitboard bb = Attacks::QUEEN_ATTACKS[Square::D4];
+  Bitboard bb = Lookups::QUEEN_ATTACKS[Square::D4];
 
   Bitboard expected = Bitboard(Bitmasks::FILE_D | Bitmasks::RANK_4);
   expected.clear(Square::D4);

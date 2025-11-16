@@ -8,7 +8,7 @@
 TEST(PawnMoveGeneratorTest, DoublePushWhiteReturnsCorrectArray) {
   auto result = PawnMoveGenerator::double_push(Color::WHITE);
   EXPECT_EQ(result.size(), 64);
-  EXPECT_EQ(result, Attacks::WHITE_PAWN_DOUBLE_PUSH);
+  EXPECT_EQ(result, Lookups::WHITE_PAWN_DOUBLE_PUSH);
 }
 
 /**
@@ -17,7 +17,7 @@ TEST(PawnMoveGeneratorTest, DoublePushWhiteReturnsCorrectArray) {
 TEST(PawnMoveGeneratorTest, DoublePushBlackReturnsCorrectArray) {
   auto result = PawnMoveGenerator::double_push(Color::BLACK);
   EXPECT_EQ(result.size(), 64);
-  EXPECT_EQ(result, Attacks::BLACK_PAWN_DOUBLE_PUSH);
+  EXPECT_EQ(result, Lookups::BLACK_PAWN_DOUBLE_PUSH);
 }
 
 /**

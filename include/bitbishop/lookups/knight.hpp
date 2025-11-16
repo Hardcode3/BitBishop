@@ -4,7 +4,7 @@
 #include <bitbishop/bitmasks.hpp>
 #include <cstdint>
 
-namespace Attacks {
+namespace Lookups {
 
 /**
  * @brief Computes the attack bitboard for a knight on a given square.
@@ -47,4 +47,4 @@ constexpr std::array<Bitboard, 64> KNIGHT_ATTACKS = []() constexpr {
   return table;
 }();
 
-}  // namespace Attacks
+}  // namespace Lookups

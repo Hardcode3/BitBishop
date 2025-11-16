@@ -119,9 +119,9 @@ constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noex
 constexpr std::array<Bitboard, 64> single_push(Color side) {
   switch (side) {
     case Color::WHITE:
-      return Attacks::WHITE_PAWN_SINGLE_PUSH;
+      return Lookups::WHITE_PAWN_SINGLE_PUSH;
     case Color::BLACK:
-      return Attacks::BLACK_PAWN_SINGLE_PUSH;
+      return Lookups::BLACK_PAWN_SINGLE_PUSH;
   }
   std::unreachable();
 }
@@ -143,9 +143,9 @@ constexpr std::array<Bitboard, 64> single_push(Color side) {
 constexpr std::array<Bitboard, 64> double_push(Color side) {
   switch (side) {
     case Color::WHITE:
-      return Attacks::WHITE_PAWN_DOUBLE_PUSH;
+      return Lookups::WHITE_PAWN_DOUBLE_PUSH;
     case Color::BLACK:
-      return Attacks::BLACK_PAWN_DOUBLE_PUSH;
+      return Lookups::BLACK_PAWN_DOUBLE_PUSH;
   }
   std::unreachable();
 }
@@ -167,9 +167,9 @@ constexpr std::array<Bitboard, 64> double_push(Color side) {
 constexpr std::array<Bitboard, 64> captures(Color side) {
   switch (side) {
     case Color::WHITE:
-      return Attacks::WHITE_PAWN_ATTACKS;
+      return Lookups::WHITE_PAWN_ATTACKS;
     case Color::BLACK:
-      return Attacks::BLACK_PAWN_ATTACKS;
+      return Lookups::BLACK_PAWN_ATTACKS;
   }
   std::unreachable();
 }

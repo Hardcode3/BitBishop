@@ -5,7 +5,7 @@
 #include <bitbishop/square.hpp>
 
 TEST(BishopAttacksTest, CornerA1) {
-  Bitboard bb = Attacks::BISHOP_ATTACKS[Square::A1];
+  Bitboard bb = Lookups::BISHOP_ATTACKS[Square::A1];
 
   EXPECT_TRUE(bb.test(Square::B2));
   EXPECT_TRUE(bb.test(Square::C3));
@@ -17,7 +17,7 @@ TEST(BishopAttacksTest, CornerA1) {
 }
 
 TEST(BishopAttacksTest, CornerA8) {
-  Bitboard bb = Attacks::BISHOP_ATTACKS[Square::A8];
+  Bitboard bb = Lookups::BISHOP_ATTACKS[Square::A8];
 
   EXPECT_TRUE(bb.test(Square::B7));
   EXPECT_TRUE(bb.test(Square::C6));
@@ -29,7 +29,7 @@ TEST(BishopAttacksTest, CornerA8) {
 }
 
 TEST(BishopAttacksTest, CornerH1) {
-  Bitboard bb = Attacks::BISHOP_ATTACKS[Square::H1];
+  Bitboard bb = Lookups::BISHOP_ATTACKS[Square::H1];
 
   EXPECT_TRUE(bb.test(Square::A8));
   EXPECT_TRUE(bb.test(Square::B7));
@@ -41,7 +41,7 @@ TEST(BishopAttacksTest, CornerH1) {
 }
 
 TEST(BishopAttacksTest, CornerH8) {
-  Bitboard bb = Attacks::BISHOP_ATTACKS[Square::H8];
+  Bitboard bb = Lookups::BISHOP_ATTACKS[Square::H8];
 
   EXPECT_TRUE(bb.test(Square::A1));
   EXPECT_TRUE(bb.test(Square::B2));
@@ -53,7 +53,7 @@ TEST(BishopAttacksTest, CornerH8) {
 }
 
 TEST(BishopAttacksTest, CenterD4) {
-  Bitboard bb = Attacks::BISHOP_ATTACKS[Square::D4];
+  Bitboard bb = Lookups::BISHOP_ATTACKS[Square::D4];
 
   // Towards NE
   EXPECT_TRUE(bb.test(Square::E5));

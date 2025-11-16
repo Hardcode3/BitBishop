@@ -6,7 +6,7 @@
 #include <bitbishop/lookups/rook.hpp>
 #include <cstdint>
 
-namespace Attacks {
+namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a queen can attack from the given square in all directions.
@@ -33,4 +33,4 @@ constexpr std::array<Bitboard, 64> QUEEN_ATTACKS = []() constexpr {
   return table;
 }();
 
-}  // namespace Attacks
+}  // namespace Lookups
