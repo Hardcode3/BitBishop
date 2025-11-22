@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
 
 permissions:
@@ -28,9 +29,9 @@ jobs:
           set -e
 
           if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>✅ Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>🟢 Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
           else
-            echo "## ❌ Configure Results" >> $GITHUB_STEP_SUMMARY
+            echo "## 🔴 Configure Results" >> $GITHUB_STEP_SUMMARY
           fi
           echo '' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -50,9 +51,9 @@ jobs:
           set -e
 
           if [ $BUILD_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>✅ Build Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>🟢 Build Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
           else
-            echo "## ❌ Build Results" >> $GITHUB_STEP_SUMMARY
+            echo "## 🔴 Build Results" >> $GITHUB_STEP_SUMMARY
           fi
           echo '' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -72,9 +73,9 @@ jobs:
           set -e
 
           if [ $TEST_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>✅ Test Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>🟢 Test Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
           else
-            echo "## ❌ Test Results" >> $GITHUB_STEP_SUMMARY
+            echo "## 🔴 Test Results" >> $GITHUB_STEP_SUMMARY
           fi
           echo '' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
