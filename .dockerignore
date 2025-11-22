@@ -1,0 +1,16 @@
+.env
+*.log
+*.md
+*.git*
+*.DS_Store
+
+docker-compose.yml
+docker-compose.override.yml
+
+dist/
+build/
+tmp/
+*.tmp
+*.swp
+
+.github/

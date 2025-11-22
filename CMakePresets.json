@@ -11,6 +11,7 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install"
