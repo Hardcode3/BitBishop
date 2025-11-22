@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/hardcode3/ghr-chess-engine-ubuntu:latest
+      image: ghcr.io/hardcode3/bitbishop-ubuntu:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
