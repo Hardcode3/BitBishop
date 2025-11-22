@@ -18,13 +18,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
 
+    strategy:
+      matrix:
+        preset: [ clang_debug, clang_release ]
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure (clang-debug)
+      - name: Configure (${{ matrix.preset }})
         run: |
           set +e
-          cmake --preset clang_debug 2>&1 | tee configure_output.txt
+          cmake --preset ${{ matrix.preset }} 2>&1 | tee configure_output.txt
           CONFIGURE_EXIT_CODE=$?
           set -e
 
@@ -46,7 +50,7 @@ jobs:
       - name: Build
         run: |
           set +e
-          cmake --build --preset clang_debug 2>&1 | tee build_output.txt
+          cmake --build --preset ${{ matrix.preset }} 2>&1 | tee build_output.txt
           BUILD_EXIT_CODE=$?
           set -e
 
@@ -68,7 +72,7 @@ jobs:
       - name: Test
         run: |
           set +e
-          ctest --preset clang_debug --output-on-failure 2>&1 | tee test_output.txt
+          ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | tee test_output.txt
           TEST_EXIT_CODE=$?
           set -e
 
