@@ -40,9 +40,12 @@
       "inherits": "default",
       "description": "Debug build using MSVC",
       "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_COMPILER": "x64-windows"
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     },
     {
@@ -50,9 +53,12 @@
       "inherits": "default",
       "description": "Release build using MSVC",
       "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_COMPILER": "x64-windows"
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     }
   ],
