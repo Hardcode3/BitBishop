@@ -10,6 +10,7 @@ permissions:
 jobs:
   linux:
     runs-on: ubuntu-latest
+
     container:
       image: ghcr.io/hardcode3/ghr-chess-engine-ubuntu:latest
       credentials:
@@ -20,10 +21,67 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Configure (clang-debug)
-        run: cmake --preset clang_debug
+        run: |
+          set +e
+          cmake --preset clang_debug 2>&1 | tee configure_output.txt
+          CONFIGURE_EXIT_CODE=$?
+          set -e
+
+          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>✅ Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Configure Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat configure_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $CONFIGURE_EXIT_CODE
 
       - name: Build
-        run: cmake --build --preset clang_debug
+        run: |
+          set +e
+          cmake --build --preset clang_debug 2>&1 | tee build_output.txt
+          BUILD_EXIT_CODE=$?
+          set -e
+
+          if [ $BUILD_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>✅ Build Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Build Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat build_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $BUILD_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $BUILD_EXIT_CODE
 
       - name: Test
-        run: ctest --preset clang_debug --output-on-failure
+        run: |
+          set +e
+          ctest --preset clang_debug --output-on-failure 2>&1 | tee test_output.txt
+          TEST_EXIT_CODE=$?
+          set -e
+
+          if [ $TEST_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>✅ Test Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Test Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $TEST_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $TEST_EXIT_CODE
