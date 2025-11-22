@@ -41,7 +41,7 @@ class Square {
 
  public:
   /**
-   * @brief Construct a Square from a raw integer value (flattened index).
+   * @brief Construct a Square from a raw integer value (flattened index) with runtime validation.
    * @param v Integer in range [0, 63].
    * @throw std::invalid_argument if v is out of range.
    */
@@ -51,6 +51,25 @@ class Square {
       throw std::invalid_argument(msg);
     }
   }
+
+  /**
+   * @brief Construct a Square from a raw integer value (flattened index).
+   * @param v Integer in range [0, 63].
+   * @param std::in_place_t
+   *
+   * The std::in_place_t parameter serves as a compile-time tag to disambiguate this constructor
+   * from other constructors. It doesn't carry any data—it's an empty struct whose sole purpose is
+   * to enable overload resolution:
+   *
+   * ```c++
+   * // You'd call it like this:
+   * Square sq(42, std::in_place);  // std::in_place is a constexpr instance of std::in_place_t
+   *
+   * // Versus a regular constructor:
+   * Square sq(42);  // Calls a different constructor
+   * ```
+   */
+  constexpr Square(int v, std::in_place_t) noexcept : m_value(static_cast<Value>(v)) {}
 
   /**
    * @brief Construct a Square directly from an enum value.
