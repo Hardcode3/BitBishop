@@ -41,7 +41,7 @@
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_COMPILER": "x64-windows"
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     },
     {
@@ -51,7 +51,7 @@
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_COMPILER": "x64-windows"
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     }
   ],
@@ -75,8 +75,20 @@
   ],
   "testPresets": [
     {
-      "name": "default",
-      "configurePreset": "default"
+      "name": "clang_debug",
+      "configurePreset": "clang_debug"
+    },
+    {
+      "name": "clang_release",
+      "configurePreset": "clang_release"
+    },
+    {
+      "name": "msvc_debug",
+      "configurePreset": "msvc_debug"
+    },
+    {
+      "name": "msvc_release",
+      "configurePreset": "msvc_release"
     }
   ],
   "packagePresets": [
