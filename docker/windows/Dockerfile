@@ -1,8 +1,7 @@
 # Commands:
 # [build] docker build -t bitbishop-windows . -f docker/windows/Dockerfile
 # [run] docker run -it --rm bitbishop-windows
-# [configure cmake] cmake --preset=clang_release
-# [build cmake] cmake --build --preset=clang_release
+# NOTE: Before trying to build this dockerfile, ensure docker engine runs in windows container mode
 
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
@@ -27,18 +26,32 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 # - ninja: fast build system, alternative to MSBuild, preferred for faster compilation
 # - zip: archive utility, often needed for packaging and handling compressed files
 # - llvm: compiler infrastructure including clang, useful for cross-platform builds
-# - --installargs 'ADD_CMAKE_TO_PATH=System': ensures CMake is accessible system-wide
 # - -y: automatic yes to prompts (non-interactive installation for Docker builds)
-RUN choco install -y git cmake ninja zip llvm --installargs 'ADD_CMAKE_TO_PATH=System'
+# NOTE: Installing each tool separately ensures proper PATH registration
+RUN choco install -y git
+RUN choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+RUN choco install -y ninja
+RUN choco install -y zip
+RUN choco install -y llvm
 
 # Update PATH environment variable to make installed tools accessible
-# CRITICAL: PowerShell directory must be in PATH for vcpkg's bootstrap script
-# - C:\Windows\System32\WindowsPowerShell\v1.0: PowerShell executable location
-#   vcpkg's bootstrap-vcpkg.bat internally calls powershell.exe and expects it in PATH
-# - C:\Program Files\Git\cmd: Git command-line tools
-# - C:\ProgramData\chocolatey\bin: Chocolatey-installed binaries
-# - ${PATH}: preserves existing PATH entries (inheritance)
-ENV PATH="C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Program Files\\Git\\cmd;C:\\ProgramData\\chocolatey\\bin;${PATH}"
+# CRITICAL: Must use [Environment]::SetEnvironmentVariable to persist changes to the system
+# This ensures PATH modifications survive container restarts and are available at runtime
+# - Machine scope: system-wide PATH that persists across sessions
+RUN [Environment]::SetEnvironmentVariable('PATH', \
+    \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0;\" + \
+    \"C:\\Program Files\\Git\\cmd;\" + \
+    \"C:\\Program Files\\CMake\\bin;\" + \
+    \"C:\\ProgramData\\chocolatey\\bin;\" + \
+    \"C:\\Tools\\ninja;\" + \
+    \"C:\\Program Files\\LLVM\\bin;\" + \
+    $env:PATH, \
+    [EnvironmentVariableTarget]::Machine)
+
+# Refresh the current session's PATH to include newly installed tools
+# This is necessary for subsequent RUN commands in the Dockerfile
+RUN refreshenv; \
+    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH','Machine')
 
 # Install Visual Studio Build Tools 2022
 # This provides the MSVC compiler toolchain required for building native Windows C++ applications
@@ -96,18 +109,50 @@ SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "-Comma
 #   * binarycaching: enables binary package caching to speed up builds
 # - VCPKG_BINARY_SOURCES: configures where binary cache is stored
 #   * clear: clears any inherited cache configuration
-#   * x-gha,readwrite: uses GitHub Actions cache with read/write permissions
-#     (particularly useful when running in GitHub Actions runners)
+#   * files: uses local filesystem cache (C:\vcpkg\binarycache)
+#   NOTE: x-gha backend has been removed, using local file cache instead
 ENV VCPKG_ROOT="C:\\vcpkg"
 ENV VCPKG_FEATURE_FLAGS="manifest,binarycaching"
-ENV VCPKG_BINARY_SOURCES="clear;x-gha,readwrite"
+ENV VCPKG_BINARY_SOURCES="clear;files,C:\\vcpkg\\binarycache,readwrite"
+
+# Create binary cache directory
+RUN New-Item -ItemType Directory -Path C:\vcpkg\binarycache -Force
 
 # Final PATH configuration with all build tools
-# - C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools:
-#   VS Developer Command Prompt tools (VsDevCmd.bat location for setting up build environment)
-# - C:\vcpkg: vcpkg.exe location for package management
-# - ${PATH}: inherits previously set PATH entries
-ENV PATH="C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools;C:\\vcpkg;${PATH}"
+# Add VS Build Tools and vcpkg to the system PATH
+# This ensures all tools are available when the container starts
+# CRITICAL: Include MSVC compiler binaries for ninja/cmake to find cl.exe
+RUN $vsPath = (Get-ChildItem 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC' | Select-Object -Last 1).FullName; \
+    [Environment]::SetEnvironmentVariable('PATH', \
+    \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools;\" + \
+    \"$vsPath\\bin\\Hostx64\\x64;\" + \
+    \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;\" + \
+    \"C:\\vcpkg;\" + \
+    [System.Environment]::GetEnvironmentVariable('PATH','Machine'), \
+    [EnvironmentVariableTarget]::Machine)
+
+# Set up MSVC environment variables required for compilation
+# These environment variables are normally set by vcvarsall.bat or VsDevCmd.bat
+# Setting them explicitly ensures cmake/ninja can find and use the MSVC toolchain
+RUN $vsPath = (Get-ChildItem 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC' | Select-Object -Last 1).FullName; \
+    $sdkPath = 'C:\Program Files (x86)\Windows Kits\10'; \
+    $sdkVersion = (Get-ChildItem \"$sdkPath\Include\" | Select-Object -Last 1).Name; \
+    [Environment]::SetEnvironmentVariable('INCLUDE', \
+    \"$vsPath\\include;\" + \
+    \"$sdkPath\\Include\\$sdkVersion\\ucrt;\" + \
+    \"$sdkPath\\Include\\$sdkVersion\\um;\" + \
+    \"$sdkPath\\Include\\$sdkVersion\\shared\", \
+    [EnvironmentVariableTarget]::Machine); \
+    [Environment]::SetEnvironmentVariable('LIB', \
+    \"$vsPath\\lib\\x64;\" + \
+    \"$sdkPath\\Lib\\$sdkVersion\\ucrt\\x64;\" + \
+    \"$sdkPath\\Lib\\$sdkVersion\\um\\x64\", \
+    [EnvironmentVariableTarget]::Machine); \
+    [Environment]::SetEnvironmentVariable('LIBPATH', \
+    \"$vsPath\\lib\\x64;\" + \
+    \"$sdkPath\\UnionMetadata\\$sdkVersion;\" + \
+    \"$sdkPath\\References\\$sdkVersion\", \
+    [EnvironmentVariableTarget]::Machine)
 
 # Set working directory for when container starts
 # C:\workspace is a conventional location for build operations
