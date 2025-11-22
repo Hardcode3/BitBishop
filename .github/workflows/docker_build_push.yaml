@@ -53,6 +53,7 @@ jobs:
         uses: docker/build-push-action@v5
         env:
           DOCKER_BUILD_SUMMARY: true
+          GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
         with:
           context: .
           file: docker/ubuntu/Dockerfile
@@ -60,3 +61,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
+          provenance: true
