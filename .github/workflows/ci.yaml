@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hardcode3/ghr-chess-engine-ubuntu:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (clang-debug)
+        run: cmake --preset clang_debug
+
+      - name: Build
+        run: cmake --build --preset clang_debug
+
+      - name: Test
+        run: ctest --preset clang_debug --output-on-failure
