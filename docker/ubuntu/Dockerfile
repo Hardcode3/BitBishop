@@ -1,6 +1,6 @@
 # Commands:
-# [build] docker build -t ghr-chess-engine-ubuntu . -f docker/ubuntu/Dockerfile
-# [run] docker run -it --rm ghr-chess-engine-ubuntu
+# [build] docker build -t bitbishop-ubuntu . -f docker/ubuntu/Dockerfile
+# [run] docker run -it --rm bitbishop-ubuntu
 # [configure cmake] cmake --preset=clang_release
 # [build cmake] cmake --build --preset=clang_release
 
