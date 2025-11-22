@@ -35,6 +35,3 @@ RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT}
 RUN ${VCPKG_ROOT}/bootstrap-vcpkg.sh
 
 WORKDIR /workspace
-
-# for testing purpose
-COPY . .
