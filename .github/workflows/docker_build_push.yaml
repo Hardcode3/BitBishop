@@ -55,6 +55,6 @@ jobs:
           context: .
           file: docker/ubuntu/Dockerfile
           push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ github.event.inputs.tag }}
-            ${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          lables: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
