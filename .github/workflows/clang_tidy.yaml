@@ -1,0 +1,44 @@
+name: Clang Tidy
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/hardcode3/bitbishop-ubuntu:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run clang-tidy
+        run: |
+          set +e
+          cmake --build --preset clang_debug --target clang-tidy 2>&1 | tee clang_tidy_output.txt
+          CLANG_TIDY_EXIT_CODE=$?
+          set -e
+
+          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>🟢 Clang Tidy Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔴 Clang Tidy Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat clang_tidy_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $CLANG_TIDY_EXIT_CODE
