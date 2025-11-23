@@ -1,4 +1,4 @@
-name: Clang Tidy
+name: Clang Tidy Linting
 
 on:
   push:
@@ -23,8 +23,8 @@ jobs:
 
       - name: Install clang-tidy
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-tidy
+          apt-get update
+          apt-get install -y clang-tidy
 
       - name: Configure (clang_debug)
         run: cmake --preset clang_debug
