@@ -9,7 +9,7 @@ permissions:
   packages: read
 
 jobs:
-  linux-build:
+  clang-tidy-linting:
     runs-on: ubuntu-latest
 
     container:
@@ -20,6 +20,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Configure (clang_debug)
+        run: cmake --preset clang_debug 2>&1 | tee configure_output.txt
 
       - name: Run clang-tidy
         run: |
