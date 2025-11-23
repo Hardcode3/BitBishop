@@ -1,6 +1,8 @@
 name: Windows Build
 
-on: [push, pull_request]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   windows-build:
@@ -35,9 +37,9 @@ jobs:
           }
 
           Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
           Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
 
           if ($exitCode -eq 0) {
             Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
@@ -60,9 +62,9 @@ jobs:
           }
 
           Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
           Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
 
           if ($exitCode -eq 0) {
             Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
@@ -85,9 +87,9 @@ jobs:
           }
 
           Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
           Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Add-Content $env:GITHUB_STEP_SUMMARY '```'
 
           if ($exitCode -eq 0) {
             Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
