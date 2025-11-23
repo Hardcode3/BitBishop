@@ -1,4 +1,3 @@
-# .github/workflows/build-windows.yml
 name: Windows Build
 
 on: [push, pull_request]
