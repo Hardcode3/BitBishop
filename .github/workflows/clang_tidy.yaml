@@ -30,6 +30,7 @@ jobs:
         run: cmake --preset clang_debug
 
       - name: Run clang-tidy
+        shell: bash
         run: |
           set +e
           cmake --build --preset clang_debug --target clang-tidy 2>&1 | tee clang_tidy_output.txt
