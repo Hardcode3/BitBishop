@@ -33,7 +33,7 @@ jobs:
         run: |
           set +e
           cmake --build --preset clang_debug --target clang-tidy 2>&1 | tee clang_tidy_output.txt
-          CLANG_TIDY_EXIT_CODE=$?
+          CLANG_TIDY_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
