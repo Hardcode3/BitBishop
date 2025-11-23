@@ -18,9 +18,6 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
           C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
 
-      - name: Check MSVC version
-        run: cl.exe
-
       - name: Configure (${{ matrix.preset }})
         env:
           VCPKG_ROOT: C:\vcpkg
