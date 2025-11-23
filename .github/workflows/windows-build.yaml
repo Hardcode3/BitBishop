@@ -3,6 +3,10 @@ name: Windows Build
 on: [push, pull_request]
 
 jobs:
+  strategy:
+      matrix:
+        preset: [ msvc_debug, msvc_release ]
+
   build:
     runs-on: windows-2022
     steps:
@@ -13,13 +17,82 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
           C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
 
-      - name: Configure CMake
-        run: cmake --preset msvc_debug
+      - name: Check MSVC version
+        run: cl.exe
+
+      - name: Configure (${{ matrix.preset }})
         env:
           VCPKG_ROOT: C:\vcpkg
+        shell: pwsh
+        run: |
+          $outputFile = "configure_output.txt"
 
-      - name: Build
-        run: cmake --build --preset msvc_debug
+          cmake --preset ${{ matrix.preset }} 2>&1 | Tee-Object -FilePath $outputFile
+          $exitCode = $LASTEXITCODE
 
-      - name: Test
-        run: ctest --preset msvc_debug
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Configure Results (click to expand)</summary>"
+          } else {
+            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Configure Results"
+          }
+
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
+          }
+
+          exit $exitCode
+
+      - name: Build (${{ matrix.preset }})
+        shell: pwsh
+        run: |
+          $outputFile = "build_output.txt"
+
+          cmake --build --preset ${{ matrix.preset }} 2>&1 | Tee-Object -FilePath $outputFile
+          $exitCode = $LASTEXITCODE
+
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Build Results (click to expand)</summary>"
+          } else {
+            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Build Results"
+          }
+
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
+          }
+
+          exit $exitCode
+
+      - name: Test (${{ matrix.preset }})
+        shell: pwsh
+        run: |
+          $outputFile = "test_output.txt"
+
+          ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | Tee-Object -FilePath $outputFile
+          $exitCode = $LASTEXITCODE
+
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Test Results (click to expand)</summary>"
+          } else {
+            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Test Results"
+          }
+
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
+          Add-Content $env:GITHUB_STEP_SUMMARY "```"
+
+          if ($exitCode -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
+          }
+
+          exit $exitCode
