@@ -102,7 +102,12 @@ constexpr bool is_promotion_rank(Square sq, Color c) { return c == Color::WHITE 
  * @return true if the capture geometry is valid for en passant, false otherwise
  */
 constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
-  int df = std::abs(int(from.file()) - int(epsq.file()));
+  // MSVC have not yet made std::abs() constexpr for C++ 23, forcing us to define a generic constexpr one...
+  // For this, lets apply the abs() function manually. This is sad, but you know, MSVC...
+  // The code should not adapt to the compiler for the same language, the compiler should...
+  int df = int(from.file()) - int(epsq.file());
+  df = (df < 0) ? -df : df;
+
   if (df != 1) return false;
   if (side == Color::WHITE && from.rank() == 4 && epsq.rank() == 5) return true;
   if (side == Color::BLACK && from.rank() == 3 && epsq.rank() == 2) return true;
