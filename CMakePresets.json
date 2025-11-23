@@ -66,11 +66,13 @@
     },
     {
       "name": "msvc_debug",
-      "configurePreset": "msvc_debug"
+      "configurePreset": "msvc_debug",
+      "configuration": "Debug"
     },
     {
       "name": "msvc_release",
-      "configurePreset": "msvc_release"
+      "configurePreset": "msvc_release",
+      "configuration": "Release"
     }
   ],
   "testPresets": [
@@ -84,11 +86,13 @@
     },
     {
       "name": "msvc_debug",
-      "configurePreset": "msvc_debug"
+      "configurePreset": "msvc_debug",
+      "configuration": "Debug"
     },
     {
       "name": "msvc_release",
-      "configurePreset": "msvc_release"
+      "configurePreset": "msvc_release",
+      "configuration": "Release"
     }
   ],
   "packagePresets": [
