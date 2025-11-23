@@ -3,12 +3,13 @@ name: Windows Build
 on: [push, pull_request]
 
 jobs:
-  strategy:
+  windows-build:
+    runs-on: windows-2022
+
+    strategy:
       matrix:
         preset: [ msvc_debug, msvc_release ]
 
-  build:
-    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
 

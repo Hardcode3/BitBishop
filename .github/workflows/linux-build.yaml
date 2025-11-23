@@ -9,7 +9,7 @@ permissions:
   packages: read
 
 jobs:
-  linux:
+  linux-build:
     runs-on: ubuntu-latest
 
     container:
