@@ -17,8 +17,6 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
-      env:
-        VCPKG_ROOT: /opt/vcpkg   # Path must match inside the Docker image
 
     strategy:
       matrix:
@@ -31,9 +29,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ env.VCPKG_ROOT }}/installed
-            ${{ env.VCPKG_ROOT }}/buildtrees
-            ${{ env.VCPKG_ROOT }}/packages
+            /opt/vcpkg/installed
+            /opt/vcpkg/buildtrees
+            /opt/vcpkg/packages
             ~/.cache/vcpkg
           key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
