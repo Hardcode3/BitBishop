@@ -45,6 +45,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cmake-
 
       - name: Configure (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           cmake --preset ${{ matrix.preset }} 2>&1 | tee configure_output.txt
@@ -67,6 +68,7 @@ jobs:
           exit $CONFIGURE_EXIT_CODE
 
       - name: Build (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           cmake --build --preset ${{ matrix.preset }} 2>&1 | tee build_output.txt
@@ -89,6 +91,7 @@ jobs:
           exit $BUILD_EXIT_CODE
 
       - name: Test (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | tee test_output.txt
