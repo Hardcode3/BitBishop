@@ -75,7 +75,7 @@ bool KingMoveGenerator::can_castle_kingside(const Board& board, Color side) {
   }
 
   // Check if rook is on the starting square
-  if (!board.rook(side).test(rook_sq)) {
+  if (!board.rooks(side).test(rook_sq)) {
     return false;
   }
 
@@ -105,7 +105,7 @@ bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
   }
 
   // Check if the rook is on the starting square
-  if (!board.rook(side).test(rook_sq)) {
+  if (!board.rooks(side).test(rook_sq)) {
     return false;
   }
 
