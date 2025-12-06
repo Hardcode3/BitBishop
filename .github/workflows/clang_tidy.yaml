@@ -25,18 +25,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /opt/vcpkg/installed
-            /opt/vcpkg/buildtrees
-            /opt/vcpkg/packages
-            ~/.cache/vcpkg
+            /opt/vcpkg/installed      # This is where vcpkg installs the built packages that CMake actually uses
+            /opt/vcpkg/downloads      # This prevents re-downloading source archives
+            ~/.cache/vcpkg/archives   # This is where vcpkg stores binary cache archives
           key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
-          path: |
-            build/${{ matrix.preset }}
+          path: build
           key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
