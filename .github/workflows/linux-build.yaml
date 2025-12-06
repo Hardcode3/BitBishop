@@ -17,6 +17,8 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
+      env:
+        VCPKG_ROOT: /opt/vcpkg   # Path must match inside the Docker image
 
     strategy:
       matrix:
