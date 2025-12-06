@@ -21,6 +21,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache VCPKG
+        uses: action/cache@v4
+        with:
+          path: |
+            ${{ env.VCPKG_ROOT }}/installed
+            ${{ env.VCPKG_ROOT }}/buildtrees
+            ${{ env.VCPKG_ROOT }}/packages
+            ~/.cache/vcpkg
+          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: ${{ runner.os }}-vcpkg-
+
+      - name: Cache build
+        uses: action/cache@v4
+        with:
+          path: |
+            build/${{ matrix.preset }}
+          key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-cmake-
+
       - name: Install clang-tidy
         run: |
           apt-get update
