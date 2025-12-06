@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache VCPKG
-        uses: action/cache@v4
+        uses: actions/cache@v4
         with:
           path: |
             ${{ env.VCPKG_ROOT }}/installed
@@ -33,7 +33,7 @@ jobs:
           restore-keys: ${{ runner.os }}-vcpkg-
 
       - name: Cache build
-        uses: action/cache@v4
+        uses: actions/cache@v4
         with:
           path: |
             build/${{ matrix.preset }}

@@ -25,11 +25,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache VCPKG
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.VCPKG_ROOT }}/installed
+            ${{ env.VCPKG_ROOT }}/buildtrees
+            ${{ env.VCPKG_ROOT }}/packages
+            ~/.cache/vcpkg
+          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: ${{ runner.os }}-vcpkg-
+
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/${{ matrix.preset }}
+          key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-cmake-
+
       - name: Configure (${{ matrix.preset }})
         run: |
           set +e
           cmake --preset ${{ matrix.preset }} 2>&1 | tee configure_output.txt
-          CONFIGURE_EXIT_CODE=$?
+          CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
@@ -51,7 +70,7 @@ jobs:
         run: |
           set +e
           cmake --build --preset ${{ matrix.preset }} 2>&1 | tee build_output.txt
-          BUILD_EXIT_CODE=$?
+          BUILD_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $BUILD_EXIT_CODE -eq 0 ]; then
@@ -73,7 +92,7 @@ jobs:
         run: |
           set +e
           ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | tee test_output.txt
-          TEST_EXIT_CODE=$?
+          TEST_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $TEST_EXIT_CODE -eq 0 ]; then
