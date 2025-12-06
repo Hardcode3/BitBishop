@@ -145,7 +145,15 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's rooks.
    */
-  Bitboard rook(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
+  Bitboard rooks(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
+
+  /**
+   * @brief Returns a bitboard representing all knights belonging to the given side.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's knights.
+   */
+  Bitboard knights(Color side) const { return (side == Color::WHITE) ? m_w_knights : m_b_knights; }
 
   /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
