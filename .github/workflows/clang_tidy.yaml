@@ -56,11 +56,6 @@ jobs:
           key: ${{ runner.os }}-cmake-clang_debug-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
-      - name: Install clang-tidy
-        run: |
-          apt-get update
-          apt-get install -y clang-tidy
-
       - name: Configure (clang_debug)
         run: cmake --preset clang_debug
 
