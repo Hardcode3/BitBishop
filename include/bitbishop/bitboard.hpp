@@ -209,6 +209,16 @@ class Bitboard {
     return sq;
   }
 
+  // TODO: docstring
+  // TODO: test
+  constexpr std::optional<Square> pop_msb() noexcept {
+    if (!*this) return std::nullopt;
+    int index = std::countl_zero(m_bb);
+    m_bb &= (m_bb - 1);
+    const Square sq(index);
+    return sq;
+  }
+
   /**
    * @brief Returns the least significant set bit (LSB) without modifying the bitboard.
    *
@@ -225,6 +235,15 @@ class Bitboard {
   constexpr std::optional<Square> lsb() const noexcept {
     if (!*this) return std::nullopt;
     int index = std::countr_zero(m_bb);
+    const Square sq(index);
+    return sq;
+  }
+
+  // TODO: docstring
+  // TODO: test
+  constexpr std::optional<Square> msb() const noexcept {
+    if (!*this) return std::nullopt;
+    int index = std::countl_zero(m_bb);
     const Square sq(index);
     return sq;
   }

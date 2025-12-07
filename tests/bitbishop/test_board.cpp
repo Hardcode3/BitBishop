@@ -215,6 +215,24 @@ TEST(BoardTest, KnightsBitboard) {
   EXPECT_TRUE(black_knights.test(Square::G8));
 }
 
+/**
+ * @test BoardTest.BishopsBitboard
+ * @brief Ensures that bishops() correctly returns the bitboard for each side.
+ */
+TEST(BoardTest, BishopsBitboard) {
+  Board board;
+
+  Bitboard white_bishops = board.bishops(Color::WHITE);
+  Bitboard black_bishops = board.bishops(Color::BLACK);
+
+  EXPECT_EQ(white_bishops.count(), 2);
+  EXPECT_EQ(black_bishops.count(), 2);
+  EXPECT_TRUE(white_bishops.test(Squares::C1));
+  EXPECT_TRUE(white_bishops.test(Squares::F1));
+  EXPECT_TRUE(black_bishops.test(Square::C8));
+  EXPECT_TRUE(black_bishops.test(Square::F8));
+}
+
 TEST(BoardTest, WhiteKingsideCastlingRights) {
   // TODO
 }

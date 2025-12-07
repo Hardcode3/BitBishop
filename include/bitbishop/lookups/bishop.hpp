@@ -91,9 +91,58 @@ constexpr uint64_t bishop_attacks_for_square(int sq) {
  * Indexed by square (0-63).
  */
 constexpr std::array<Bitboard, 64> BISHOP_ATTACKS = []() constexpr {
+  // TODO: remove this function
   std::array<Bitboard, 64> table{};
   for (int sq = 0; sq < 64; ++sq) {
     table[sq] = Bitboard(bishop_attacks_for_square(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of bishop northeast attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, 64> BISHOP_NORTHEAST_ATTACKS = []() constexpr {
+  std::array<Bitboard, 64> table{};
+  for (int sq = 0; sq < 64; ++sq) {
+    table[sq] = Bitboard(bishop_northeast_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of bishop northwest attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, 64> BISHOP_NORTHWEST_ATTACKS = []() constexpr {
+  std::array<Bitboard, 64> table{};
+  for (int sq = 0; sq < 64; ++sq) {
+    table[sq] = Bitboard(bishop_northwest_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of bishop southeast attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, 64> BISHOP_SOUTHEAST_ATTACKS = []() constexpr {
+  std::array<Bitboard, 64> table{};
+  for (int sq = 0; sq < 64; ++sq) {
+    table[sq] = Bitboard(bishop_southeast_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of bishop southwest attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, 64> BISHOP_SOUTHWEST_ATTACKS = []() constexpr {
+  std::array<Bitboard, 64> table{};
+  for (int sq = 0; sq < 64; ++sq) {
+    table[sq] = Bitboard(bishop_southwest_attacks(sq));
   }
   return table;
 }();

@@ -156,6 +156,14 @@ class Board {
   Bitboard knights(Color side) const { return (side == Color::WHITE) ? m_w_knights : m_b_knights; }
 
   /**
+   * @brief Returns a bitboard representing all bishops belonging to the given side.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's bishop.
+   */
+  Bitboard bishops(Color side) const { return (side == Color::WHITE) ? m_w_bishops : m_b_bishops; }
+
+  /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
    *
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
