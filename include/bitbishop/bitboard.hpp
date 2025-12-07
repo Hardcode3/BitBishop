@@ -209,12 +209,47 @@ class Bitboard {
     return sq;
   }
 
-  // TODO: docstring
+  /**
+   * @brief Removes and returns the most significant set bit (MSB) from the bitboard.
+   *
+   * This method identifies the highest-index bit currently set to 1 (the most significant bit),
+   * converts it to a Square object, clears that bit from the bitboard, and returns the square.
+   *
+   * ### Example
+   *
+   * Suppose the bitboard has bits set for A1 (index 0) and H8 (index 63):
+   *
+   * ```
+   * m_bb (binary) = 1000000000000000000000000000000000000000000000000000000000000001
+   * pop_msb() → returns Square(63)  // H8
+   * m_bb (after) = 0000000000000000000000000000000000000000000000000000000000000001  // only A1 remains
+   * ```
+   *
+   * ### Implementation Details
+   *
+   * - `std::countl_zero(m_bb)` efficiently counts the number of leading zero bits.
+   * - The MSB index is calculated as `63 - std::countl_zero(m_bb)`.
+   * - The expression `m_bb ^= (1ULL << index)` uses XOR to toggle (clear) the MSB.
+   *
+   * The XOR operation works because XORing a bit with 1 flips it:
+   *
+   * m_bb        = 0b10110000
+   * 1ULL << 7   = 0b10000000
+   * m_bb ^= ... = 0b00110000  // MSB cleared
+   *
+   * ### Return Value
+   *
+   * - `std::optional<Square>` containing the highest set square if one exists.
+   * - `std::nullopt` if the bitboard is empty.
+   *
+   * @note This method **modifies** the bitboard by clearing the bit that it returns.
+   *       Use `msb()` if you want to inspect the most significant bit *without* modification.
+   */
   // TODO: test
   constexpr std::optional<Square> pop_msb() noexcept {
     if (!*this) return std::nullopt;
-    int index = std::countl_zero(m_bb);
-    m_bb &= (m_bb - 1);
+    int index = 63 - std::countl_zero(m_bb);
+    m_bb ^= (1ULL << index);
     const Square sq(index);
     return sq;
   }
@@ -222,13 +257,32 @@ class Bitboard {
   /**
    * @brief Returns the least significant set bit (LSB) without modifying the bitboard.
    *
-   * This function behaves like pop_lsb(), but it only reads the lowest set bit without clearing it.
+   * This function identifies the lowest-index bit currently set to 1 and returns
+   * it as a Square, without modifying the underlying bitboard.
    *
-   * For example, if bits are set at C5 and A1, lsb() will return Square(0) (A1),
-   * but the bitboard will remain unchanged.
+   * ### Example
    *
-   * @return std::optional<Square> — the square corresponding to the least significant bit,
-   * or std::nullopt if the bitboard is empty.
+   * If bits are set at A1 (index 0) and H8 (index 63):
+   *
+   * ```
+   * m_bb (binary) = 1000000000000000000000000000000000000000000000000000000000000001
+   * lsb() → returns Square(0)  // A1
+   * m_bb (unchanged)
+   * ```
+   *
+   * ### Implementation Details
+   *
+   * - `std::countr_zero(m_bb)` counts the number of trailing zero bits.
+   * - The LSB index is the result of `std::countr_zero(m_bb)`.
+   *
+   * For example, if the LSB is at position 0:
+   * - `countr_zero` returns 0 (no trailing zeros)
+   * - This directly gives the correct index
+   *
+   * ### Return Value
+   *
+   * - `std::optional<Square>` containing the lowest set square if one exists.
+   * - `std::nullopt` if the bitboard is empty.
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
@@ -239,11 +293,42 @@ class Bitboard {
     return sq;
   }
 
-  // TODO: docstring
+  /**
+   * @brief Returns the most significant set bit (MSB) without modifying the bitboard.
+   *
+   * This function identifies the highest-index bit currently set to 1 and returns
+   * it as a Square, without modifying the underlying bitboard.
+   *
+   * ### Example
+   *
+   * If bits are set at A1 (index 0) and H8 (index 63):
+   *
+   * ```
+   * m_bb (binary) = 1000000000000000000000000000000000000000000000000000000000000001
+   * msb() → returns Square(63)  // H8
+   * m_bb (unchanged)
+   * ```
+   *
+   * ### Implementation Details
+   *
+   * - `std::countl_zero(m_bb)` counts the number of leading zero bits.
+   * - The MSB index is calculated as `63 - std::countl_zero(m_bb)`.
+   *
+   * For example, if the MSB is at position 63:
+   * - `countl_zero` returns 0 (no leading zeros)
+   * - `63 - 0 = 63` gives the correct index
+   *
+   * ### Return Value
+   *
+   * - `std::optional<Square>` containing the highest set square if one exists.
+   * - `std::nullopt` if the bitboard is empty.
+   *
+   * @note This method is const and does not modify the underlying bitboard.
+   */
   // TODO: test
   constexpr std::optional<Square> msb() const noexcept {
     if (!*this) return std::nullopt;
-    int index = std::countl_zero(m_bb);
+    int index = 63 - std::countl_zero(m_bb);
     const Square sq(index);
     return sq;
   }

@@ -2,7 +2,6 @@
 #include <bitbishop/moves/bishop_move_gen.hpp>
 #include <optional>
 
-// TODO: test
 void BishopMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {
   Bitboard bishops = board.bishops(side);
   Bitboard empty = board.unoccupied();
@@ -12,7 +11,6 @@ void BishopMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, 
   // warning: this loop is destructive on Bitboard bishops
   while (auto from_opt = bishops.pop_lsb()) {
     Square from = from_opt.value();
-    Bitboard bishop_lookup = Lookups::BISHOP_ATTACKS[from.value()];
 
     Bitboard bishop_attacks;
     bishop_attacks |= north_east_ray(from, occupied);
@@ -44,7 +42,7 @@ Bitboard BishopMoveGenerator::north_east_ray(Square from, Bitboard occupied) {
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
     Bitboard beyond_blocker = Lookups::BISHOP_NORTHEAST_ATTACKS[blocker_square.value()];
-    ne_ray &= beyond_blocker;
+    ne_ray &= ~beyond_blocker;
   }
 
   return ne_ray;
@@ -60,7 +58,7 @@ Bitboard BishopMoveGenerator::north_west_ray(Square from, Bitboard occupied) {
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
     Bitboard beyond_blocker = Lookups::BISHOP_NORTHWEST_ATTACKS[blocker_square.value()];
-    nw_ray &= beyond_blocker;
+    nw_ray &= ~beyond_blocker;
   }
 
   return nw_ray;
@@ -76,7 +74,7 @@ Bitboard BishopMoveGenerator::south_east_ray(Square from, Bitboard occupied) {
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
     Bitboard beyond_blocker = Lookups::BISHOP_SOUTHEAST_ATTACKS[blocker_square.value()];
-    se_ray &= beyond_blocker;
+    se_ray &= ~beyond_blocker;
   }
 
   return se_ray;
@@ -92,7 +90,7 @@ Bitboard BishopMoveGenerator::south_west_ray(Square from, Bitboard occupied) {
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
     Bitboard beyond_blocker = Lookups::BISHOP_SOUTHWEST_ATTACKS[blocker_square.value()];
-    sw_ray &= beyond_blocker;
+    sw_ray &= ~beyond_blocker;
   }
 
   return sw_ray;
