@@ -245,7 +245,6 @@ class Bitboard {
    * @note This method **modifies** the bitboard by clearing the bit that it returns.
    *       Use `msb()` if you want to inspect the most significant bit *without* modification.
    */
-  // TODO: test
   constexpr std::optional<Square> pop_msb() noexcept {
     if (!*this) return std::nullopt;
     int index = 63 - std::countl_zero(m_bb);
@@ -325,7 +324,6 @@ class Bitboard {
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
-  // TODO: test
   constexpr std::optional<Square> msb() const noexcept {
     if (!*this) return std::nullopt;
     int index = 63 - std::countl_zero(m_bb);

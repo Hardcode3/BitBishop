@@ -91,7 +91,9 @@ constexpr uint64_t bishop_attacks_for_square(int sq) {
  * Indexed by square (0-63).
  */
 constexpr std::array<Bitboard, 64> BISHOP_ATTACKS = []() constexpr {
-  // TODO: remove this function
+  // TODO: remove this function, not used anymore
+  // TODO: adapt the tests to use bishop attacks with directions instead
+  // BISHOP_NORTHEAST_ATTACKS, ...
   std::array<Bitboard, 64> table{};
   for (int sq = 0; sq < 64; ++sq) {
     table[sq] = Bitboard(bishop_attacks_for_square(sq));
