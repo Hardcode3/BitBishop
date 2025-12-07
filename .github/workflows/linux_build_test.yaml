@@ -1,4 +1,4 @@
-name: Linux Build
+name: Linux Build Test
 
 on:
   push:
@@ -12,12 +12,6 @@ jobs:
   linux-build:
     runs-on: ubuntu-latest
 
-    container:
-      image: ghcr.io/hardcode3/bitbishop-ubuntu:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
-
     strategy:
       matrix:
         preset: [ clang_debug, clang_release ]
@@ -25,11 +19,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            clang \
+            clang-tidy \
+            gcc \
+            g++ \
+            git \
+            curl \
+            zip \
+            unzip \
+            pkg-config \
+            ninja-build \
+            cmake
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
+          /tmp/vcpkg/bootstrap-vcpkg.sh
+          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
+          echo "/tmp/vcpkg" >> $GITHUB_PATH
+
+      - name: Cache VCPKG
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/vcpkg/downloads
+            /tmp/vcpkg/installed
+            ~/.cache/vcpkg
+          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: ${{ runner.os }}-vcpkg-
+
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-cmake-
+
       - name: Configure (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           cmake --preset ${{ matrix.preset }} 2>&1 | tee configure_output.txt
-          CONFIGURE_EXIT_CODE=$?
+          CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
@@ -48,10 +84,11 @@ jobs:
           exit $CONFIGURE_EXIT_CODE
 
       - name: Build (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           cmake --build --preset ${{ matrix.preset }} 2>&1 | tee build_output.txt
-          BUILD_EXIT_CODE=$?
+          BUILD_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $BUILD_EXIT_CODE -eq 0 ]; then
@@ -70,10 +107,11 @@ jobs:
           exit $BUILD_EXIT_CODE
 
       - name: Test (${{ matrix.preset }})
+        shell: bash
         run: |
           set +e
           ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | tee test_output.txt
-          TEST_EXIT_CODE=$?
+          TEST_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
           if [ $TEST_EXIT_CODE -eq 0 ]; then

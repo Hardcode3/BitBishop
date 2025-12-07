@@ -1,12 +1,12 @@
 name: Build Push Linux Docker Image
 
-on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Docker image tag (default: latest)"
-        required: false
-        default: "latest"
+on: []
+  # workflow_dispatch:
+  #   inputs:
+  #     tag:
+  #       description: "Docker image tag (default: latest)"
+  #       required: false
+  #       default: "latest"
 
 permissions:
   contents: read

@@ -6,8 +6,6 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV VCPKG_ROOT=/opt/vcpkg
-ENV VCPKG_FEATURE_FLAGS=manifest,binarycaching
-ENV VCPKG_BINARY_SOURCES="clear;x-gha,readwrite"
 ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 RUN apt-get update && apt-get install -y \
