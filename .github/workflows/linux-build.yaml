@@ -17,6 +17,11 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
+      volumes:
+        - /tmp/vcpkg-cache:/opt/vcpkg/buildtrees
+        - /tmp/vcpkg-downloads:/opt/vcpkg/downloads
+        - /tmp/vcpkg-installed:/opt/vcpkg/installed
+        - /tmp/vcpkg-archives:/root/.cache/vcpkg/archives
 
     strategy:
       matrix:
@@ -29,10 +34,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /opt/vcpkg/buildtrees
-            /opt/vcpkg/downloads
-            /opt/vcpkg/installed
-            /root/.cache/vcpkg/archives
+            /tmp/vcpkg-cache
+            /tmp/vcpkg-downloads
+            /tmp/vcpkg-installed
+            /tmp/vcpkg-archives
           key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
 
