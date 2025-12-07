@@ -6,8 +6,6 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV VCPKG_ROOT=/opt/vcpkg
-ENV VCPKG_FEATURE_FLAGS=manifest,binarycaching
-ENV VCPKG_BINARY_SOURCES="clear;files,/root/.cache/vcpkg/archives,readwrite"
 ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 RUN apt-get update && apt-get install -y \
@@ -31,8 +29,5 @@ RUN clang++ --version && g++ --version
 
 RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT}
 RUN ${VCPKG_ROOT}/bootstrap-vcpkg.sh
-
-# Create the binary cache directory
-RUN mkdir -p /root/.cache/vcpkg/archives
 
 WORKDIR /workspace
