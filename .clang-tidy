@@ -4,4 +4,11 @@ Checks: >
   -modernize-use-trailing-return-type,
   performance-*,
   readability-*
-WarningsAsErrors: '*'
+
+WarningsAsErrors: "*"
+
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: "^[A-H][1-8]$|^to$"
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: "^to$"
