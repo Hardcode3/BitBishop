@@ -1,5 +1,6 @@
 #pragma once
 #include <bit>
+#include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
 #include <cstdint>
 #include <iostream>
@@ -46,10 +47,10 @@ class Bitboard {
   constexpr Bitboard(uint64_t value) : m_bb(value) {}
 
   /** @brief Constructs a bitboard from another bitboard by copy. */
-  constexpr Bitboard(const Bitboard& bb) : m_bb(bb.value()) {}
+  constexpr Bitboard(const Bitboard& bitboard) : m_bb(bitboard.value()) {}
 
   /** @brief Returns the raw 64-bit value of the bitboard. */
-  constexpr uint64_t value() const { return m_bb; }
+  [[nodiscard]] constexpr uint64_t value() const { return m_bb; }
 
   /**
    * @brief Sets a bit (places a piece) on a given square.
@@ -67,8 +68,8 @@ class Bitboard {
    * 1ULL << E2 = 00000000 00000000 ... 00010000 00000000
    * m_bb |= (1ULL << sq) = 00000000 00000000 ... 00010000 00000000
    */
-  constexpr void set(Square sq) { m_bb |= (1ULL << sq.value()); }
-  constexpr void set(Square::Value sq) { m_bb |= (1ULL << sq); }
+  constexpr void set(Square square) { m_bb |= (1ULL << square.value()); }
+  constexpr void set(Square::Value square) { m_bb |= (1ULL << square); }
 
   /**
    * @brief Clears a bit (removes a piece) on a given square.
@@ -86,8 +87,8 @@ class Bitboard {
    * ~(1ULL << E2) = 11111111 11111111 ... 11101111 11111111
    * m_bb &= ~(1ULL << sq) = 00000000 00000000 ... 00000000 00000000
    */
-  constexpr void clear(Square sq) { m_bb &= ~(1ULL << sq.value()); }
-  constexpr void clear(Square::Value sq) { m_bb &= ~(1ULL << sq); }
+  constexpr void clear(Square square) { m_bb &= ~(1ULL << square.value()); }
+  constexpr void clear(Square::Value square) { m_bb &= ~(1ULL << square); }
 
   /**
    * @brief Checks if a square is occupied.
@@ -105,8 +106,8 @@ class Bitboard {
    * (m_bb >> E2) & 1ULL = true
    *
    */
-  constexpr bool test(Square sq) const { return (m_bb >> sq.value()) & 1ULL; }
-  constexpr bool test(Square::Value sq) const { return (m_bb >> sq) & 1ULL; }
+  [[nodiscard]] constexpr bool test(Square square) const { return ((m_bb >> square.value()) & 1ULL) != 0ULL; }
+  [[nodiscard]] constexpr bool test(Square::Value square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
 
   /** @brief Clears the whole bitboard (all bits = 0). */
   constexpr void reset() { m_bb = 0ULL; }
@@ -120,10 +121,12 @@ class Bitboard {
    * The output starts from rank 8 down to rank 1.
    */
   void print() const {
-    for (int rank = 7; rank >= 0; --rank) {
-      for (int file = 0; file < 8; ++file) {
-        const Square sq(file, rank);
-        std::cout << (test(sq) ? "1 " : ". ");
+    using namespace Const;
+
+    for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
+      for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
+        const Square square(file, rank);
+        std::cout << (test(square) ? "1 " : ". ");
       }
       std::cout << "\n";
     }
@@ -134,8 +137,8 @@ class Bitboard {
   constexpr Bitboard operator|(const Bitboard& other) const { return m_bb | other.m_bb; }
   constexpr Bitboard operator&(const Bitboard& other) const { return m_bb & other.m_bb; }
   constexpr Bitboard operator~() const { return ~m_bb; }
-  constexpr Bitboard operator<<(int n) const { return m_bb << n; }
-  constexpr Bitboard operator>>(int n) const { return m_bb >> n; }
+  constexpr Bitboard operator<<(int shift) const { return m_bb << shift; }
+  constexpr Bitboard operator>>(int shift) const { return m_bb >> shift; }
   constexpr Bitboard& operator|=(const Bitboard& other) {
     m_bb |= other.m_bb;
     return *this;
@@ -153,7 +156,7 @@ class Bitboard {
    *
    * @note Uses std::popcount (C++20 and later).
    */
-  constexpr int count() const noexcept { return std::popcount(m_bb); }
+  [[nodiscard]] constexpr int count() const noexcept { return std::popcount(m_bb); }
 
   /**
    * @brief Tells if any bit in the bitboard is set to one.
@@ -162,7 +165,7 @@ class Bitboard {
    *
    * @note Equivalent to `cout() > 0` and `bool()`
    */
-  constexpr bool any() const noexcept { return m_bb != 0ULL; }
+  [[nodiscard]] constexpr bool any() const noexcept { return m_bb != 0ULL; }
 
   /**
    * @brief Removes and returns the least significant set bit (LSB) from the bitboard.
@@ -202,11 +205,13 @@ class Bitboard {
    *       Use `lsb()` if you want to inspect the least significant bit *without* modification.
    */
   constexpr std::optional<Square> pop_lsb() noexcept {
-    if (!*this) return std::nullopt;
+    if (!*this) {
+      return std::nullopt;
+    }
     int index = std::countr_zero(m_bb);
     m_bb &= (m_bb - 1);
-    const Square sq(index);
-    return sq;
+    const Square square(index);
+    return square;
   }
 
   /**
@@ -246,11 +251,15 @@ class Bitboard {
    *       Use `msb()` if you want to inspect the most significant bit *without* modification.
    */
   constexpr std::optional<Square> pop_msb() noexcept {
-    if (!*this) return std::nullopt;
-    int index = 63 - std::countl_zero(m_bb);
+    using namespace Const;
+
+    if (!*this) {
+      return std::nullopt;
+    }
+    int index = BOARD_SIZE - 1 - std::countl_zero(m_bb);
     m_bb ^= (1ULL << index);
-    const Square sq(index);
-    return sq;
+    const Square square(index);
+    return square;
   }
 
   /**
@@ -285,11 +294,13 @@ class Bitboard {
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
-  constexpr std::optional<Square> lsb() const noexcept {
-    if (!*this) return std::nullopt;
+  [[nodiscard]] constexpr std::optional<Square> lsb() const noexcept {
+    if (!*this) {
+      return std::nullopt;
+    }
     int index = std::countr_zero(m_bb);
-    const Square sq(index);
-    return sq;
+    const Square square(index);
+    return square;
   }
 
   /**
@@ -324,11 +335,15 @@ class Bitboard {
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
-  constexpr std::optional<Square> msb() const noexcept {
-    if (!*this) return std::nullopt;
-    int index = 63 - std::countl_zero(m_bb);
-    const Square sq(index);
-    return sq;
+  [[nodiscard]] constexpr std::optional<Square> msb() const noexcept {
+    using namespace Const;
+
+    if (!*this) {
+      return std::nullopt;
+    }
+    int index = BOARD_SIZE - 1 - std::countl_zero(m_bb);
+    const Square square(index);
+    return square;
   }
 
   /**
@@ -362,7 +377,7 @@ class Bitboard {
      * @brief Constructs an iterator for a given bit pattern.
      * @param b The 64-bit bitboard value to iterate over.
      */
-    constexpr Iterator(uint64_t b) noexcept : bits(b) {}
+    constexpr Iterator(uint64_t bitboard) noexcept : bits(bitboard) {}
 
     /**
      * @brief Inequality comparison for iterators.
@@ -382,7 +397,7 @@ class Bitboard {
      * @brief Dereferences the iterator to return the current square.
      * @return A `Square` corresponding to the current least significant set bit.
      */
-    constexpr Square operator*() const noexcept { return Square(std::countr_zero(bits), std::in_place); }
+    constexpr Square operator*() const noexcept { return {std::countr_zero(bits), std::in_place}; }
 
     /**
      * @brief Advances the iterator to the next set bit.
@@ -402,11 +417,11 @@ class Bitboard {
    * @brief Returns an iterator pointing to the first set bit (if any).
    * @return Iterator positioned at the first set bit.
    */
-  constexpr Iterator begin() const noexcept { return Iterator(m_bb); }
+  [[nodiscard]] constexpr Iterator begin() const noexcept { return {m_bb}; }
 
   /**
    * @brief Returns an iterator representing the end (no bits set).
    * @return Iterator with no bits remaining.
    */
-  constexpr Iterator end() const noexcept { return Iterator(0ULL); }
+  [[nodiscard]] static constexpr Iterator end() noexcept { return {0ULL}; }
 };
