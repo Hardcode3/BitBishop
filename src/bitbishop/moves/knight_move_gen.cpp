@@ -9,7 +9,7 @@ void KnightMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, 
   // warning: this loop is destructive on Bitboard knights
   while (auto from_opt = knights.pop_lsb()) {
     Square from = from_opt.value();
-    Bitboard knight_lookup = Lookups::KNIGHT_ATTACKS[from.value()];
+    const Bitboard& knight_lookup = Lookups::KNIGHT_ATTACKS[from.value()];
 
     // Classic knight moves
     Bitboard knight_moves = knight_lookup & empty;
