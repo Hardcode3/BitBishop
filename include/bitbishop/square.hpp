@@ -1,4 +1,5 @@
 #pragma once
+#include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
 #include <format>
 #include <stdexcept>
@@ -23,7 +24,7 @@ class Square {
    * - Scoped enums (`enum class`) forbid implicit conversions
    */
   // clang-format off
-  enum Value : int {
+  enum Value : std::uint8_t {
       A1, B1, C1, D1, E1, F1, G1, H1,
       A2, B2, C2, D2, E2, F2, G2, H2,
       A3, B3, C3, D3, E3, F3, G3, H3,
@@ -42,19 +43,21 @@ class Square {
  public:
   /**
    * @brief Construct a Square from a raw integer value (flattened index) with runtime validation.
-   * @param v Integer in range [0, 63].
-   * @throw std::invalid_argument if v is out of range.
+   * @param square_index Integer in range [0, 63].
+   * @throw std::invalid_argument if square_index is out of range.
    */
-  explicit Square(int v) : m_value(static_cast<Value>(v)) {
-    if (v < 0 || v > 63) {
-      const std::string msg = std::format("Invalid flattened square index {}, must stay in range [0,63]", v);
+  explicit Square(int square_index) : m_value(static_cast<Value>(square_index)) {
+    using namespace Const;
+
+    if (square_index < 0 || square_index >= BOARD_SIZE) {
+      const std::string msg = std::format("Invalid flattened square index {}, must stay in range [0,63]", square_index);
       throw std::invalid_argument(msg);
     }
   }
 
   /**
    * @brief Construct a Square from a raw integer value (flattened index).
-   * @param v Integer in range [0, 63].
+   * @param square_index Integer in range [0, 63].
    * @param std::in_place_t
    *
    * The std::in_place_t parameter serves as a compile-time tag to disambiguate this constructor
@@ -69,13 +72,15 @@ class Square {
    * Square sq(42);  // Calls a different constructor
    * ```
    */
-  constexpr Square(int v, std::in_place_t) noexcept : m_value(static_cast<Value>(v)) {}
+  constexpr Square(int square_index, std::in_place_t tag) noexcept : m_value(static_cast<Value>(square_index)) {
+    (void)tag;
+  }
 
   /**
    * @brief Construct a Square directly from an enum value.
-   * @param v A valid Value from the Square::Value enum.
+   * @param square_value A valid Value from the Square::Value enum.
    */
-  constexpr explicit Square(Value v) : m_value(v) {}
+  constexpr explicit Square(Value square_value) : m_value(square_value) {}
 
   /**
    * @brief Construct a Square from file and rank coordinates.
@@ -84,63 +89,73 @@ class Square {
    * @throw std::invalid_argument if file or rank are out of range.
    */
   explicit Square(int file, int rank) {
+    using namespace Const;
+
     // Rank refers to the eight horizontal rows on the board, labelled 1 to 8.
     // File refers to the eight vertical columns on the board, labelled a to h.
-    if (file < 0 || file > 7 || rank < 0 || rank > 7) {
+    if (file < FILE_A_IND || file > FILE_H_IND || rank < RANK_1_IND || rank > RANK_8_IND) {
       const std::string msg = std::format("Invalid file ({}) or rank({}), must stay within ranke [0,7].", file, rank);
       throw std::invalid_argument(msg);
     }
-    m_value = static_cast<Value>(rank * 8 + file);
+    m_value = static_cast<Value>((rank * BOARD_WIDTH) + file);
   }
 
   /**
    * @brief Construct a Square from algebraic notation.
-   * @param s String like "e4" (case-insensitive).
+   * @param str String like "e4" (case-insensitive).
    * @throw std::invalid_argument if the string is malformed or out of range.
    */
-  explicit Square(const std::string& s) {
-    if (s.size() != 2) {
-      const std::string msg = std::format("Invalid Square string '{}', must be built out of two characters", s);
+  explicit Square(const std::string& str) {
+    using namespace Const;
+
+    if (str.size() != 2) {
+      const std::string msg = std::format("Invalid Square string '{}', must be built out of two characters", str);
       throw std::invalid_argument(msg);
     }
 
-    const char file = std::tolower(s.at(0));
-    const char rank = s.at(1);
+    const char file = std::tolower(str.at(0));
+    const char rank = str.at(1);
     if (file < 'a' || file > 'h' || rank < '1' || rank > '8') {
       const std::string msg = std::format(
           "Invalid Square string '{}', must be built out of two characters, "
           "the first being the file (between a and h, got {}) and the second the rank (between 1 and 8, got {})",
-          s, file, rank);
+          str, file, rank);
       throw std::invalid_argument(msg);
     }
     const int ifile = file - 'a';
     const int irank = rank - '1';
-    m_value = static_cast<Value>(irank * 8 + ifile);
+    m_value = static_cast<Value>((irank * BOARD_WIDTH) + ifile);
   }
 
   /**
    * @brief Get the underlying enum value.
    * @return Square::Value corresponding to this square.
    */
-  constexpr Value value() const { return m_value; }
+  [[nodiscard]] constexpr Value value() const { return m_value; }
 
   /**
    * @brief Get the file index (column).
    * @return Integer 0–7, where 0 = 'a' and 7 = 'h'.
    */
-  constexpr int file() const { return static_cast<int>(m_value) % 8; }
+  [[nodiscard]] constexpr int file() const {
+    using namespace Const;
+    return static_cast<int>(m_value) % BOARD_WIDTH;
+  }
 
   /**
    * @brief Get the rank index (row).
    * @return Integer 0–7, where 0 = '1' and 7 = '8'.
    */
-  constexpr int rank() const { return static_cast<int>(m_value) / 8; }
+  [[nodiscard]] constexpr int rank() const {
+    using namespace Const;
+    return static_cast<int>(m_value) / BOARD_WIDTH;
+  }
 
   /**
    * @brief Convert the square to algebraic notation.
    * @return Lowercase string like "a1", "e4", "h8".
    */
-  std::string to_string() const { return {char('a' + file()), char('1' + rank())}; }
+  [[nodiscard]] std::string to_string() const { return {char('a' + file()), char('1' + rank())}; }
 
   /**
    * @brief Equality operator.
