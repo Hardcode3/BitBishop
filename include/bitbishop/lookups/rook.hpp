@@ -9,7 +9,7 @@ namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack moving north from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving north.
  */
 constexpr uint64_t rook_north_attacks(int square) {
@@ -26,7 +26,7 @@ constexpr uint64_t rook_north_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack moving south from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving south.
  */
 constexpr uint64_t rook_south_attacks(int square) {
@@ -43,7 +43,7 @@ constexpr uint64_t rook_south_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack moving east from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving east.
  */
 constexpr uint64_t rook_east_attacks(int square) {
@@ -60,7 +60,7 @@ constexpr uint64_t rook_east_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack moving west from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving west.
  */
 constexpr uint64_t rook_west_attacks(int square) {
@@ -77,7 +77,7 @@ constexpr uint64_t rook_west_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a rook can attack from the given square in all directions.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a rook from the given square.
  */
 constexpr uint64_t rook_attacks_for_square(int square) {

@@ -9,7 +9,7 @@ namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack moving northeast from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a bishop moving northeast.
  */
 constexpr uint64_t bishop_northeast_attacks(int square) {
@@ -28,7 +28,7 @@ constexpr uint64_t bishop_northeast_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack moving northwest from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a bishop moving northwest.
  */
 constexpr uint64_t bishop_northwest_attacks(int square) {
@@ -47,7 +47,7 @@ constexpr uint64_t bishop_northwest_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack moving southeast from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a bishop moving southeast.
  */
 constexpr uint64_t bishop_southeast_attacks(int square) {
@@ -66,7 +66,7 @@ constexpr uint64_t bishop_southeast_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack moving southwest from the given square.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a bishop moving southwest.
  */
 constexpr uint64_t bishop_southwest_attacks(int square) {
@@ -85,7 +85,7 @@ constexpr uint64_t bishop_southwest_attacks(int square) {
 
 /**
  * @brief Generates a bitboard of all squares a bishop can attack from the given square in all directions.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a bishop from the given square.
  */
 constexpr uint64_t bishop_attacks_for_square(int square) {

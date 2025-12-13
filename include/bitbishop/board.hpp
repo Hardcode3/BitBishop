@@ -65,21 +65,21 @@ class Board {
 
   /**
    * @brief Retrieves the piece on a given square.
-   * @param sq The square to query.
+   * @param square The square to query.
    * @return Piece located on `sq' or std::nullopt if no piece lays on that square.
    */
   [[nodiscard]] std::optional<Piece> get_piece(Square square) const;
 
   /**
    * @brief (Re)Places a piece on a given square.
-   * @param sq The square where the piece will be placed.
-   * @param p The piece type (including color).
+   * @param square The square where the piece will be placed.
+   * @param piece The piece type (including color).
    */
   void set_piece(Square square, Piece piece);
 
   /**
    * @brief Removes any piece from a given square.
-   * @param sq The square to clear.
+   * @param square The square to clear.
    */
   void remove_piece(Square square);
 

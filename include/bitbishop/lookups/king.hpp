@@ -12,7 +12,7 @@ namespace Lookups {
  * Given a square index (0-63), returns a bitboard with all squares attacked by a king from that square.
  * Takes into account board edges to avoid wrap-around attacks.
  *
- * @param sq The square index (0 = a1, 63 = h8).
+ * @param square The square index (0 = a1, 63 = h8).
  * @return Bitboard representing all possible king attacks from the given square.
  */
 constexpr uint64_t king_attacks_for_square(int square) {

@@ -68,8 +68,8 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
  * Pawns start on rank 2 (index 1) for White and rank 7 (index 6) for Black.
  * This is used to determine if a pawn is eligible to perform a double push.
  *
- * @param sq Square to check
- * @param c Color of the pawn
+ * @param square Square to check
+ * @param color Color of the pawn
  * @return true if the square is on the starting rank for the given color, false otherwise
  */
 constexpr bool is_starting_rank(Square square, Color color) {
@@ -82,8 +82,8 @@ constexpr bool is_starting_rank(Square square, Color color) {
  *
  * Pawns promote when reaching rank 8 (index 7) for White or rank 1 (index 0) for Black.
  *
- * @param sq Square to check
- * @param c Color of the pawn
+ * @param square Square to check
+ * @param color Color of the pawn
  * @return true if the square is on the promotion rank for the given color, false otherwise
  */
 constexpr bool is_promotion_rank(Square square, Color color) {

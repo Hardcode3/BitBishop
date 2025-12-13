@@ -11,7 +11,7 @@ namespace Lookups {
 
 /**
  * @brief Generates a bitboard of all squares a queen can attack from the given square in all directions.
- * @param sq The square index (0-63).
+ * @param square The square index (0-63).
  * @return Bitboard of all squares attacked by a queen from the given square.
  *
  * Note that queen moves is the combination of rook and bishop moves.

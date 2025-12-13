@@ -375,7 +375,7 @@ class Bitboard {
    public:
     /**
      * @brief Constructs an iterator for a given bit pattern.
-     * @param b The 64-bit bitboard value to iterate over.
+     * @param bitboard The 64-bit bitboard value to iterate over.
      */
     constexpr Iterator(uint64_t bitboard) noexcept : bits(bitboard) {}
 
