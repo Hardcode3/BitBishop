@@ -1,6 +1,7 @@
 #pragma once
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/constants.hpp>
 #include <bitbishop/lookups/pawn.hpp>
 #include <bitbishop/move.hpp>
 #include <utility>
@@ -67,22 +68,28 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
  * Pawns start on rank 2 (index 1) for White and rank 7 (index 6) for Black.
  * This is used to determine if a pawn is eligible to perform a double push.
  *
- * @param sq Square to check
- * @param c Color of the pawn
+ * @param square Square to check
+ * @param color Color of the pawn
  * @return true if the square is on the starting rank for the given color, false otherwise
  */
-constexpr bool is_starting_rank(Square sq, Color c) { return c == Color::WHITE ? (sq.rank() == 1) : (sq.rank() == 6); }
+constexpr bool is_starting_rank(Square square, Color color) {
+  using namespace Const;
+  return color == Color::WHITE ? (square.rank() == RANK_2_IND) : (square.rank() == RANK_7_IND);
+}
 
 /**
  * @brief Checks if a square is on the pawn's promotion rank.
  *
  * Pawns promote when reaching rank 8 (index 7) for White or rank 1 (index 0) for Black.
  *
- * @param sq Square to check
- * @param c Color of the pawn
+ * @param square Square to check
+ * @param color Color of the pawn
  * @return true if the square is on the promotion rank for the given color, false otherwise
  */
-constexpr bool is_promotion_rank(Square sq, Color c) { return c == Color::WHITE ? (sq.rank() == 7) : (sq.rank() == 0); }
+constexpr bool is_promotion_rank(Square square, Color color) {
+  using namespace Const;
+  return color == Color::WHITE ? (square.rank() == RANK_8_IND) : (square.rank() == RANK_1_IND);
+}
 
 /**
  * @brief Validates if an en passant capture is geometrically legal.
@@ -102,15 +109,23 @@ constexpr bool is_promotion_rank(Square sq, Color c) { return c == Color::WHITE 
  * @return true if the capture geometry is valid for en passant, false otherwise
  */
 constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
+  using namespace Const;
+
   // MSVC have not yet made std::abs() constexpr for C++ 23, forcing us to define a generic constexpr one...
   // For this, lets apply the abs() function manually. This is sad, but you know, MSVC...
   // The code should not adapt to the compiler for the same language, the compiler should...
-  int df = int(from.file()) - int(epsq.file());
-  df = (df < 0) ? -df : df;
+  int dif = from.file() - epsq.file();
+  dif = (dif < 0) ? -dif : dif;
 
-  if (df != 1) return false;
-  if (side == Color::WHITE && from.rank() == 4 && epsq.rank() == 5) return true;
-  if (side == Color::BLACK && from.rank() == 3 && epsq.rank() == 2) return true;
+  if (dif != 1) {
+    return false;
+  }
+  if (side == Color::WHITE && from.rank() == RANK_5_IND && epsq.rank() == RANK_6_IND) {
+    return true;
+  }
+  if (side == Color::BLACK && from.rank() == RANK_4_IND && epsq.rank() == RANK_3_IND) {
+    return true;
+  }
   return false;
 }
 
@@ -126,7 +141,7 @@ constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noex
  * @param side Color of the pawns
  * @return Array of 64 bitboards indexed by source square, each containing the single push destination
  */
-constexpr std::array<Bitboard, 64> single_push(Color side) {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> single_push(Color side) {
   switch (side) {
     case Color::WHITE:
       return Lookups::WHITE_PAWN_SINGLE_PUSH;
@@ -150,7 +165,7 @@ constexpr std::array<Bitboard, 64> single_push(Color side) {
  * @param side Color of the pawns
  * @return Array of 64 bitboards indexed by source square, each containing the double push destination
  */
-constexpr std::array<Bitboard, 64> double_push(Color side) {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> double_push(Color side) {
   switch (side) {
     case Color::WHITE:
       return Lookups::WHITE_PAWN_DOUBLE_PUSH;
@@ -174,7 +189,7 @@ constexpr std::array<Bitboard, 64> double_push(Color side) {
  * @param side Color of the pawns
  * @return Array of 64 bitboards indexed by source square, each containing the diagonal capture squares
  */
-constexpr std::array<Bitboard, 64> captures(Color side) {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> captures(Color side) {
   switch (side) {
     case Color::WHITE:
       return Lookups::WHITE_PAWN_ATTACKS;

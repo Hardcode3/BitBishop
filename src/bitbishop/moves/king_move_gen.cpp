@@ -18,7 +18,7 @@ void KingMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, co
   }
 
   const Square from = opt_sq.value();
-  const Bitboard king_moves = Lookups::KING_ATTACKS[from.value()];
+  const Bitboard& king_moves = Lookups::KING_ATTACKS[from.value()];
   const Bitboard empty = board.unoccupied();
   const Bitboard enemy = board.enemy(side);
 
@@ -81,11 +81,7 @@ bool KingMoveGenerator::can_castle_kingside(const Board& board, Color side) {
 
   // Check if squares between king and rook are empty
   const Bitboard occupied = board.occupied();
-  if (occupied.test(f_sq) || occupied.test(g_sq)) {
-    return false;
-  }
-
-  return true;
+  return !occupied.test(f_sq) && !occupied.test(g_sq);
 }
 
 bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
@@ -111,9 +107,5 @@ bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
 
   // Check if the squares between king and rook are empty
   const Bitboard occupied = board.occupied();
-  if (occupied.test(b_sq) || occupied.test(c_sq) || occupied.test(d_sq)) {
-    return false;
-  }
-
-  return true;
+  return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
 }

@@ -1,4 +1,5 @@
 #include <bitbishop/board.hpp>
+#include <bitbishop/constants.hpp>
 #include <format>
 #include <sstream>
 
@@ -20,30 +21,32 @@ Board::Board(const std::string& fen) {
    *
    * Example FEN for starting position: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
    */
+  using namespace Const;
+
   std::istringstream iss(fen);
   std::string token;
   iss >> token;
 
-  int index = 64 - 8;
-  for (auto c : token) {
-    if (c == '/') {
-      index -= 2 * 8;
+  int index = BOARD_SIZE - BOARD_WIDTH;
+  for (unsigned char character : token) {
+    if (character == '/') {
+      index -= 2 * BOARD_WIDTH;
       continue;
-    } else if (isdigit(c)) {
-      const int skip = c - '0';
+    }
+    if (std::isdigit(character) != 0) {
+      const int skip = character - '0';
       index += skip;
       continue;
-    } else {
-      const Square square(index);
-      Piece piece(c);
-      set_piece(square, piece);
-      index++;
     }
+    const Square square(index);
+    Piece piece(character);
+    set_piece(square, piece);
+    index++;
   }
 
   // Second token: side to move
   iss >> token;
-  m_is_white_turn = (token == "w") ? true : false;
+  m_is_white_turn = (token == "w");
 
   // Third token: Castling Rights
   iss >> token;
@@ -68,126 +71,128 @@ Board::Board(const std::string& fen) {
 }
 
 Bitboard Board::white_pieces() const {
-  Bitboard bb;
-  bb |= m_w_pawns;
-  bb |= m_w_rooks;
-  bb |= m_w_bishops;
-  bb |= m_w_knights;
-  bb |= m_w_king;
-  bb |= m_w_queen;
-  return bb;
+  Bitboard bitboard;
+  bitboard |= m_w_pawns;
+  bitboard |= m_w_rooks;
+  bitboard |= m_w_bishops;
+  bitboard |= m_w_knights;
+  bitboard |= m_w_king;
+  bitboard |= m_w_queen;
+  return bitboard;
 }
 
 Bitboard Board::black_pieces() const {
-  Bitboard bb;
-  bb |= m_b_pawns;
-  bb |= m_b_rooks;
-  bb |= m_b_bishops;
-  bb |= m_b_knights;
-  bb |= m_b_king;
-  bb |= m_b_queen;
-  return bb;
+  Bitboard bitboard;
+  bitboard |= m_b_pawns;
+  bitboard |= m_b_rooks;
+  bitboard |= m_b_bishops;
+  bitboard |= m_b_knights;
+  bitboard |= m_b_king;
+  bitboard |= m_b_queen;
+  return bitboard;
 }
 
 Bitboard Board::occupied() const {
-  Bitboard bb;
-  bb |= m_b_pawns;
-  bb |= m_b_rooks;
-  bb |= m_b_bishops;
-  bb |= m_b_knights;
-  bb |= m_b_king;
-  bb |= m_b_queen;
-  bb |= m_w_pawns;
-  bb |= m_w_rooks;
-  bb |= m_w_bishops;
-  bb |= m_w_knights;
-  bb |= m_w_king;
-  bb |= m_w_queen;
-  return bb;
+  Bitboard bitboard;
+  bitboard |= m_b_pawns;
+  bitboard |= m_b_rooks;
+  bitboard |= m_b_bishops;
+  bitboard |= m_b_knights;
+  bitboard |= m_b_king;
+  bitboard |= m_b_queen;
+  bitboard |= m_w_pawns;
+  bitboard |= m_w_rooks;
+  bitboard |= m_w_bishops;
+  bitboard |= m_w_knights;
+  bitboard |= m_w_king;
+  bitboard |= m_w_queen;
+  return bitboard;
 }
 
-std::optional<Piece> Board::get_piece(Square sq) const {
-  if (m_w_pawns.test(sq)) return Pieces::WHITE_PAWN;
-  if (m_w_knights.test(sq)) return Pieces::WHITE_KNIGHT;
-  if (m_w_bishops.test(sq)) return Pieces::WHITE_BISHOP;
-  if (m_w_rooks.test(sq)) return Pieces::WHITE_ROOK;
-  if (m_w_queen.test(sq)) return Pieces::WHITE_QUEEN;
-  if (m_w_king.test(sq)) return Pieces::WHITE_KING;
+std::optional<Piece> Board::get_piece(Square square) const {
+  // clang-format off
+  if (m_w_pawns.test(square))   { return Pieces::WHITE_PAWN;    }
+  if (m_w_knights.test(square)) { return Pieces::WHITE_KNIGHT;  }
+  if (m_w_bishops.test(square)) { return Pieces::WHITE_BISHOP;  }
+  if (m_w_rooks.test(square))   { return Pieces::WHITE_ROOK;    }
+  if (m_w_queen.test(square))   { return Pieces::WHITE_QUEEN;   }
+  if (m_w_king.test(square))    { return Pieces::WHITE_KING;    }
 
-  if (m_b_pawns.test(sq)) return Pieces::BLACK_PAWN;
-  if (m_b_knights.test(sq)) return Pieces::BLACK_KNIGHT;
-  if (m_b_bishops.test(sq)) return Pieces::BLACK_BISHOP;
-  if (m_b_rooks.test(sq)) return Pieces::BLACK_ROOK;
-  if (m_b_queen.test(sq)) return Pieces::BLACK_QUEEN;
-  if (m_b_king.test(sq)) return Pieces::BLACK_KING;
+  if (m_b_pawns.test(square))   { return Pieces::BLACK_PAWN;    }
+  if (m_b_knights.test(square)) { return Pieces::BLACK_KNIGHT;  }
+  if (m_b_bishops.test(square)) { return Pieces::BLACK_BISHOP;  }
+  if (m_b_rooks.test(square))   { return Pieces::BLACK_ROOK;    }
+  if (m_b_queen.test(square))   { return Pieces::BLACK_QUEEN;   }
+  if (m_b_king.test(square))    { return Pieces::BLACK_KING;    }
+  // clang-format on
 
   return std::nullopt;  // NO_PIECE
 }
 
-void Board::set_piece(Square sq, Piece p) {
+void Board::set_piece(Square square, Piece piece) {
   // Remove any existing piece if existent
-  const std::optional<Piece> existing_piece = get_piece(sq);
+  const std::optional<Piece> existing_piece = get_piece(square);
   if (existing_piece.has_value()) {
-    remove_piece(sq);
+    remove_piece(square);
   }
 
   // Use color to select white or black bitboards, then type for the specific piece
-  if (p.is_white()) {
-    switch (p.type()) {
+  if (piece.is_white()) {
+    switch (piece.type()) {
         // clang-format off
-    case Piece::PAWN:   m_w_pawns.set(sq);   return;
-    case Piece::KNIGHT: m_w_knights.set(sq); return;
-    case Piece::BISHOP: m_w_bishops.set(sq); return;
-    case Piece::ROOK:   m_w_rooks.set(sq);   return;
-    case Piece::QUEEN:  m_w_queen.set(sq);   return;
-    case Piece::KING:   m_w_king.set(sq);    return;
-    default: break; // clang-format off
-  }
+    case Piece::PAWN:   m_w_pawns.set(square);   return;
+    case Piece::KNIGHT: m_w_knights.set(square); return;
+    case Piece::BISHOP: m_w_bishops.set(square); return;
+    case Piece::ROOK:   m_w_rooks.set(square);   return;
+    case Piece::QUEEN:  m_w_queen.set(square);   return;
+    case Piece::KING:   m_w_king.set(square);    return;
+    default: break;  // clang-format on
+    }
   } else {  // is_black()
-    switch (p.type()) {
-      // clang-format off
-      case Piece::PAWN:   m_b_pawns.set(sq);   return;
-      case Piece::KNIGHT: m_b_knights.set(sq); return;
-      case Piece::BISHOP: m_b_bishops.set(sq); return;
-      case Piece::ROOK:   m_b_rooks.set(sq);   return;
-      case Piece::QUEEN:  m_b_queen.set(sq);   return;
-      case Piece::KING:   m_b_king.set(sq);    return;
-      default: break; // clang-format off
+    switch (piece.type()) {
+        // clang-format off
+      case Piece::PAWN:   m_b_pawns.set(square);   return;
+      case Piece::KNIGHT: m_b_knights.set(square); return;
+      case Piece::BISHOP: m_b_bishops.set(square); return;
+      case Piece::ROOK:   m_b_rooks.set(square);   return;
+      case Piece::QUEEN:  m_b_queen.set(square);   return;
+      case Piece::KING:   m_b_king.set(square);    return;
+      default: break;  // clang-format on
     }
   }
 
   // If we get here, something went wrong
   throw std::invalid_argument(
-    std::format("Invalid piece type for piece {} on square {}",
-                p.to_char(), sq.to_string())
-  );
+      std::format("Invalid piece type for piece {} on square {}", piece.to_char(), square.to_string()));
 }
 
-void Board::remove_piece(Square sq) {
+void Board::remove_piece(Square square) {
   // clear the square from ALL bitboards (only one will match)
-  m_w_pawns.clear(sq);
-  m_w_knights.clear(sq);
-  m_w_bishops.clear(sq);
-  m_w_rooks.clear(sq);
-  m_w_queen.clear(sq);
-  m_w_king.clear(sq);
+  m_w_pawns.clear(square);
+  m_w_knights.clear(square);
+  m_w_bishops.clear(square);
+  m_w_rooks.clear(square);
+  m_w_queen.clear(square);
+  m_w_king.clear(square);
 
-  m_b_pawns.clear(sq);
-  m_b_knights.clear(sq);
-  m_b_bishops.clear(sq);
-  m_b_rooks.clear(sq);
-  m_b_queen.clear(sq);
-  m_b_king.clear(sq);
+  m_b_pawns.clear(square);
+  m_b_knights.clear(square);
+  m_b_bishops.clear(square);
+  m_b_rooks.clear(square);
+  m_b_queen.clear(square);
+  m_b_king.clear(square);
 }
 
 void Board::print() const {
-  for (int rank = 7; rank >= 0; --rank) {
+  using namespace Const;
+
+  for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
     std::cout << (rank + 1) << " ";  // rank numbers on the left
-    for (int file = 0; file < 8; ++file) {
-      Square sq(file, rank);
-      std::optional<Piece> opt_p = get_piece(sq);
-      char c = (opt_p.has_value()) ? opt_p.value().to_char(): '.';
-      std::cout << c << " ";
+    for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
+      Square square(file, rank);
+      std::optional<Piece> opt_p = get_piece(square);
+      char character = (opt_p.has_value()) ? opt_p.value().to_char() : '.';
+      std::cout << character << " ";
     }
     std::cout << "\n";
   }

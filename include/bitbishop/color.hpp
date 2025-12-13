@@ -9,7 +9,7 @@
  *
  * @see std::formatter<Color> for formatting support
  */
-enum class Color {
+enum class Color : std::uint8_t {
   BLACK,  ///< Black pieces/player
   WHITE   ///< White pieces/player
 };
@@ -36,7 +36,7 @@ struct std::formatter<Color> {
    * @param ctx The format parse context
    * @return Iterator to the end of the parsed format specification
    */
-  constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+  constexpr auto static parse(format_parse_context& ctx) { return ctx.begin(); }
 
   /**
    * @brief Formats a Color value as a string.
@@ -44,13 +44,13 @@ struct std::formatter<Color> {
    * Converts Color::BLACK to "black" and Color::WHITE to "white".
    * Unknown values are formatted as "unknown".
    *
-   * @param c The Color value to format
+   * @param color The Color value to format
    * @param ctx The format context
    * @return Iterator to the end of the formatted output
    */
-  auto format(Color c, format_context& ctx) const {
+  auto static format(Color color, format_context& ctx) {
     string_view name = "unknown";
-    switch (c) {
+    switch (color) {
         // clang-format off
     case Color::BLACK: name = "black"; break;
     case Color::WHITE: name = "white"; break;
