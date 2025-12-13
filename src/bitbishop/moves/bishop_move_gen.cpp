@@ -32,7 +32,7 @@ void BishopMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, 
   }
 }
 
-Bitboard BishopMoveGenerator::north_east_ray(Square from, Bitboard occupied) {
+Bitboard BishopMoveGenerator::north_east_ray(Square from, const Bitboard& occupied) {
   Bitboard ne_ray = Lookups::BISHOP_NORTHEAST_ATTACKS[from.value()];
   Bitboard blockers = ne_ray & occupied;
 
@@ -41,14 +41,14 @@ Bitboard BishopMoveGenerator::north_east_ray(Square from, Bitboard occupied) {
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
-    Bitboard beyond_blocker = Lookups::BISHOP_NORTHEAST_ATTACKS[blocker_square.value()];
+    const Bitboard& beyond_blocker = Lookups::BISHOP_NORTHEAST_ATTACKS[blocker_square.value()];
     ne_ray &= ~beyond_blocker;
   }
 
   return ne_ray;
 }
 
-Bitboard BishopMoveGenerator::north_west_ray(Square from, Bitboard occupied) {
+Bitboard BishopMoveGenerator::north_west_ray(Square from, const Bitboard& occupied) {
   Bitboard nw_ray = Lookups::BISHOP_NORTHWEST_ATTACKS[from.value()];
   Bitboard blockers = nw_ray & occupied;
 
@@ -57,14 +57,14 @@ Bitboard BishopMoveGenerator::north_west_ray(Square from, Bitboard occupied) {
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
-    Bitboard beyond_blocker = Lookups::BISHOP_NORTHWEST_ATTACKS[blocker_square.value()];
+    const Bitboard& beyond_blocker = Lookups::BISHOP_NORTHWEST_ATTACKS[blocker_square.value()];
     nw_ray &= ~beyond_blocker;
   }
 
   return nw_ray;
 }
 
-Bitboard BishopMoveGenerator::south_east_ray(Square from, Bitboard occupied) {
+Bitboard BishopMoveGenerator::south_east_ray(Square from, const Bitboard& occupied) {
   Bitboard se_ray = Lookups::BISHOP_SOUTHEAST_ATTACKS[from.value()];
   Bitboard blockers = se_ray & occupied;
 
@@ -73,14 +73,14 @@ Bitboard BishopMoveGenerator::south_east_ray(Square from, Bitboard occupied) {
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
-    Bitboard beyond_blocker = Lookups::BISHOP_SOUTHEAST_ATTACKS[blocker_square.value()];
+    const Bitboard& beyond_blocker = Lookups::BISHOP_SOUTHEAST_ATTACKS[blocker_square.value()];
     se_ray &= ~beyond_blocker;
   }
 
   return se_ray;
 }
 
-Bitboard BishopMoveGenerator::south_west_ray(Square from, Bitboard occupied) {
+Bitboard BishopMoveGenerator::south_west_ray(Square from, const Bitboard& occupied) {
   Bitboard sw_ray = Lookups::BISHOP_SOUTHWEST_ATTACKS[from.value()];
   Bitboard blockers = sw_ray & occupied;
 
@@ -89,7 +89,7 @@ Bitboard BishopMoveGenerator::south_west_ray(Square from, Bitboard occupied) {
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
-    Bitboard beyond_blocker = Lookups::BISHOP_SOUTHWEST_ATTACKS[blocker_square.value()];
+    const Bitboard& beyond_blocker = Lookups::BISHOP_SOUTHWEST_ATTACKS[blocker_square.value()];
     sw_ray &= ~beyond_blocker;
   }
 
