@@ -2,6 +2,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/constants.hpp>
 #include <cstdint>
 
 namespace Lookups {
@@ -11,12 +12,14 @@ namespace Lookups {
  * @param sq The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving north.
  */
-constexpr uint64_t rook_north_attacks(int sq) {
+constexpr uint64_t rook_north_attacks(int square) {
+  using namespace Const;
+
   uint64_t attacks = 0ULL;
-  int r = sq / 8;
-  int f = sq % 8;
-  for (int i = r + 1; i < 8; ++i) {
-    attacks |= (1ULL << (f + i * 8));
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  for (int i = rank + 1; i < BOARD_WIDTH; ++i) {
+    attacks |= (1ULL << (file + i * BOARD_WIDTH));
   }
   return attacks;
 }
@@ -26,12 +29,14 @@ constexpr uint64_t rook_north_attacks(int sq) {
  * @param sq The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving south.
  */
-constexpr uint64_t rook_south_attacks(int sq) {
+constexpr uint64_t rook_south_attacks(int square) {
+  using namespace Const;
+
   uint64_t attacks = 0ULL;
-  int r = sq / 8;
-  int f = sq % 8;
-  for (int i = r - 1; i >= 0; --i) {
-    attacks |= (1ULL << (f + i * 8));
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  for (int i = rank - 1; i >= 0; --i) {
+    attacks |= (1ULL << (file + i * BOARD_WIDTH));
   }
   return attacks;
 }
@@ -41,12 +46,14 @@ constexpr uint64_t rook_south_attacks(int sq) {
  * @param sq The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving east.
  */
-constexpr uint64_t rook_east_attacks(int sq) {
+constexpr uint64_t rook_east_attacks(int square) {
+  using namespace Const;
+
   uint64_t attacks = 0ULL;
-  int r = sq / 8;
-  int f = sq % 8;
-  for (int i = f + 1; i < 8; ++i) {
-    attacks |= (1ULL << (i + r * 8));
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  for (int i = file + 1; i < BOARD_WIDTH; ++i) {
+    attacks |= (1ULL << (i + rank * BOARD_WIDTH));
   }
   return attacks;
 }
@@ -56,12 +63,14 @@ constexpr uint64_t rook_east_attacks(int sq) {
  * @param sq The square index (0-63).
  * @return Bitboard of all squares attacked by a rook moving west.
  */
-constexpr uint64_t rook_west_attacks(int sq) {
+constexpr uint64_t rook_west_attacks(int square) {
+  using namespace Const;
+
   uint64_t attacks = 0ULL;
-  int r = sq / 8;
-  int f = sq % 8;
-  for (int i = f - 1; i >= 0; --i) {
-    attacks |= (1ULL << (i + r * 8));
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  for (int i = file - 1; i >= 0; --i) {
+    attacks |= (1ULL << (i + rank * BOARD_WIDTH));
   }
   return attacks;
 }
@@ -71,8 +80,9 @@ constexpr uint64_t rook_west_attacks(int sq) {
  * @param sq The square index (0-63).
  * @return Bitboard of all squares attacked by a rook from the given square.
  */
-constexpr uint64_t rook_attacks_for_square(int sq) {
-  return rook_north_attacks(sq) | rook_south_attacks(sq) | rook_east_attacks(sq) | rook_west_attacks(sq);
+constexpr uint64_t rook_attacks_for_square(int square) {
+  return rook_north_attacks(square) | rook_south_attacks(square) | rook_east_attacks(square) |
+         rook_west_attacks(square);
 }
 
 /**
@@ -81,9 +91,11 @@ constexpr uint64_t rook_attacks_for_square(int sq) {
  * Each entry is a bitboard of all squares a rook can attack from the corresponding square.
  * Indexed by square (0-63).
  */
-constexpr std::array<Bitboard, 64> ROOK_ATTACKS = []() constexpr {
-  std::array<Bitboard, 64> table{};
-  for (int sq = 0; sq < 64; ++sq) {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<Bitboard, BOARD_SIZE> table{};
+  for (int sq = 0; sq < BOARD_SIZE; ++sq) {
     table[sq] = Bitboard(rook_attacks_for_square(sq));
   }
   return table;
