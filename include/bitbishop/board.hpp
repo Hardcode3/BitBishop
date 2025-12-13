@@ -68,20 +68,20 @@ class Board {
    * @param sq The square to query.
    * @return Piece located on `sq' or std::nullopt if no piece lays on that square.
    */
-  std::optional<Piece> get_piece(Square sq) const;
+  [[nodiscard]] std::optional<Piece> get_piece(Square square) const;
 
   /**
    * @brief (Re)Places a piece on a given square.
    * @param sq The square where the piece will be placed.
    * @param p The piece type (including color).
    */
-  void set_piece(Square sq, Piece p);
+  void set_piece(Square square, Piece piece);
 
   /**
    * @brief Removes any piece from a given square.
    * @param sq The square to clear.
    */
-  void remove_piece(Square sq);
+  void remove_piece(Square square);
 
   /**
    * @brief Prints the board to the given output stream.
@@ -104,24 +104,24 @@ class Board {
   /**
    * @brief Returns a bitboard containing all white pieces.
    */
-  Bitboard white_pieces() const;
+  [[nodiscard]] Bitboard white_pieces() const;
 
   /**
    * @brief Returns a bitboard containing all black pieces.
    */
-  Bitboard black_pieces() const;
+  [[nodiscard]] Bitboard black_pieces() const;
 
   /**
    * @brief Returns a bitboard containing all occupied squares (both sides).
    */
-  Bitboard occupied() const;
+  [[nodiscard]] Bitboard occupied() const;
 
   /**
    * @brief Returns a bitboard of all empty squares on the board.
    *
    * @return Bitboard with bits set where no piece occupies a square.
    */
-  Bitboard unoccupied() const { return ~occupied(); }
+  [[nodiscard]] Bitboard unoccupied() const { return ~occupied(); }
 
   /**
    * @brief Returns a bitboard representing all pawns belonging to the given side to move.
@@ -129,7 +129,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's pawns.
    */
-  Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
+  [[nodiscard]] Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
 
   /**
    * @brief Returns a bitboard representing the king belonging to the given side to move.
@@ -137,7 +137,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's king.
    */
-  Bitboard king(Color side) const { return (side == Color::WHITE) ? m_w_king : m_b_king; }
+  [[nodiscard]] Bitboard king(Color side) const { return (side == Color::WHITE) ? m_w_king : m_b_king; }
 
   /**
    * @brief Returns a bitboard representing all rooks belonging to the given side.
@@ -145,7 +145,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's rooks.
    */
-  Bitboard rooks(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
+  [[nodiscard]] Bitboard rooks(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
 
   /**
    * @brief Returns a bitboard representing all knights belonging to the given side.
@@ -153,7 +153,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's knights.
    */
-  Bitboard knights(Color side) const { return (side == Color::WHITE) ? m_w_knights : m_b_knights; }
+  [[nodiscard]] Bitboard knights(Color side) const { return (side == Color::WHITE) ? m_w_knights : m_b_knights; }
 
   /**
    * @brief Returns a bitboard representing all bishops belonging to the given side.
@@ -161,7 +161,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's bishop.
    */
-  Bitboard bishops(Color side) const { return (side == Color::WHITE) ? m_w_bishops : m_b_bishops; }
+  [[nodiscard]] Bitboard bishops(Color side) const { return (side == Color::WHITE) ? m_w_bishops : m_b_bishops; }
 
   /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
@@ -169,7 +169,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard of all opposing pieces.
    */
-  Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
+  [[nodiscard]] Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
 
   /**
    * @brief Returns a bitboard of all friendly pieces relative to the given side to move.
@@ -177,7 +177,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard of all friendly pieces.
    */
-  Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
+  [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
   /**
    * @brief Returns the current en passant target square, if any.
@@ -192,14 +192,14 @@ class Board {
    * }
    * @endcode
    */
-  std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
+  [[nodiscard]] std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
 
   /**
    * @brief Checks if the given side has kingside castling rights.
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return true if kingside castling rights is available, false otherwise
    */
-  bool has_kingside_castling_rights(Color side) const {
+  [[nodiscard]] bool has_kingside_castling_rights(Color side) const {
     return (side == Color::WHITE) ? m_white_castle_kingside : m_black_castle_kingside;
   }
 
@@ -208,7 +208,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return true if queenside castling rights is available, false otherwise
    */
-  bool has_queenside_castling_rights(Color side) const {
+  [[nodiscard]] bool has_queenside_castling_rights(Color side) const {
     return (side == Color::WHITE) ? m_white_castle_queenside : m_black_castle_queenside;
   }
 };
