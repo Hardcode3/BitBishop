@@ -10,7 +10,7 @@
  * @test RookMoveGenerator::add_rook_castling() with no castling rights
  * @brief Verifies that no castling moves are added when castling rights are not available.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingNoCastlingRights) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteNoCastlingRights) {
   Board board("8/8/8/8/8/8/8/R3K2R w - - 0 1");
 
   std::vector<Move> moves;
@@ -46,7 +46,7 @@ TEST(RookMoveGeneratorTest, AddRookCastlingBlackNoCastlingRights) {
  * @test RookMoveGenerator::add_rook_castling() with both castling rights available
  * @brief Verifies that both kingside and queenside castling moves are added when both are legal.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingBothSidesAvailable) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteBothSidesAvailable) {
   Board board("8/8/8/8/8/8/8/R3K2R w KQ - 0 1");
 
   std::vector<Move> moves;
@@ -66,7 +66,7 @@ TEST(RookMoveGeneratorTest, AddRookCastlingBothSidesAvailable) {
  * @test RookMoveGenerator::add_rook_castling() with only kingside castling available
  * @brief Verifies that only kingside castling move is added when queenside is not legal.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingOnlyKingsideAvailable) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteOnlyKingsideAvailable) {
   Board board("8/8/8/8/8/8/8/R3K2R w K - 0 1");
 
   std::vector<Move> moves;
@@ -86,7 +86,7 @@ TEST(RookMoveGeneratorTest, AddRookCastlingOnlyKingsideAvailable) {
  * @test RookMoveGenerator::add_rook_castling() with only queenside castling available
  * @brief Verifies that only queenside castling move is added when kingside is not legal.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingOnlyQueensideAvailable) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteOnlyQueensideAvailable) {
   Board board("8/8/8/8/8/8/8/R3K2R w Q - 0 1");
 
   std::vector<Move> moves;
@@ -166,7 +166,7 @@ TEST(RookMoveGeneratorTest, AddRookCastlingBlackOnlyQueensideAvailable) {
  * @test RookMoveGenerator::add_rook_castling() with pieces blocking castling
  * @brief Verifies that castling moves are not added when pieces block the path.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingBlockedByPieces) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteBlockedByPieces) {
   Board board("8/8/8/8/8/8/8/R1B1KN1R w KQ - 0 1");
 
   std::vector<Move> moves;
@@ -202,7 +202,7 @@ TEST(RookMoveGeneratorTest, AddRookCastlingBlackBlockedByPieces) {
  * @test RookMoveGenerator::add_rook_castling() with invalid starting square for a black rook
  * @brief Verifies that castling moves are not added when black rook's starting position is invalid.
  */
-TEST(RookMoveGeneratorTest, AddRookCastlingInvalidFromSquare) {
+TEST(RookMoveGeneratorTest, AddRookCastlingWhiteInvalidFromSquare) {
   Board board("8/8/8/8/8/8/8/R1B1KN1R w KQ - 0 1");
 
   std::vector<Move> moves;
