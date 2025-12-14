@@ -38,15 +38,19 @@ void RookMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, co
 void RookMoveGenerator::add_rook_castling(std::vector<Move>& moves, Square from, Color side, const Board& board) {
   // TODO: These Castling utilities must be moved out of the KingMoveGenerator namespace
   // as it is common code with RookMoveGenerator
+  Square kingside_rook = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
+  Square queenside_rook = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
 
   // Kingside castling
-  if (KingMoveGenerator::can_castle_kingside(board, side)) {
+  const bool can_castle_kingside = KingMoveGenerator::can_castle_kingside(board, side) && (from == kingside_rook);
+  if (can_castle_kingside) {
     Square to = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
 
   // Queenside castling
-  if (KingMoveGenerator::can_castle_queenside(board, side)) {
+  const bool can_castle_queenside = KingMoveGenerator::can_castle_queenside(board, side) && (from == queenside_rook);
+  if (can_castle_queenside) {
     Square to = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
@@ -56,7 +60,7 @@ Bitboard RookMoveGenerator::north_ray(Square from, const Bitboard& occupied) {
   Bitboard n_ray = Lookups::ROOK_NORTH_ATTACKS[from.value()];
   Bitboard blockers = n_ray & occupied;
 
-  // Closest blocker (N goes up, so use lsb)
+  // Closest blocker (N goes up towards msb, so use lsb)
   std::optional<Square> first_blocker = blockers.lsb();
 
   if (first_blocker.has_value()) {
@@ -72,8 +76,8 @@ Bitboard RookMoveGenerator::south_ray(Square from, const Bitboard& occupied) {
   Bitboard s_ray = Lookups::ROOK_SOUTH_ATTACKS[from.value()];
   Bitboard blockers = s_ray & occupied;
 
-  // Closest blocker (N goes up, so use lsb)
-  std::optional<Square> first_blocker = blockers.lsb();
+  // Closest blocker (S goes down towards lsb, so use msb)
+  std::optional<Square> first_blocker = blockers.msb();
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
@@ -88,7 +92,7 @@ Bitboard RookMoveGenerator::east_ray(Square from, const Bitboard& occupied) {
   Bitboard e_ray = Lookups::ROOK_EAST_ATTACKS[from.value()];
   Bitboard blockers = e_ray & occupied;
 
-  // Closest blocker (N goes up, so use lsb)
+  // Closest blocker (E goes twoards msb, so use lsb)
   std::optional<Square> first_blocker = blockers.lsb();
 
   if (first_blocker.has_value()) {
@@ -104,8 +108,8 @@ Bitboard RookMoveGenerator::west_ray(Square from, const Bitboard& occupied) {
   Bitboard w_ray = Lookups::ROOK_WEST_ATTACKS[from.value()];
   Bitboard blockers = w_ray & occupied;
 
-  // Closest blocker (N goes up, so use lsb)
-  std::optional<Square> first_blocker = blockers.lsb();
+  // Closest blocker (W goes towards lsb, so use msb)
+  std::optional<Square> first_blocker = blockers.msb();
 
   if (first_blocker.has_value()) {
     Square blocker_square = first_blocker.value();
