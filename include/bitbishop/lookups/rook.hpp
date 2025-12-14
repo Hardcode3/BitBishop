@@ -101,4 +101,60 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKS = []() constexpr 
   return table;
 }();
 
+/**
+ * @brief Precomputed lookup table of rook north attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<Bitboard, BOARD_SIZE> table{};
+  for (int sq = 0; sq < BOARD_SIZE; ++sq) {
+    table[sq] = Bitboard(rook_north_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of rook south attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<Bitboard, BOARD_SIZE> table{};
+  for (int sq = 0; sq < BOARD_SIZE; ++sq) {
+    table[sq] = Bitboard(rook_south_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of rook east attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<Bitboard, BOARD_SIZE> table{};
+  for (int sq = 0; sq < BOARD_SIZE; ++sq) {
+    table[sq] = Bitboard(rook_east_attacks(sq));
+  }
+  return table;
+}();
+
+/**
+ * @brief Precomputed lookup table of rook west attacks for every square.
+ * Indexed by square (0-63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<Bitboard, BOARD_SIZE> table{};
+  for (int sq = 0; sq < BOARD_SIZE; ++sq) {
+    table[sq] = Bitboard(rook_west_attacks(sq));
+  }
+  return table;
+}();
+
 }  // namespace Lookups

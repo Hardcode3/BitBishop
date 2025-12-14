@@ -173,19 +173,39 @@ int count_quiet_moves(const std::vector<Move>& moves) {
 }
 
 /**
- * @brief Counts kingside castling moves for the given side.
+ * @brief Counts kingside castling moves for the king for the given side.
  */
-int count_kingside_castling(const std::vector<Move>& moves, Color side) {
+int count_king_kingside_castling(const std::vector<Move>& moves, Color side) {
+  Square from = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
   Square target = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
-  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target; });
+  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
 }
 
 /**
- * @brief Counts queenside castling moves for the given side.
+ * @brief Counts queenside castling moves for the king for the given side.
  */
-int count_queenside_castling(const std::vector<Move>& moves, Color side) {
+int count_king_queenside_castling(const std::vector<Move>& moves, Color side) {
+  Square from = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
   Square target = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
-  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target; });
+  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
+}
+
+/**
+ * @brief Counts kingside castling moves for the rook for the given side.
+ */
+int count_rook_kingside_castling(const std::vector<Move>& moves, Color side) {
+  Square from = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
+  Square target = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
+  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
+}
+
+/**
+ * @brief Counts queenside castling moves for the rook for the given side.
+ */
+int count_rook_queenside_castling(const std::vector<Move>& moves, Color side) {
+  Square from = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
+  Square target = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
+  return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
 }
 
 /**
