@@ -55,34 +55,4 @@ void generate_legal_moves(std::vector<Move>& moves, const Board& board, Color si
  */
 void add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board);
 
-/**
- * @brief Checks if kingside castling is legal.
- *
- * Kingside castling (also called short castling or O-O) is legal when:
- * - Neither the king nor the kingside rook have previously moved
- * - All squares between the king and the kingside rook are empty
- * - The king is not currently in check
- * - The king does not pass through or land on a square that is under attack
- *
- * @param board Current board state
- * @param side Color of the side to check
- * @return true if kingside castling is legal, false otherwise
- */
-bool can_castle_kingside(const Board& board, Color side);
-
-/**
- * @brief Checks if queenside castling is legal.
- *
- * Queenside castling (also called long castling or O-O-O) is legal when:
- * - Neither the king nor the queenside rook have previously moved
- * - All squares between the king and the queenside rook are empty
- * - The king is not currently in check
- * - The king does not pass through or land on a square that is under attack
- *
- * @param board Current board state
- * @param side Color of the side to check
- * @return true if queenside castling is legal, false otherwise
- */
-bool can_castle_queenside(const Board& board, Color side);
-
 };  // namespace KingMoveGenerator

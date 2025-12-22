@@ -42,14 +42,14 @@ void RookMoveGenerator::add_rook_castling(std::vector<Move>& moves, Square from,
   Square queenside_rook = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
 
   // Kingside castling
-  const bool can_castle_kingside = KingMoveGenerator::can_castle_kingside(board, side) && (from == kingside_rook);
+  const bool can_castle_kingside = board.can_castle_kingside(side) && (from == kingside_rook);
   if (can_castle_kingside) {
     Square to = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
 
   // Queenside castling
-  const bool can_castle_queenside = KingMoveGenerator::can_castle_queenside(board, side) && (from == queenside_rook);
+  const bool can_castle_queenside = board.can_castle_queenside(side) && (from == queenside_rook);
   if (can_castle_queenside) {
     Square to = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
