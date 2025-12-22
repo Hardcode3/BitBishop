@@ -26,8 +26,8 @@
 class Board {
  private:
   // Piece bitboards
-  Bitboard m_w_pawns, m_w_rooks, m_w_bishops, m_w_knights, m_w_king, m_w_queen;
-  Bitboard m_b_pawns, m_b_rooks, m_b_bishops, m_b_knights, m_b_king, m_b_queen;
+  Bitboard m_w_pawns, m_w_rooks, m_w_bishops, m_w_knights, m_w_king, m_w_queens;
+  Bitboard m_b_pawns, m_b_rooks, m_b_bishops, m_b_knights, m_b_king, m_b_queens;
 
   // Game state
   bool m_is_white_turn;                   ///< True if it is White's turn
@@ -162,6 +162,14 @@ class Board {
    * @return Bitboard containing all squares occupied by that side's bishop.
    */
   [[nodiscard]] Bitboard bishops(Color side) const { return (side == Color::WHITE) ? m_w_bishops : m_b_bishops; }
+
+  /**
+   * @brief Returns a bitboard representing the queen(s) belonging to the given side.
+   *
+   * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
+   * @return Bitboard containing all squares occupied by that side's queen(s).
+   */
+  [[nodiscard]] Bitboard queens(Color side) const { return (side == Color::WHITE) ? m_w_queens : m_b_queens; }
 
   /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
