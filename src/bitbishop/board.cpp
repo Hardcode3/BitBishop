@@ -198,3 +198,54 @@ void Board::print() const {
   }
   std::cout << "  a b c d e f g h\n";  // file labels
 }
+
+bool Board::can_castle_kingside(Color side) const noexcept {
+  if (!this->has_kingside_castling_rights(side)) {
+    return false;
+  }
+
+  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
+  Square rook_sq = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
+  Square f_sq = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
+  Square g_sq = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
+
+  // Check if king is on the starting square
+  if (!this->king(side).test(king_sq)) {
+    return false;
+  }
+
+  // Check if rook is on the starting square
+  if (!this->rooks(side).test(rook_sq)) {
+    return false;
+  }
+
+  // Check if squares between king and rook are empty
+  const Bitboard occupied = this->occupied();
+  return !occupied.test(f_sq) && !occupied.test(g_sq);
+}
+
+bool Board::can_castle_queenside(Color side) const noexcept {
+  if (!this->has_queenside_castling_rights(side)) {
+    return false;
+  }
+
+  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
+  Square rook_sq = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
+  Square b_sq = (side == Color::WHITE) ? Squares::B1 : Squares::B8;
+  Square c_sq = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
+  Square d_sq = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
+
+  // Check that the king is on the starting square
+  if (!this->king(side).test(king_sq)) {
+    return false;
+  }
+
+  // Check if the rook is on the starting square
+  if (!this->rooks(side).test(rook_sq)) {
+    return false;
+  }
+
+  // Check if the squares between king and rook are empty
+  const Bitboard occupied = this->occupied();
+  return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
+}

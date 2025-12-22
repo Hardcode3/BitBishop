@@ -47,65 +47,14 @@ void KingMoveGenerator::generate_legal_moves(std::vector<Move>& moves, const Boa
 
 void KingMoveGenerator::add_king_castling(std::vector<Move>& moves, Square from, Color side, const Board& board) {
   // Kingside castling
-  if (can_castle_kingside(board, side)) {
+  if (board.can_castle_kingside(side)) {
     Square to = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
 
   // Queenside castling
-  if (can_castle_queenside(board, side)) {
+  if (board.can_castle_queenside(side)) {
     Square to = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
     moves.emplace_back(from, to, std::nullopt, false, false, true);
   }
-}
-
-bool KingMoveGenerator::can_castle_kingside(const Board& board, Color side) {
-  if (!board.has_kingside_castling_rights(side)) {
-    return false;
-  }
-
-  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
-  Square rook_sq = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
-  Square f_sq = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
-  Square g_sq = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
-
-  // Check if king is on the starting square
-  if (!board.king(side).test(king_sq)) {
-    return false;
-  }
-
-  // Check if rook is on the starting square
-  if (!board.rooks(side).test(rook_sq)) {
-    return false;
-  }
-
-  // Check if squares between king and rook are empty
-  const Bitboard occupied = board.occupied();
-  return !occupied.test(f_sq) && !occupied.test(g_sq);
-}
-
-bool KingMoveGenerator::can_castle_queenside(const Board& board, Color side) {
-  if (!board.has_queenside_castling_rights(side)) {
-    return false;
-  }
-
-  Square king_sq = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
-  Square rook_sq = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
-  Square b_sq = (side == Color::WHITE) ? Squares::B1 : Squares::B8;
-  Square c_sq = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
-  Square d_sq = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
-
-  // Check that the king is on the starting square
-  if (!board.king(side).test(king_sq)) {
-    return false;
-  }
-
-  // Check if the rook is on the starting square
-  if (!board.rooks(side).test(rook_sq)) {
-    return false;
-  }
-
-  // Check if the squares between king and rook are empty
-  const Bitboard occupied = board.occupied();
-  return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
 }
