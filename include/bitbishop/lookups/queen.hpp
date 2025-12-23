@@ -7,6 +7,10 @@
 #include <bitbishop/lookups/rook.hpp>
 #include <cstdint>
 
+// NOTE: These queen lookups are not used in moves generation code.
+// Instead, rook and bishop rays are used individually and reused to generate queen rays,
+// as it is the same logic.
+
 namespace Lookups {
 
 /**

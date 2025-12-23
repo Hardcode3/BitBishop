@@ -77,7 +77,7 @@ Bitboard Board::white_pieces() const {
   bitboard |= m_w_bishops;
   bitboard |= m_w_knights;
   bitboard |= m_w_king;
-  bitboard |= m_w_queen;
+  bitboard |= m_w_queens;
   return bitboard;
 }
 
@@ -88,7 +88,7 @@ Bitboard Board::black_pieces() const {
   bitboard |= m_b_bishops;
   bitboard |= m_b_knights;
   bitboard |= m_b_king;
-  bitboard |= m_b_queen;
+  bitboard |= m_b_queens;
   return bitboard;
 }
 
@@ -99,13 +99,13 @@ Bitboard Board::occupied() const {
   bitboard |= m_b_bishops;
   bitboard |= m_b_knights;
   bitboard |= m_b_king;
-  bitboard |= m_b_queen;
+  bitboard |= m_b_queens;
   bitboard |= m_w_pawns;
   bitboard |= m_w_rooks;
   bitboard |= m_w_bishops;
   bitboard |= m_w_knights;
   bitboard |= m_w_king;
-  bitboard |= m_w_queen;
+  bitboard |= m_w_queens;
   return bitboard;
 }
 
@@ -115,14 +115,14 @@ std::optional<Piece> Board::get_piece(Square square) const {
   if (m_w_knights.test(square)) { return Pieces::WHITE_KNIGHT;  }
   if (m_w_bishops.test(square)) { return Pieces::WHITE_BISHOP;  }
   if (m_w_rooks.test(square))   { return Pieces::WHITE_ROOK;    }
-  if (m_w_queen.test(square))   { return Pieces::WHITE_QUEEN;   }
+  if (m_w_queens.test(square))   { return Pieces::WHITE_QUEEN;   }
   if (m_w_king.test(square))    { return Pieces::WHITE_KING;    }
 
   if (m_b_pawns.test(square))   { return Pieces::BLACK_PAWN;    }
   if (m_b_knights.test(square)) { return Pieces::BLACK_KNIGHT;  }
   if (m_b_bishops.test(square)) { return Pieces::BLACK_BISHOP;  }
   if (m_b_rooks.test(square))   { return Pieces::BLACK_ROOK;    }
-  if (m_b_queen.test(square))   { return Pieces::BLACK_QUEEN;   }
+  if (m_b_queens.test(square))   { return Pieces::BLACK_QUEEN;   }
   if (m_b_king.test(square))    { return Pieces::BLACK_KING;    }
   // clang-format on
 
@@ -144,7 +144,7 @@ void Board::set_piece(Square square, Piece piece) {
     case Piece::KNIGHT: m_w_knights.set(square); return;
     case Piece::BISHOP: m_w_bishops.set(square); return;
     case Piece::ROOK:   m_w_rooks.set(square);   return;
-    case Piece::QUEEN:  m_w_queen.set(square);   return;
+    case Piece::QUEEN:  m_w_queens.set(square);   return;
     case Piece::KING:   m_w_king.set(square);    return;
     default: break;  // clang-format on
     }
@@ -155,7 +155,7 @@ void Board::set_piece(Square square, Piece piece) {
       case Piece::KNIGHT: m_b_knights.set(square); return;
       case Piece::BISHOP: m_b_bishops.set(square); return;
       case Piece::ROOK:   m_b_rooks.set(square);   return;
-      case Piece::QUEEN:  m_b_queen.set(square);   return;
+      case Piece::QUEEN:  m_b_queens.set(square);   return;
       case Piece::KING:   m_b_king.set(square);    return;
       default: break;  // clang-format on
     }
@@ -172,14 +172,14 @@ void Board::remove_piece(Square square) {
   m_w_knights.clear(square);
   m_w_bishops.clear(square);
   m_w_rooks.clear(square);
-  m_w_queen.clear(square);
+  m_w_queens.clear(square);
   m_w_king.clear(square);
 
   m_b_pawns.clear(square);
   m_b_knights.clear(square);
   m_b_bishops.clear(square);
   m_b_rooks.clear(square);
-  m_b_queen.clear(square);
+  m_b_queens.clear(square);
   m_b_king.clear(square);
 }
 

@@ -91,3 +91,19 @@ TEST(BoardTest, BishopsBitboard) {
   EXPECT_TRUE(black_bishops.test(Square::C8));
   EXPECT_TRUE(black_bishops.test(Square::F8));
 }
+
+/**
+ * @test BoardTest.QueensBitboard
+ * @brief Ensures that queens() correctly returns the bitboard for each side.
+ */
+TEST(BoardTest, QueensBitboard) {
+  Board board;
+
+  Bitboard white_queens = board.queens(Color::WHITE);
+  Bitboard black_queens = board.queens(Color::BLACK);
+
+  EXPECT_EQ(white_queens.count(), 1);
+  EXPECT_EQ(black_queens.count(), 1);
+  EXPECT_TRUE(white_queens.test(Squares::D1));
+  EXPECT_TRUE(black_queens.test(Square::D8));
+}
