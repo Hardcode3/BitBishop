@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/bitboard.hpp>
-#include <bitbishop/lookups/rook.hpp>
+#include <bitbishop/lookups/rook_rays.hpp>
 #include <bitbishop/square.hpp>
 
 TEST(RookAttacksTest, CornerA1) {

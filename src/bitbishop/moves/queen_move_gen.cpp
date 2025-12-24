@@ -1,4 +1,4 @@
-#include <bitbishop/lookups/queen.hpp>
+#include <bitbishop/lookups/queen_rays.hpp>
 #include <bitbishop/moves/bishop_move_gen.hpp>
 #include <bitbishop/moves/queen_move_gen.hpp>
 #include <bitbishop/moves/rook_move_gen.hpp>

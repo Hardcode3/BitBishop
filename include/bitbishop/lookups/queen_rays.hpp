@@ -3,8 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
 #include <bitbishop/constants.hpp>
-#include <bitbishop/lookups/bishop.hpp>
-#include <bitbishop/lookups/rook.hpp>
+#include <bitbishop/lookups/bishop_rays.hpp>
+#include <bitbishop/lookups/rook_rays.hpp>
 #include <cstdint>
 
 // NOTE: These queen lookups are not used in moves generation code.

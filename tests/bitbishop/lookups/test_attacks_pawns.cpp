@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/bitboard.hpp>
-#include <bitbishop/lookups/pawn.hpp>
+#include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/square.hpp>
 
 using namespace Lookups;

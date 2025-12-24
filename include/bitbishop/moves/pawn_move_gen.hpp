@@ -2,7 +2,7 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
 #include <bitbishop/constants.hpp>
-#include <bitbishop/lookups/pawn.hpp>
+#include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/move.hpp>
 #include <utility>
 #include <vector>

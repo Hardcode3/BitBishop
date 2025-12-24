@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/bitboard.hpp>
-#include <bitbishop/lookups/queen.hpp>
+#include <bitbishop/lookups/queen_rays.hpp>
 #include <bitbishop/square.hpp>
 
 TEST(QueenAttacksTest, CornerA1) {
