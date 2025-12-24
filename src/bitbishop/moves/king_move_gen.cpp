@@ -1,4 +1,4 @@
-#include <bitbishop/lookups/king.hpp>
+#include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/moves/king_move_gen.hpp>
 #include <format>
 #include <optional>

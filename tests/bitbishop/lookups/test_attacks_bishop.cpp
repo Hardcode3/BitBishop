@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/bitboard.hpp>
-#include <bitbishop/lookups/bishop.hpp>
+#include <bitbishop/lookups/bishop_rays.hpp>
 #include <bitbishop/square.hpp>
 
 TEST(BishopAttacksTest, CornerA1) {

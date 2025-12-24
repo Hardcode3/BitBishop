@@ -1,7 +1,7 @@
 #pragma once
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
-#include <bitbishop/lookups/king.hpp>
+#include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/move.hpp>
 #include <utility>
 #include <vector>

@@ -2,7 +2,7 @@
 
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
-#include <bitbishop/lookups/king.hpp>
+#include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/square.hpp>
 
 using namespace Lookups;

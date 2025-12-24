@@ -1,4 +1,4 @@
-#include <bitbishop/lookups/bishop.hpp>
+#include <bitbishop/lookups/bishop_rays.hpp>
 #include <bitbishop/moves/bishop_move_gen.hpp>
 #include <optional>
 

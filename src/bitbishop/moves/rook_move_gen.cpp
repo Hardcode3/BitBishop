@@ -1,4 +1,4 @@
-#include <bitbishop/lookups/rook.hpp>
+#include <bitbishop/lookups/rook_rays.hpp>
 #include <bitbishop/moves/king_move_gen.hpp>
 #include <bitbishop/moves/rook_move_gen.hpp>
 

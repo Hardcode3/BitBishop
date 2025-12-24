@@ -1,4 +1,4 @@
-#include <bitbishop/lookups/knight.hpp>
+#include <bitbishop/lookups/knight_attacks.hpp>
 #include <bitbishop/moves/knight_move_gen.hpp>
 
 void KnightMoveGenerator::generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, Color side) {

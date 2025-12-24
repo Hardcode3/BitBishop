@@ -1,7 +1,7 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
-#include <bitbishop/lookups/pawn.hpp>
+#include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/moves/pawn_move_gen.hpp>
 #include <optional>
 
