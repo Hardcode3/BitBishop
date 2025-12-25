@@ -19,14 +19,14 @@ namespace Lookups {
 constexpr uint64_t rook_north_ray(int square) {
   using namespace Const;
 
-  uint64_t attacks = 0ULL;
+  uint64_t ray = 0ULL;
   int rank = square / BOARD_WIDTH;
   int file = square % BOARD_WIDTH;
 
   for (int r = rank + 1; r < BOARD_WIDTH; ++r) {
-    attacks |= (1ULL << (file + r * BOARD_WIDTH));
+    ray |= (1ULL << (file + r * BOARD_WIDTH));
   }
-  return attacks;
+  return ray;
 }
 
 /**
@@ -41,14 +41,14 @@ constexpr uint64_t rook_north_ray(int square) {
 constexpr uint64_t rook_south_ray(int square) {
   using namespace Const;
 
-  uint64_t attacks = 0ULL;
+  uint64_t ray = 0ULL;
   int rank = square / BOARD_WIDTH;
   int file = square % BOARD_WIDTH;
 
   for (int r = rank - 1; r >= 0; --r) {
-    attacks |= (1ULL << (file + r * BOARD_WIDTH));
+    ray |= (1ULL << (file + r * BOARD_WIDTH));
   }
-  return attacks;
+  return ray;
 }
 
 /**
@@ -63,14 +63,14 @@ constexpr uint64_t rook_south_ray(int square) {
 constexpr uint64_t rook_east_ray(int square) {
   using namespace Const;
 
-  uint64_t attacks = 0ULL;
+  uint64_t ray = 0ULL;
   int rank = square / BOARD_WIDTH;
   int file = square % BOARD_WIDTH;
 
   for (int f = file + 1; f < BOARD_WIDTH; ++f) {
-    attacks |= (1ULL << (f + rank * BOARD_WIDTH));
+    ray |= (1ULL << (f + rank * BOARD_WIDTH));
   }
-  return attacks;
+  return ray;
 }
 
 /**
@@ -85,14 +85,14 @@ constexpr uint64_t rook_east_ray(int square) {
 constexpr uint64_t rook_west_ray(int square) {
   using namespace Const;
 
-  uint64_t attacks = 0ULL;
+  uint64_t ray = 0ULL;
   int rank = square / BOARD_WIDTH;
   int file = square % BOARD_WIDTH;
 
   for (int f = file - 1; f >= 0; --f) {
-    attacks |= (1ULL << (f + rank * BOARD_WIDTH));
+    ray |= (1ULL << (f + rank * BOARD_WIDTH));
   }
-  return attacks;
+  return ray;
 }
 
 /**
