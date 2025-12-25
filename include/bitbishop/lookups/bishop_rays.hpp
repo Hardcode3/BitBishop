@@ -1,4 +1,5 @@
 #pragma once
+
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
@@ -8,162 +9,196 @@
 namespace Lookups {
 
 /**
- * @brief Generates a bitboard of all squares a bishop can attack moving northeast from the given square.
- * @param square The square index (0-63).
- * @return Bitboard of all squares attacked by a bishop moving northeast.
- */
-constexpr uint64_t bishop_northeast_attacks(int square) {
-  using namespace Const;
-
-  uint64_t attacks = 0ULL;
-  int rank = square / BOARD_WIDTH;
-  int file = square % BOARD_WIDTH;
-  int index = 1;
-  while ((rank + index <= RANK_8_IND) && (file + index <= FILE_H_IND)) {
-    attacks |= (1ULL << ((file + index) + (rank + index) * BOARD_WIDTH));
-    ++index;
-  }
-  return attacks;
-}
-
-/**
- * @brief Generates a bitboard of all squares a bishop can attack moving northwest from the given square.
- * @param square The square index (0-63).
- * @return Bitboard of all squares attacked by a bishop moving northwest.
- */
-constexpr uint64_t bishop_northwest_attacks(int square) {
-  using namespace Const;
-
-  uint64_t attacks = 0ULL;
-  int rank = square / BOARD_WIDTH;
-  int file = square % BOARD_WIDTH;
-  int index = 1;
-  while ((rank + index <= RANK_8_IND) && (file - index >= FILE_A_IND)) {
-    attacks |= (1ULL << ((file - index) + (rank + index) * BOARD_WIDTH));
-    ++index;
-  }
-  return attacks;
-}
-
-/**
- * @brief Generates a bitboard of all squares a bishop can attack moving southeast from the given square.
- * @param square The square index (0-63).
- * @return Bitboard of all squares attacked by a bishop moving southeast.
- */
-constexpr uint64_t bishop_southeast_attacks(int square) {
-  using namespace Const;
-
-  uint64_t attacks = 0ULL;
-  int rank = square / BOARD_WIDTH;
-  int file = square % BOARD_WIDTH;
-  int index = 1;
-  while ((rank - index >= RANK_1_IND) && (file + index <= FILE_H_IND)) {
-    attacks |= (1ULL << ((file + index) + (rank - index) * BOARD_WIDTH));
-    ++index;
-  }
-  return attacks;
-}
-
-/**
- * @brief Generates a bitboard of all squares a bishop can attack moving southwest from the given square.
- * @param square The square index (0-63).
- * @return Bitboard of all squares attacked by a bishop moving southwest.
- */
-constexpr uint64_t bishop_southwest_attacks(int square) {
-  using namespace Const;
-
-  uint64_t attacks = 0ULL;
-  int rank = square / BOARD_WIDTH;
-  int file = square % BOARD_WIDTH;
-  int index = 1;
-  while ((rank - index >= RANK_1_IND) && (file - index >= FILE_A_IND)) {
-    attacks |= (1ULL << ((file - index) + (rank - index) * BOARD_WIDTH));
-    ++index;
-  }
-  return attacks;
-}
-
-/**
- * @brief Generates a bitboard of all squares a bishop can attack from the given square in all directions.
- * @param square The square index (0-63).
- * @return Bitboard of all squares attacked by a bishop from the given square.
- */
-constexpr uint64_t bishop_attacks_for_square(int square) {
-  return bishop_northeast_attacks(square) | bishop_northwest_attacks(square) | bishop_southeast_attacks(square) |
-         bishop_southwest_attacks(square);
-}
-
-/**
- * @brief Precomputed lookup table of bishop attacks for every square on the board.
+ * @brief Returns the full northeast diagonal ray from a square.
  *
- * Each entry is a bitboard of all squares a bishop can attack from the corresponding square.
- * Indexed by square (0-63).
+ * Computes all squares reachable by a bishop moving northeast from the given
+ * square, ignoring board occupancy. The ray extends until the edge of the board.
+ *
+ * This function is pure geometry and is intended for compile-time lookup
+ * generation.
+ *
+ * @param square The starting square index (0–63)
+ * @return Bitboard of all squares on the northeast diagonal from the square
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKS = []() constexpr {
-  // TODO: remove this function, not used anymore
-  // TODO: adapt the tests to use bishop attacks with directions instead
-  // BISHOP_NORTHEAST_ATTACKS, ...
+constexpr uint64_t bishop_northeast_ray(int square) {
+  using namespace Const;
+
+  uint64_t ray = 0ULL;
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  int index = 1;
+
+  while ((rank + index <= RANK_8_IND) && (file + index <= FILE_H_IND)) {
+    ray |= (1ULL << ((file + index) + (rank + index) * BOARD_WIDTH));
+    ++index;
+  }
+
+  return ray;
+}
+
+/**
+ * @brief Returns the full northwest diagonal ray from a square.
+ *
+ * Computes all squares reachable by a bishop moving northwest from the given
+ * square, ignoring board occupancy.
+ *
+ * @param square The starting square index (0–63)
+ * @return Bitboard of all squares on the northwest diagonal from the square
+ */
+constexpr uint64_t bishop_northwest_ray(int square) {
+  using namespace Const;
+
+  uint64_t ray = 0ULL;
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  int index = 1;
+
+  while ((rank + index <= RANK_8_IND) && (file - index >= FILE_A_IND)) {
+    ray |= (1ULL << ((file - index) + (rank + index) * BOARD_WIDTH));
+    ++index;
+  }
+
+  return ray;
+}
+
+/**
+ * @brief Returns the full southeast diagonal ray from a square.
+ *
+ * Computes all squares reachable by a bishop moving southeast from the given
+ * square, ignoring board occupancy.
+ *
+ * @param square The starting square index (0–63)
+ * @return Bitboard of all squares on the southeast diagonal from the square
+ */
+constexpr uint64_t bishop_southeast_ray(int square) {
+  using namespace Const;
+
+  uint64_t ray = 0ULL;
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  int index = 1;
+
+  while ((rank - index >= RANK_1_IND) && (file + index <= FILE_H_IND)) {
+    ray |= (1ULL << ((file + index) + (rank - index) * BOARD_WIDTH));
+    ++index;
+  }
+
+  return ray;
+}
+
+/**
+ * @brief Returns the full southwest diagonal ray from a square.
+ *
+ * Computes all squares reachable by a bishop moving southwest from the given
+ * square, ignoring board occupancy.
+ *
+ * @param square The starting square index (0–63)
+ * @return Bitboard of all squares on the southwest diagonal from the square
+ */
+constexpr uint64_t bishop_southwest_ray(int square) {
+  using namespace Const;
+
+  uint64_t ray = 0ULL;
+  int rank = square / BOARD_WIDTH;
+  int file = square % BOARD_WIDTH;
+  int index = 1;
+
+  while ((rank - index >= RANK_1_IND) && (file - index >= FILE_A_IND)) {
+    ray |= (1ULL << ((file - index) + (rank - index) * BOARD_WIDTH));
+    ++index;
+  }
+
+  return ray;
+}
+
+/**
+ * @brief Returns the union of all diagonal rays from a square.
+ *
+ * Combines the four diagonal rays (NE, NW, SE, SW) reachable by a bishop from
+ * the given square, ignoring board occupancy.
+ *
+ * @param square The starting square index (0–63)
+ * @return Bitboard of all diagonal ray squares from the square
+ */
+constexpr uint64_t bishop_rays_for_square(int square) {
+  return bishop_northeast_ray(square) | bishop_northwest_ray(square) | bishop_southeast_ray(square) |
+         bishop_southwest_ray(square);
+}
+
+/**
+ * @brief Precomputed lookup table of bishop diagonal rays.
+ *
+ * For each square, stores the union of all diagonal rays reachable by a bishop
+ * from that square, ignoring board occupancy.
+ *
+ * Indexed by square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() constexpr {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    table[sq] = Bitboard(bishop_attacks_for_square(sq));
+    table[sq] = Bitboard(bishop_rays_for_square(sq));
   }
   return table;
 }();
 
 /**
- * @brief Precomputed lookup table of bishop northeast attacks for every square.
- * Indexed by square (0-63).
+ * @brief Precomputed lookup table of bishop northeast diagonal rays.
+ *
+ * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_ATTACKS = []() constexpr {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() constexpr {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    table[sq] = Bitboard(bishop_northeast_attacks(sq));
+    table[sq] = Bitboard(bishop_northeast_ray(sq));
   }
   return table;
 }();
 
 /**
- * @brief Precomputed lookup table of bishop northwest attacks for every square.
- * Indexed by square (0-63).
+ * @brief Precomputed lookup table of bishop northwest diagonal rays.
+ *
+ * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_ATTACKS = []() constexpr {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() constexpr {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    table[sq] = Bitboard(bishop_northwest_attacks(sq));
+    table[sq] = Bitboard(bishop_northwest_ray(sq));
   }
   return table;
 }();
 
 /**
- * @brief Precomputed lookup table of bishop southeast attacks for every square.
- * Indexed by square (0-63).
+ * @brief Precomputed lookup table of bishop southeast diagonal rays.
+ *
+ * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_ATTACKS = []() constexpr {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() constexpr {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    table[sq] = Bitboard(bishop_southeast_attacks(sq));
+    table[sq] = Bitboard(bishop_southeast_ray(sq));
   }
   return table;
 }();
 
 /**
- * @brief Precomputed lookup table of bishop southwest attacks for every square.
- * Indexed by square (0-63).
+ * @brief Precomputed lookup table of bishop southwest diagonal rays.
+ *
+ * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_ATTACKS = []() constexpr {
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() constexpr {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    table[sq] = Bitboard(bishop_southwest_attacks(sq));
+    table[sq] = Bitboard(bishop_southwest_ray(sq));
   }
   return table;
 }();

@@ -41,40 +41,4 @@ void generate_pseudo_legal_moves(std::vector<Move>& moves, const Board& board, C
  */
 void add_rook_castling(std::vector<Move>& moves, Square from, Color side, const Board& board);
 
-/**
- * @brief Computes the north ray from a square, stopping at the first blocker.
- *
- * @param from The starting square
- * @param occupied Bitboard of all occupied squares on the board
- * @return Bitboard containing all squares occupied by friendly or enemy pieces
- */
-Bitboard north_ray(Square from, const Bitboard& occupied);
-
-/**
- * @brief Computes the south ray from a square, stopping at the first blocker.
- *
- * @param from The starting square
- * @param occupied Bitboard of all occupied squares on the board
- * @return Bitboard containing all squares occupied by friendly or enemy pieces
- */
-Bitboard south_ray(Square from, const Bitboard& occupied);
-
-/**
- * @brief Computes the east ray from a square, stopping at the first blocker.
- *
- * @param from The starting square
- * @param occupied Bitboard of all occupied squares on the board
- * @return Bitboard containing all squares occupied by friendly or enemy pieces
- */
-Bitboard east_ray(Square from, const Bitboard& occupied);
-
-/**
- * @brief Computes the west ray from a square, stopping at the first blocker.
- *
- * @param from The starting square
- * @param occupied Bitboard of all occupied squares on the board
- * @return Bitboard containing all squares occupied by friendly or enemy pieces
- */
-Bitboard west_ray(Square from, const Bitboard& occupied);
-
 };  // namespace RookMoveGenerator

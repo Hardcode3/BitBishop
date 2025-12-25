@@ -1,18 +1,19 @@
 #include <gtest/gtest.h>
 
+#include <bitbishop/attacks/bishop_attacks.hpp>
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
 #include <bitbishop/moves/bishop_move_gen.hpp>
 
 /**
- * @test BishopMoveGenerator::north_east_ray() with no blockers
- * @brief Verifies that north_east_ray returns all squares in the NE diagonal when unobstructed.
+ * @test bishop_north_east_attacks() with no blockers
+ * @brief Verifies that bishop_north_east_attacks returns all squares in the NE diagonal when unobstructed.
  */
 TEST(BishopMoveGeneratorTest, NorthEastRayNoBlockers) {
   Bitboard occupied;
   Square from = Squares::A1;  // Bottom-left corner
 
-  Bitboard result = BishopMoveGenerator::north_east_ray(from, occupied);
+  Bitboard result = bishop_north_east_attacks(from, occupied);
 
   // Should include: B2, C3, D4, E5, F6, G7, H8
   EXPECT_TRUE(result.test(Square::B2));
@@ -26,15 +27,15 @@ TEST(BishopMoveGeneratorTest, NorthEastRayNoBlockers) {
 }
 
 /**
- * @test BishopMoveGenerator::north_east_ray() with a blocker
- * @brief Verifies that north_east_ray stops at the first blocker (inclusive).
+ * @test bishop_north_east_attacks() with a blocker
+ * @brief Verifies that bishop_north_east_attacks stops at the first blocker (inclusive).
  */
 TEST(BishopMoveGeneratorTest, NorthEastRayWithBlocker) {
   Bitboard occupied;
   occupied.set(Square::D4);  // Blocker at D4
   Square from = Squares::A1;
 
-  Bitboard result = BishopMoveGenerator::north_east_ray(from, occupied);
+  Bitboard result = bishop_north_east_attacks(from, occupied);
 
   // Should include: B2, C3, D4 (blocker), but not E5, F6, G7, H8
   EXPECT_TRUE(result.test(Square::B2));
@@ -48,15 +49,15 @@ TEST(BishopMoveGeneratorTest, NorthEastRayWithBlocker) {
 }
 
 /**
- * @test BishopMoveGenerator::north_east_ray() with immediate blocker
- * @brief Verifies that north_east_ray handles a blocker on the first square.
+ * @test bishop_north_east_attacks() with immediate blocker
+ * @brief Verifies that bishop_north_east_attacks handles a blocker on the first square.
  */
 TEST(BishopMoveGeneratorTest, NorthEastRayWithImmediateBlocker) {
   Bitboard occupied;
   occupied.set(Square::B2);  // Immediate blocker
   Square from = Squares::A1;
 
-  Bitboard result = BishopMoveGenerator::north_east_ray(from, occupied);
+  Bitboard result = bishop_north_east_attacks(from, occupied);
 
   // Should only include B2
   EXPECT_TRUE(result.test(Square::B2));
@@ -65,14 +66,14 @@ TEST(BishopMoveGeneratorTest, NorthEastRayWithImmediateBlocker) {
 }
 
 /**
- * @test BishopMoveGenerator::north_east_ray() from center of board
- * @brief Verifies north_east_ray works correctly from a central square.
+ * @test bishop_north_east_attacks() from center of board
+ * @brief Verifies bishop_north_east_attacks works correctly from a central square.
  */
 TEST(BishopMoveGeneratorTest, NorthEastRayFromCenter) {
   Bitboard occupied;
   Square from = Squares::D4;
 
-  Bitboard result = BishopMoveGenerator::north_east_ray(from, occupied);
+  Bitboard result = bishop_north_east_attacks(from, occupied);
 
   // Should include: E5, F6, G7, H8
   EXPECT_TRUE(result.test(Square::E5));
@@ -83,7 +84,7 @@ TEST(BishopMoveGeneratorTest, NorthEastRayFromCenter) {
 }
 
 /**
- * @test BishopMoveGenerator::north_east_ray() with multiple blockers
+ * @test bishop_north_east_attacks() with multiple blockers
  * @brief Verifies that each ray function only stops at the FIRST blocker, not subsequent ones.
  */
 TEST(BishopMoveGeneratorTest, NorthEastRayStopAtFirstBlockerOnly) {
@@ -92,7 +93,7 @@ TEST(BishopMoveGeneratorTest, NorthEastRayStopAtFirstBlockerOnly) {
   occupied.set(Square::E5);  // Second blocker (should be ignored)
   Square from = Squares::A1;
 
-  Bitboard result = BishopMoveGenerator::north_east_ray(from, occupied);
+  Bitboard result = bishop_north_east_attacks(from, occupied);
 
   // Should include: B2, C3 (first blocker), but not D4, E5, F6, G7, H8
   EXPECT_TRUE(result.test(Square::B2));
@@ -103,7 +104,7 @@ TEST(BishopMoveGeneratorTest, NorthEastRayStopAtFirstBlockerOnly) {
 }
 
 /**
- * @test BishopMoveGenerator::north_east_ray() from edge squares
+ * @test bishop_north_east_attacks() from edge squares
  * @brief Verifies that ray functions return empty bitboards when starting from edge squares
  *        where no moves are possible in that direction.
  */
@@ -111,6 +112,6 @@ TEST(BishopMoveGeneratorTest, NorthEastRayFromEdgeSquares) {
   Bitboard occupied;
 
   // NE from H8 (top-right corner) - no squares available
-  Bitboard ne_result = BishopMoveGenerator::north_east_ray(Squares::H8, occupied);
+  Bitboard ne_result = bishop_north_east_attacks(Squares::H8, occupied);
   EXPECT_EQ(ne_result.count(), 0);
 }
