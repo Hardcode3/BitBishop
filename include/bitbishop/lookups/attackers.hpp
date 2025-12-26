@@ -15,7 +15,6 @@ constexpr Bitboard attackers_to(Square target, Color color) {
   const int square_index = target.value();
 
   Bitboard attackers;
-  attackers |= BISHOP_ATTACKER_RAYS[square_index];
   attackers |= KING_ATTACKERS[square_index];
   attackers |= KNIGHT_ATTACKERS[square_index];
 
@@ -25,8 +24,9 @@ constexpr Bitboard attackers_to(Square target, Color color) {
     attackers |= BLACK_PAWN_ATTACKERS[square_index];
   }
 
-  attackers |= QUEEN_ATTACKER_RAYS[square_index];
   attackers |= ROOK_ATTACKER_RAYS[square_index];
+  attackers |= BISHOP_ATTACKER_RAYS[square_index];
+  attackers |= QUEEN_ATTACKER_RAYS[square_index];
 
   return attackers;
 }
