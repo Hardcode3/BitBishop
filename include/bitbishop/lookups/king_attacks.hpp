@@ -58,4 +58,21 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = []() constexpr 
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of king attackers.
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a king could attack that square.
+ *
+ * King attack geometry:
+ * - Attacks are symmetric (attackers == attacks)
+ * - No directionality
+ * - Independent of board occupancy
+ *
+ * As a result, the king attacker table is identical to the king attack table.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKERS = KING_ATTACKS;
+
 }  // namespace Lookups

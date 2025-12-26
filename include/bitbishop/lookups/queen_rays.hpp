@@ -40,4 +40,22 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() constexpr {
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of queen attackers (composite ray-based).
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a queen could attack that square, assuming an empty board.
+ *
+ * Queen attack geometry:
+ * - Attacks are ray-based (diagonal + orthogonal directions)
+ * - Directional and not symmetric
+ * - Independent of board occupancy at this level
+ *
+ * Queen attackers are defined as the union of rook attackers and
+ * bishop attackers for the same target square.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
+
 }  // namespace Lookups

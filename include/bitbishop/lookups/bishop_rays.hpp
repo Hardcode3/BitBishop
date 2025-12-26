@@ -203,4 +203,22 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() c
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of bishop attackers (ray-based).
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a bishop could attack that square, assuming an empty board.
+ *
+ * Bishop attack geometry:
+ * - Attacks are ray-based (diagonal directions)
+ * - Directional and not symmetric
+ * - Independent of board occupancy at this level
+ *
+ * For sliding pieces, the set of potential attackers to a square is
+ * exactly the set of squares lying on the corresponding rays.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
+
 }  // namespace Lookups
