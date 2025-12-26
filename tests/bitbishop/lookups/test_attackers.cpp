@@ -11,8 +11,8 @@ TEST(AttackersToTest, CentralSquareHasAttackers) {
   Bitboard white_attackers = attackers_to(Squares::E4, Color::WHITE);
   Bitboard black_attackers = attackers_to(Squares::E4, Color::BLACK);
 
-  EXPECT_NE(white_attackers, 0ULL);
-  EXPECT_NE(black_attackers, 0ULL);
+  EXPECT_TRUE(white_attackers.any());
+  EXPECT_TRUE(black_attackers.any());
 }
 
 /**

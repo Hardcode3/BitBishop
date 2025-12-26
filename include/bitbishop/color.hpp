@@ -30,18 +30,18 @@ namespace ColorUtil {
  * This is primarily intended for indexing color-dependent lookup tables
  * and arrays.
  *
- * @param c The color to convert
+ * @param color The color to convert
  * @return 0 for Color::BLACK, 1 for Color::WHITE
  */
-constexpr std::size_t to_index(Color c) { return static_cast<std::size_t>(c); }
+constexpr std::size_t to_index(Color color) { return static_cast<std::size_t>(color); }
 
 /**
  * @brief Returns the opposite color.
  *
- * @param c The input color
- * @return Color::WHITE if c is Color::BLACK, otherwise Color::BLACK
+ * @param color The input color
+ * @return Color::WHITE if color is Color::BLACK, otherwise Color::BLACK
  */
-constexpr Color opposite(Color c) { return c == Color::WHITE ? Color::BLACK : Color::WHITE; }
+constexpr Color opposite(Color color) { return color == Color::WHITE ? Color::BLACK : Color::WHITE; }
 
 /**
  * @brief Returns all valid Color values.

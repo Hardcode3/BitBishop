@@ -35,10 +35,10 @@ constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()>
   using namespace Const;
 
   std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
-  for (Color c : ColorUtil::all()) {
-    const std::size_t ci = ColorUtil::to_index(c);
+  for (Color col : ColorUtil::all()) {
+    const std::size_t coli = ColorUtil::to_index(col);
     for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-      table[ci][sq] = Bitboard(attackers_to(Square(sq, std::in_place), c));
+      table[coli][sq] = Bitboard(attackers_to(Square(sq, std::in_place), col));
     }
   }
   return table;
