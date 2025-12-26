@@ -51,4 +51,21 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> KNIGHT_ATTACKS = []() constexp
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of knight attackers.
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a knight could attack that square.
+ *
+ * Knight attack geometry:
+ * - Attacks are symmetric (attackers == attacks)
+ * - No directionality
+ * - Independent of board occupancy
+ *
+ * As a result, the knight attacker table is identical to the knight attack table.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> KNIGHT_ATTACKERS = KNIGHT_ATTACKS;
+
 }  // namespace Lookups

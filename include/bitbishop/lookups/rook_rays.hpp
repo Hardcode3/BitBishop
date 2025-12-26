@@ -189,4 +189,22 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() constexp
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of rook attackers (ray-based).
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a rook could attack that square, assuming an empty board.
+ *
+ * Rook attack geometry:
+ * - Attacks are ray-based (orthogonal directions)
+ * - Directional and not symmetric
+ * - Independent of board occupancy at this level
+ *
+ * For sliding pieces, the set of potential attackers to a square is
+ * exactly the set of squares lying on the corresponding rays.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
+
 }  // namespace Lookups

@@ -131,4 +131,42 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() cons
   return table;
 }();
 
+/**
+ * @brief Precomputed bitboards of WHITE pawn attackers (reverse pawn attacks).
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a WHITE pawn could attack that square.
+ *
+ * Important notes about pawn attack geometry:
+ * - Pawn attacks are directional and asymmetric
+ * - Pawn attackers are NOT equal to pawn attacks from the same square
+ * - White pawn attackers are equivalent to black pawn attacks
+ *   when viewed from the target square
+ *
+ * This table is independent of board occupancy and contains only
+ * pure geometric information.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, 64> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
+
+/**
+ * @brief Precomputed bitboards of BLACK pawn attackers (reverse pawn attacks).
+ *
+ * For each target square, this table contains a bitboard of all squares
+ * from which a BLACK pawn could attack that square.
+ *
+ * Important notes about pawn attack geometry:
+ * - Pawn attacks are directional and asymmetric
+ * - Pawn attackers are NOT equal to pawn attacks from the same square
+ * - Black pawn attackers are equivalent to white pawn attacks
+ *   when viewed from the target square
+ *
+ * This table is independent of board occupancy and contains only
+ * pure geometric information.
+ *
+ * Indexed by target square (0–63).
+ */
+constexpr std::array<Bitboard, 64> BLACK_PAWN_ATTACKERS = WHITE_PAWN_ATTACKS;
+
 }  // namespace Lookups
