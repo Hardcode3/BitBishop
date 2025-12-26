@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <format>
 
 /**
@@ -7,6 +8,7 @@
  * This enumeration represents the two player colors in chess.
  * It is intentionally compact and suitable for use as an array index.
  *
+ * @see std::formatter<Color> for formatting support with std::format
  * @see ColorUtil for helper utilities operating on Color values
  */
 enum class Color : std::uint8_t {
