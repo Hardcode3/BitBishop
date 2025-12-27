@@ -52,6 +52,12 @@ class Bitboard {
   /** @brief Returns the raw 64-bit value of the bitboard. */
   [[nodiscard]] constexpr uint64_t value() const { return m_bb; }
 
+  /** @brief Returns a Bitboard instance with all bits set to zero. */
+  static constexpr Bitboard Zeros() noexcept { return {0ULL}; }
+
+  /** @brief Returns a Bitbaord instance with all bits set to one. */
+  static constexpr Bitboard Ones() noexcept { return {~0ULL}; }
+
   /**
    * @brief Sets a bit (places a piece) on a given square.
    *
@@ -70,6 +76,7 @@ class Bitboard {
    */
   constexpr void set(Square square) { m_bb |= (1ULL << square.value()); }
   constexpr void set(Square::Value square) { m_bb |= (1ULL << square); }
+  constexpr void set(std::uint8_t square) { m_bb |= (1ULL << square); }
 
   /**
    * @brief Clears a bit (removes a piece) on a given square.
@@ -89,6 +96,7 @@ class Bitboard {
    */
   constexpr void clear(Square square) { m_bb &= ~(1ULL << square.value()); }
   constexpr void clear(Square::Value square) { m_bb &= ~(1ULL << square); }
+  constexpr void clear(std::uint8_t square) { m_bb &= ~(1ULL << square); }
 
   /**
    * @brief Checks if a square is occupied.
@@ -108,6 +116,7 @@ class Bitboard {
    */
   [[nodiscard]] constexpr bool test(Square square) const { return ((m_bb >> square.value()) & 1ULL) != 0ULL; }
   [[nodiscard]] constexpr bool test(Square::Value square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
+  [[nodiscard]] constexpr bool test(std::uint8_t square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
 
   /** @brief Clears the whole bitboard (all bits = 0). */
   constexpr void reset() { m_bb = 0ULL; }
@@ -166,6 +175,15 @@ class Bitboard {
    * @note Equivalent to `cout() > 0` and `bool()`
    */
   [[nodiscard]] constexpr bool any() const noexcept { return m_bb != 0ULL; }
+
+  /**
+   * @brief Tells if the bitboard is empty / has no bit set.
+   *
+   * @return True if no bit is set on that bitboard.
+   *
+   * @note Equivalent to '!any()' or 'count() == 0'
+   */
+  [[nodiscard]] constexpr bool empty() const noexcept { return m_bb == 0ULL; }
 
   /**
    * @brief Removes and returns the least significant set bit (LSB) from the bitboard.
