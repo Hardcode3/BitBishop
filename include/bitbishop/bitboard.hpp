@@ -49,6 +49,9 @@ class Bitboard {
   /** @brief Constructs a bitboard from another bitboard by copy. */
   constexpr Bitboard(const Bitboard& bitboard) : m_bb(bitboard.value()) {}
 
+  /** @brief Constructs a bitboard with the given square being the only bit set to one. */
+  constexpr Bitboard(Square square) : m_bb(0ULL) { set(square); }
+
   /** @brief Returns the raw 64-bit value of the bitboard. */
   [[nodiscard]] constexpr uint64_t value() const { return m_bb; }
 
