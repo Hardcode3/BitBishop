@@ -17,6 +17,7 @@ namespace Lookups {
  * - +-9  for NE–SW diagonal movement
  * - +-7  for NW–SE diagonal movement
  * - 0    if source and destination square are identical
+ * - 0    if source and destination squares are not aligned
  *
  * This function assumes that the two squares are aligned. Its primary use
  * is internal traversal of rays when building geometric lookup tables such
@@ -72,9 +73,13 @@ constexpr Bitboard ray_between(Square from, Square to) {
     return Bitboard::Zeros();
   }
 
+  // Defensive check: if step is 0, squares aren't truly aligned
   const int step = direction(from, to);
-  Bitboard ray = Bitboard::Zeros();
+  if (step == 0) {
+    return Bitboard::Zeros();
+  }
 
+  Bitboard ray = Bitboard::Zeros();
   for (std::uint8_t square = from.value() + step; square != to.value(); square += step) {
     ray.set(square);
   }
