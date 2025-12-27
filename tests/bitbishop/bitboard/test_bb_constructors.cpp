@@ -93,3 +93,15 @@ TEST(BitboardTest, OnesStaticConstructor) {
   static_assert(bb.value() == (~0ULL), "Bitboard::Ones() static constructor must be constexpr");
   EXPECT_EQ(bb.value(), (~0ULL));
 }
+
+/**
+ * @test Bitboard(Square) constructor.
+ * @brief Verifies that the constructor can be evaluated at compile time.
+ */
+TEST(BitboardConstructorsTest, SquareConstructorIsConstexpr) {
+  constexpr Bitboard bb = Bitboard(Squares::A4);
+
+  static_assert(bb.test(Squares::A4) == true, "Bitboard(Square) must be constexpr");
+  EXPECT_TRUE(bb.test(Squares::A4));
+  EXPECT_EQ(bb.count(), 1);
+}

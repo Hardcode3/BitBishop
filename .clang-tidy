@@ -9,8 +9,8 @@ WarningsAsErrors: "*"
 
 CheckOptions:
   - key: readability-identifier-length.IgnoredVariableNames
-    value: "^(sq|to|from|bb|A[1-8]|B[1-8]|C[1-8]|D[1-8]|E[1-8]|F[1-8]|G[1-8]|H[1-8])$"
+    value: "^(sq|to|from|bb|us|A[1-8]|B[1-8]|C[1-8]|D[1-8]|E[1-8]|F[1-8]|G[1-8]|H[1-8])$"
   - key: readability-identifier-length.IgnoredParameterNames
-    value: "^(sq|to|from|bb)$"
+    value: "^(sq|to|from|bb|us)$"
   - key: readability-identifier-length.IgnoredLoopCounterNames
     value: "^(r|f)$"
