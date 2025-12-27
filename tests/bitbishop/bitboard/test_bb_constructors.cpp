@@ -71,3 +71,25 @@ TEST(BitboardTest, CopyConstructorIsConstexpr) {
   static_assert(cp.value() == 0x00000000000000FFULL, "Copy constructor must be constexpr");
   EXPECT_EQ(cp.value(), 0x00000000000000FFULL);
 }
+
+/**
+ * @test Static Bitboard::Zeros() constructor.
+ * @brief Verifies that the constructor can be evaluated at compile time.
+ */
+TEST(BitboardTest, ZerosStaticConstructor) {
+  constexpr Bitboard bb = Bitboard::Zeros();
+
+  static_assert(bb.value() == 0ULL, "Bitboard::Zeros() static constructor must be constexpr");
+  EXPECT_EQ(bb.value(), 0ULL);
+}
+
+/**
+ * @test Static Bitboard::Ones() constructor.
+ * @brief Verifies that the constructor can be evaluated at compile time.
+ */
+TEST(BitboardTest, OnesStaticConstructor) {
+  constexpr Bitboard bb = Bitboard::Ones();
+
+  static_assert(bb.value() == 1ULL, "Bitboard::Ones() static constructor must be constexpr");
+  EXPECT_EQ(bb.value(), 1ULL);
+}
