@@ -2,6 +2,8 @@
 
 #include <bitbishop/square.hpp>
 
+using namespace Squares;
+
 // --- Construction Tests ---
 
 /**
@@ -158,4 +160,140 @@ TEST(SquareTest, EnumValueMapping) {
   EXPECT_EQ(s1.rank(), 0);
   EXPECT_EQ(s2.file(), 7);
   EXPECT_EQ(s2.rank(), 7);
+}
+
+/**
+ * @test Same file detection for vertical alignment.
+ * @brief Confirms squares on the same file are detected correctly.
+ */
+TEST(SquareTest, SameFileVerticalAlignment) {
+  EXPECT_TRUE(A1.same_file(A8));
+  EXPECT_TRUE(E2.same_file(E7));
+  EXPECT_TRUE(H1.same_file(H4));
+  EXPECT_TRUE(D5.same_file(D5));
+}
+
+/**
+ * @test Different file detection.
+ * @brief Confirms squares on different files are detected correctly.
+ */
+TEST(SquareTest, SameFileDifferentFiles) {
+  EXPECT_FALSE(A1.same_file(B1));
+  EXPECT_FALSE(D4.same_file(E4));
+  EXPECT_FALSE(H8.same_file(A8));
+}
+
+/**
+ * @test Same rank detection for horizontal alignment.
+ * @brief Confirms squares on the same rank are detected correctly.
+ */
+TEST(SquareTest, SameRankHorizontalAlignment) {
+  EXPECT_TRUE(A1.same_rank(H1));
+  EXPECT_TRUE(B4.same_rank(G4));
+  EXPECT_TRUE(C8.same_rank(F8));
+  EXPECT_TRUE(D5.same_rank(D5));
+}
+
+/**
+ * @test Different rank detection.
+ * @brief Confirms squares on different ranks are detected correctly.
+ */
+TEST(SquareTest, SameRankDifferentRanks) {
+  EXPECT_FALSE(A1.same_rank(A2));
+  EXPECT_FALSE(E4.same_rank(E5));
+  EXPECT_FALSE(H1.same_rank(H8));
+}
+
+/**
+ * @test NE-SW diagonal alignment (file - rank constant).
+ * @brief Confirms squares on the same NE-SW diagonal are detected.
+ */
+TEST(SquareTest, SameNESWDiagonalAlignment) {
+  EXPECT_TRUE(A1.same_ne_sw_diag(B2));
+  EXPECT_TRUE(A1.same_ne_sw_diag(C3));
+  EXPECT_TRUE(A1.same_ne_sw_diag(H8));
+  EXPECT_TRUE(H8.same_ne_sw_diag(G7));
+  EXPECT_TRUE(D4.same_ne_sw_diag(E5));
+  EXPECT_TRUE(D4.same_ne_sw_diag(C3));
+  EXPECT_TRUE(E5.same_ne_sw_diag(E5));
+}
+
+/**
+ * @test NE-SW diagonal non-alignment.
+ * @brief Confirms squares not on the same NE-SW diagonal are detected.
+ */
+TEST(SquareTest, SameNESWDiagonalNonAlignment) {
+  EXPECT_FALSE(A1.same_ne_sw_diag(A8));
+  EXPECT_FALSE(D4.same_ne_sw_diag(D5));
+  EXPECT_FALSE(E4.same_ne_sw_diag(D5));
+}
+
+/**
+ * @test NW-SE diagonal alignment (file + rank constant).
+ * @brief Confirms squares on the same NW-SE diagonal are detected.
+ */
+TEST(SquareTest, SameNWSEDiagonalAlignment) {
+  EXPECT_TRUE(A8.same_nw_se_diag(B7));
+  EXPECT_TRUE(A8.same_nw_se_diag(H1));
+  EXPECT_TRUE(H1.same_nw_se_diag(G2));
+  EXPECT_TRUE(D4.same_nw_se_diag(E3));
+  EXPECT_TRUE(D4.same_nw_se_diag(C5));
+  EXPECT_TRUE(D4.same_nw_se_diag(B6));
+  EXPECT_TRUE(E5.same_nw_se_diag(E5));
+}
+
+/**
+ * @test NW-SE diagonal non-alignment.
+ * @brief Confirms squares not on the same NW-SE diagonal are detected.
+ */
+TEST(SquareTest, SameNWSEDiagonalNonAlignment) {
+  EXPECT_FALSE(A1.same_nw_se_diag(H8));
+  EXPECT_FALSE(D4.same_nw_se_diag(D5));
+  EXPECT_FALSE(E4.same_nw_se_diag(D3));
+}
+
+/**
+ * @test General diagonal alignment (any diagonal).
+ * @brief Confirms squares on either NE-SW or NW-SE diagonals are detected.
+ */
+TEST(SquareTest, SameDiagonalAnyAlignment) {
+  EXPECT_TRUE(A1.same_diag(H8));
+  EXPECT_TRUE(D4.same_diag(E5));
+  EXPECT_TRUE(A8.same_diag(H1));
+  EXPECT_TRUE(D4.same_diag(C5));
+  EXPECT_TRUE(E3.same_diag(B6));
+  EXPECT_TRUE(D5.same_diag(D5));
+}
+
+/**
+ * @test General diagonal non-alignment.
+ * @brief Confirms squares on neither diagonal type are detected.
+ */
+TEST(SquareTest, SameDiagonalNoAlignment) {
+  EXPECT_FALSE(A1.same_diag(A8));
+  EXPECT_FALSE(A1.same_diag(H1));
+  EXPECT_FALSE(D4.same_diag(D5));
+  EXPECT_FALSE(E4.same_diag(F6));
+}
+
+/**
+ * @test Edge case: corner squares on main diagonals.
+ * @brief Confirms A1-H8 and A8-H1 diagonal relationships.
+ */
+TEST(SquareTest, SameDiagonalCornerSquares) {
+  EXPECT_TRUE(A1.same_ne_sw_diag(H8));
+  EXPECT_TRUE(A8.same_nw_se_diag(H1));
+  EXPECT_FALSE(A1.same_ne_sw_diag(H1));
+  EXPECT_FALSE(A8.same_ne_sw_diag(H1));
+}
+
+/**
+ * @test Edge case: single square files and ranks.
+ * @brief Confirms edge squares correctly identify alignment.
+ */
+TEST(SquareTest, SameFileRankEdgeCases) {
+  EXPECT_TRUE(A1.same_file(A1));
+  EXPECT_TRUE(A1.same_rank(A1));
+  EXPECT_TRUE(H8.same_file(H1));
+  EXPECT_TRUE(H8.same_rank(A8));
 }
