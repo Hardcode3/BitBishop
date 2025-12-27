@@ -16,8 +16,8 @@ Bitboard compute_check_mask(Square king_sq, const Bitboard& checkers, const Boar
       board.knights(Color::WHITE) | board.knights(Color::BLACK) | board.pawns(Color::WHITE) | board.pawns(Color::BLACK);
   const bool is_knight_or_pawn = knights_and_pawns.test(checker_sq);
   if (is_knight_or_pawn) {
-    return Bitboard(checker_sq.value());
+    return checkers;
   }
 
-  return Lookups::ray_between(checker_sq, king_sq) | Bitboard(checker_sq.value());
+  return Lookups::ray_between(checker_sq, king_sq) | checkers;
 }

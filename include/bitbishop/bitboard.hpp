@@ -53,10 +53,10 @@ class Bitboard {
   [[nodiscard]] constexpr uint64_t value() const { return m_bb; }
 
   /** @brief Returns a Bitboard instance with all bits set to zero. */
-  static constexpr Bitboard Zeros() noexcept { return Bitboard(0ULL); }
+  static constexpr Bitboard Zeros() noexcept { return {0ULL}; }
 
   /** @brief Returns a Bitbaord instance with all bits set to one. */
-  static constexpr Bitboard Ones() noexcept { return Bitboard(1ULL); }
+  static constexpr Bitboard Ones() noexcept { return {~0ULL}; }
 
   /**
    * @brief Sets a bit (places a piece) on a given square.

@@ -16,6 +16,7 @@ namespace Lookups {
  * - +-8  for vertical movement (same file)
  * - +-9  for NE–SW diagonal movement
  * - +-7  for NW–SE diagonal movement
+ * - 0    if source and destination square are identical
  *
  * This function assumes that the two squares are aligned. Its primary use
  * is internal traversal of rays when building geometric lookup tables such
@@ -26,10 +27,23 @@ namespace Lookups {
  * @return The signed step value to advance one square toward @p to.
  */
 constexpr int direction(Square from, Square to) {
-  if (from.same_rank(to)) return (to.value() > from.value()) ? +1 : -1;
-  if (from.same_file(to)) return (to.value() > from.value()) ? +8 : -8;
-  if (from.same_ne_sw_diag(to)) return (to.value() > from.value()) ? +9 : -9;
-  return (to.value() > from.value()) ? +7 : -7;
+  if (from == to) {
+    return 0;
+  }
+  if (from.same_rank(to)) {
+    return (to.file() > from.file()) ? +1 : -1;
+  }
+  if (from.same_file(to)) {
+    return (to.rank() > from.rank()) ? +Const::BOARD_WIDTH : -Const::BOARD_WIDTH;
+  }
+  if (from.same_ne_sw_diag(to)) {
+    return (to.rank() > from.rank()) ? +(Const::BOARD_WIDTH + 1) : -(Const::BOARD_WIDTH + 1);
+  }
+  if (from.same_nw_se_diag(to)) {
+    return (to.rank() > from.rank()) ? +(Const::BOARD_WIDTH - 1) : -(Const::BOARD_WIDTH - 1);
+  }
+
+  return 0;
 }
 
 /**
@@ -50,14 +64,20 @@ constexpr int direction(Square from, Square to) {
  * @return A bitboard of squares strictly between @p from and @p to.
  */
 constexpr Bitboard ray_between(Square from, Square to) {
-  if (from == to) return Bitboard::Zeros();
+  if (from == to) {
+    return Bitboard::Zeros();
+  }
 
-  if (!(from.same_file(to) || from.same_rank(to) || from.same_diag(to))) return Bitboard::Zeros();
+  if (!(from.same_file(to) || from.same_rank(to) || from.same_diag(to))) {
+    return Bitboard::Zeros();
+  }
 
   const int step = direction(from, to);
   Bitboard ray = Bitboard::Zeros();
 
-  for (std::uint8_t square = from.value() + step; square != to.value(); square += step) ray.set(square);
+  for (std::uint8_t square = from.value() + step; square != to.value(); square += step) {
+    ray.set(square);
+  }
 
   return ray;
 }

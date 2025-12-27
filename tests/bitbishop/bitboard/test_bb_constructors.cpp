@@ -90,6 +90,6 @@ TEST(BitboardTest, ZerosStaticConstructor) {
 TEST(BitboardTest, OnesStaticConstructor) {
   constexpr Bitboard bb = Bitboard::Ones();
 
-  static_assert(bb.value() == 1ULL, "Bitboard::Ones() static constructor must be constexpr");
-  EXPECT_EQ(bb.value(), 1ULL);
+  static_assert(bb.value() == (~0ULL), "Bitboard::Ones() static constructor must be constexpr");
+  EXPECT_EQ(bb.value(), (~0ULL));
 }
