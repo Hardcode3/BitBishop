@@ -4,7 +4,7 @@ message(STATUS "> Found src/bitbishop directory")
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
 # Define the library target name and source folder
-set(target_name ChessEngineLib)
+set(target_name Bitbishop)
 set(target_folder_name bitbishop)
 
 # Search and list all .cpp files in the source folder
@@ -54,7 +54,7 @@ target_include_directories(${target_name}
 )
 
 # Define the folder in the IDE where the target will appear
-set_property(TARGET ${target_name} PROPERTY FOLDER ChessEngineLib)
+set_property(TARGET ${target_name} PROPERTY FOLDER Bitbishop)
 
 # Library packaging section
 
