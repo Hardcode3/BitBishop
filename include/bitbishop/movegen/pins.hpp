@@ -11,7 +11,7 @@
  * Distinguishes between rook-like and bishop-like rays,
  * determining which enemy sliders can produce a pin.
  */
-enum class RayType {
+enum class RayType : std::uint8_t {
   ROOK,   ///< Orthogonal rays (rook / queen)
   BISHOP  ///< Diagonal rays (bishop / queen)
 };
@@ -22,7 +22,7 @@ enum class RayType {
  * Used to determine ray orientation and correct blocker ordering
  * (LSB vs MSB) when scanning occupied squares.
  */
-enum class RayDir {
+enum class RayDir : std::uint8_t {
   N,
   S,
   E,
@@ -55,7 +55,7 @@ struct PinRay {
    * @param bb Bitboard of occupied squares along the ray
    * @return Square of the closest blocker to the king
    */
-  [[nodiscard]] Square first_blocker(Bitboard bb) const {
+  [[nodiscard]] Square first_blocker(const Bitboard& bb) const {
     switch (dir) {
       case RayDir::N:
       case RayDir::NE:
@@ -78,7 +78,7 @@ struct PinRay {
    * @param them Enemy color
    * @return true if the piece can create a pin along this ray
    */
-  [[nodiscard]] bool matches_slider(Bitboard piece, const Board& board, Color them) const {
+  [[nodiscard]] bool matches_slider(const Bitboard& piece, const Board& board, Color them) const {
     return (type == RayType::BISHOP) ? (piece & (board.bishops(them) | board.queens(them)))
                                      : (piece & (board.rooks(them) | board.queens(them)));
   }
