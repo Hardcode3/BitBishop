@@ -152,6 +152,70 @@ class Square {
   }
 
   /**
+   * @brief Tells if two squares lays on the same file.
+   * @return True if two squares lays on the same file, false otherwise.
+   */
+  [[nodiscard]] constexpr bool same_file(const Square& other) const { return this->file() == other.file(); }
+
+  /**
+   * @brief Tells if two squares lays on the same rank.
+   * @return True if two squares lays on the same rank, false otherwise.
+   */
+  [[nodiscard]] constexpr bool same_rank(const Square& other) const { return this->rank() == other.rank(); }
+
+  /**
+   * @brief Checks whether this square lies on the same NE–SW diagonal as another square.
+   *
+   * Two squares are aligned on a NE–SW diagonal if the difference between their
+   * file and rank coordinates is identical. Along such a diagonal, (file − rank)
+   * remains constant.
+   *
+   * This diagonal orientation corresponds to bishop movement in the NE–SW direction
+   * and is commonly used when computing diagonal attacks, pins, and interposition
+   * rays.
+   *
+   * @param other The square to compare against.
+   * @return true if both squares share the same NE–SW diagonal, false otherwise.
+   */
+  [[nodiscard]] constexpr bool same_ne_sw_diag(const Square& other) const {
+    return (this->file() - this->rank()) == (other.file() - other.rank());
+  }
+
+  /**
+   * @brief Checks whether this square lies on the same NW–SE diagonal as another square.
+   *
+   * Two squares are aligned on a NW–SE diagonal if the sum of their file and rank
+   * coordinates is identical. Along such a diagonal, (file + rank) remains constant.
+   *
+   * This diagonal orientation corresponds to bishop movement in the NW–SE direction
+   * and is commonly used when computing diagonal attacks, pins, and interposition
+   * rays.
+   *
+   * @param other The square to compare against.
+   * @return true if both squares share the same NW–SE diagonal, false otherwise.
+   */
+  [[nodiscard]] constexpr bool same_nw_se_diag(const Square& other) const {
+    return (this->file() + this->rank()) == (other.file() + other.rank());
+  }
+
+  /**
+   * @brief Checks whether this square lies on the same diagonal as another square.
+   *
+   * Two squares are on the same diagonal if they share either:
+   * - the same NE–SW diagonal, or
+   * - the same NW–SE diagonal.
+   *
+   * This geometric property is used to determine bishop and queen alignment,
+   * detect pins, compute interposition rays, and build diagonal attack lookups.
+   *
+   * @param other The square to compare against.
+   * @return true if both squares are aligned on a common diagonal, false otherwise.
+   */
+  [[nodiscard]] constexpr bool same_diag(const Square& other) const {
+    return same_ne_sw_diag(other) || same_nw_se_diag(other);
+  }
+
+  /**
    * @brief Convert the square to algebraic notation.
    * @return Lowercase string like "a1", "e4", "h8".
    */
