@@ -63,6 +63,8 @@ class Board {
    */
   Board(const std::string& fen);
 
+  [[nodiscard]] static Board Empty() noexcept { return Board("8/8/8/8/8/8/8/8 w KQkq - 0 1"); }
+
   /**
    * @brief Retrieves the piece on a given square.
    * @param square The square to query.
