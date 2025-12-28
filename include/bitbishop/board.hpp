@@ -67,7 +67,7 @@ class Board {
     return {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
   }
 
-  [[nodiscard]] static Board Empty() noexcept { return {"8/8/8/8/8/8/8/8 w KQkq - 0 1"}; }
+  [[nodiscard]] static Board Empty() noexcept { return {"8/8/8/8/8/8/8/8 b - - 0 1"}; }
 
   /**
    * @brief Retrieves the piece on a given square.
