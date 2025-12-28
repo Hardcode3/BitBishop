@@ -98,10 +98,19 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKS = []() cons
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
     uint64_t bitboard = 1ULL << sq;
     uint64_t attacks = 0;
-    if (sq / BOARD_WIDTH < RANK_8_IND) {           // rank 1..7
-      attacks |= (bitboard << (BOARD_WIDTH - 1));  // NW
-      attacks |= (bitboard << (BOARD_WIDTH + 1));  // NE
+
+    const int rank = sq / BOARD_WIDTH;
+    const int file = sq % BOARD_WIDTH;
+
+    if (rank < RANK_8_IND) {
+      if (file > FILE_A_IND) {
+        attacks |= (bitboard << (BOARD_WIDTH - 1));  // NW
+      }
+      if (file < FILE_H_IND) {
+        attacks |= (bitboard << (BOARD_WIDTH + 1));  // NE
+      }
     }
+
     table[sq] = Bitboard(attacks);
   }
   return table;
@@ -115,19 +124,28 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKS = []() cons
  */
 constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() constexpr {
   using namespace Const;
-  using namespace Bitmasks;
 
   std::array<Bitboard, BOARD_SIZE> table{};
 
   for (int sq = 0; sq < BOARD_SIZE; ++sq) {
-    uint64_t bitboard = 1ULL << sq;
+    uint64_t bb = 1ULL << sq;
     uint64_t attacks = 0;
-    if (sq / BOARD_WIDTH > RANK_1_IND) {           // rank 2..8
-      attacks |= (bitboard >> (BOARD_WIDTH + 1));  // SW
-      attacks |= (bitboard >> (BOARD_WIDTH - 1));  // SE
+
+    const int rank = sq / BOARD_WIDTH;
+    const int file = sq % BOARD_WIDTH;
+
+    if (rank > RANK_1_IND) {
+      if (file > FILE_A_IND) {
+        attacks |= bb >> (BOARD_WIDTH + 1);  // SW
+      }
+      if (file < FILE_H_IND) {
+        attacks |= bb >> (BOARD_WIDTH - 1);  // SE
+      }
     }
+
     table[sq] = Bitboard(attacks);
   }
+
   return table;
 }();
 

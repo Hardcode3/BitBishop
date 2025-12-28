@@ -73,3 +73,47 @@ TEST(PawnAttackTest, BlackPawnAttacksFromE5) {
 
   EXPECT_EQ(BLACK_PAWN_ATTACKS[Square::E5], expected);
 }
+
+/**
+ * @test White pawn attacks from an H4 edge square
+ * Expected: No wrapping, single attack
+ */
+TEST(PawnAttackTest, WhitePawnAttacksFromH4) {
+  Bitboard expected;
+  expected.set(Square::G5);
+
+  EXPECT_EQ(WHITE_PAWN_ATTACKS[Square::H4], expected);
+}
+
+/**
+ * @test Black pawn attacks from H4 edge square
+ * Expected: No wrapping, single attack
+ */
+TEST(PawnAttackTest, BlackPawnAttacksFromH4) {
+  Bitboard expected;
+  expected.set(Square::G3);
+
+  EXPECT_EQ(BLACK_PAWN_ATTACKS[Square::H4], expected);
+}
+
+/**
+ * @test White pawn attacks from an A5 edge square
+ * Expected: No wrapping, single attack
+ */
+TEST(PawnAttackTest, WhitePawnAttacksFromA5) {
+  Bitboard expected;
+  expected.set(Square::B6);
+
+  EXPECT_EQ(WHITE_PAWN_ATTACKS[Square::A5], expected);
+}
+
+/**
+ * @test Black pawn attacks from A5 edge square
+ * Expected: No wrapping, single attack
+ */
+TEST(PawnAttackTest, BlackPawnAttacksFromA5) {
+  Bitboard expected;
+  expected.set(Square::B4);
+
+  EXPECT_EQ(BLACK_PAWN_ATTACKS[Square::A5], expected);
+}
