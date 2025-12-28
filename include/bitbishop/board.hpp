@@ -1,4 +1,5 @@
 #pragma once
+
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/color.hpp>
 #include <bitbishop/piece.hpp>

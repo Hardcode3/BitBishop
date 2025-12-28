@@ -1,3 +1,5 @@
+#pragma once
+
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/lookups/between_squares.hpp>
