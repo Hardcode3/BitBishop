@@ -1,3 +1,5 @@
+#pragma once
+
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
 #include <bitbishop/lookups/king_attacks.hpp>

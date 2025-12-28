@@ -1,4 +1,5 @@
 #pragma once
+
 #include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
 #include <format>

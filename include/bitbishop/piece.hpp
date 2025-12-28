@@ -1,4 +1,5 @@
 #pragma once
+
 #include <bitbishop/color.hpp>
 #include <cctype>
 #include <format>
