@@ -21,8 +21,8 @@
  * @return Number of moves matching the predicate.
  */
 template <typename Pred>
-int count_if(const std::vector<Move>& moves, Pred pred) {
-  return std::count_if(moves.begin(), moves.end(), pred);
+std::size_t count_if(const std::vector<Move>& moves, Pred pred) {
+  return static_cast<std::size_t>(std::count_if(moves.begin(), moves.end(), pred));
 }
 
 /**
@@ -95,49 +95,49 @@ bool has_valid_move_flags(const std::vector<Move>& moves) {
 /**
  * @brief Counts moves originating from a given square.
  */
-int count_moves_from(const std::vector<Move>& moves, Square from) {
+std::size_t count_moves_from(const std::vector<Move>& moves, Square from) {
   return count_if(moves, [&](const Move& m) { return m.from == from; });
 }
 
 /**
  * @brief Counts moves targeting a given square.
  */
-int count_moves_to(const std::vector<Move>& moves, Square to) {
+std::size_t count_moves_to(const std::vector<Move>& moves, Square to) {
   return count_if(moves, [&](const Move& m) { return m.to == to; });
 }
 
 /**
  * @brief Counts all capture moves (including en passant).
  */
-int count_captures(const std::vector<Move>& moves) {
+std::size_t count_captures(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.is_capture; });
 }
 
 /**
  * @brief Counts normal captures (excluding en passant).
  */
-int count_regular_captures(const std::vector<Move>& moves) {
+std::size_t count_regular_captures(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.is_capture && !m.is_en_passant; });
 }
 
 /**
  * @brief Counts en passant captures.
  */
-int count_en_passant(const std::vector<Move>& moves) {
+std::size_t count_en_passant(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.is_en_passant; });
 }
 
 /**
  * @brief Counts all castling moves.
  */
-int count_castling(const std::vector<Move>& moves) {
+std::size_t count_castling(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.is_castling; });
 }
 
 /**
  * @brief Counts promotions of any type.
  */
-int count_promotions(const std::vector<Move>& moves) {
+std::size_t count_promotions(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.promotion.has_value(); });
 }
 
@@ -145,28 +145,28 @@ int count_promotions(const std::vector<Move>& moves) {
  * @brief Counts promotions to a specific piece type.
  * @param piece Piece type and color to match.
  */
-int count_promotions_to(const std::vector<Move>& moves, const Piece& piece) {
+std::size_t count_promotions_to(const std::vector<Move>& moves, const Piece& piece) {
   return count_if(moves, [&](const Move& m) { return m.promotion.has_value() && m.promotion.value() == piece; });
 }
 
 /**
  * @brief Counts promotions that also capture.
  */
-int count_promotion_captures(const std::vector<Move>& moves) {
+std::size_t count_promotion_captures(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.promotion.has_value() && m.is_capture; });
 }
 
 /**
  * @brief Counts promotions that are not captures.
  */
-int count_quiet_promotions(const std::vector<Move>& moves) {
+std::size_t count_quiet_promotions(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) { return m.promotion.has_value() && !m.is_capture; });
 }
 
 /**
  * @brief Counts quiet moves (non-capture, non-promotion, non-castling).
  */
-int count_quiet_moves(const std::vector<Move>& moves) {
+std::size_t count_quiet_moves(const std::vector<Move>& moves) {
   return count_if(moves, [](const Move& m) {
     return !m.is_capture && !m.is_castling && !m.is_en_passant && !m.promotion.has_value();
   });
@@ -175,7 +175,7 @@ int count_quiet_moves(const std::vector<Move>& moves) {
 /**
  * @brief Counts kingside castling moves for the king for the given side.
  */
-int count_king_kingside_castling(const std::vector<Move>& moves, Color side) {
+std::size_t count_king_kingside_castling(const std::vector<Move>& moves, Color side) {
   Square from = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
   Square target = (side == Color::WHITE) ? Squares::G1 : Squares::G8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
@@ -184,7 +184,7 @@ int count_king_kingside_castling(const std::vector<Move>& moves, Color side) {
 /**
  * @brief Counts queenside castling moves for the king for the given side.
  */
-int count_king_queenside_castling(const std::vector<Move>& moves, Color side) {
+std::size_t count_king_queenside_castling(const std::vector<Move>& moves, Color side) {
   Square from = (side == Color::WHITE) ? Squares::E1 : Squares::E8;
   Square target = (side == Color::WHITE) ? Squares::C1 : Squares::C8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
@@ -193,7 +193,7 @@ int count_king_queenside_castling(const std::vector<Move>& moves, Color side) {
 /**
  * @brief Counts kingside castling moves for the rook for the given side.
  */
-int count_rook_kingside_castling(const std::vector<Move>& moves, Color side) {
+std::size_t count_rook_kingside_castling(const std::vector<Move>& moves, Color side) {
   Square from = (side == Color::WHITE) ? Squares::H1 : Squares::H8;
   Square target = (side == Color::WHITE) ? Squares::F1 : Squares::F8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
@@ -202,7 +202,7 @@ int count_rook_kingside_castling(const std::vector<Move>& moves, Color side) {
 /**
  * @brief Counts queenside castling moves for the rook for the given side.
  */
-int count_rook_queenside_castling(const std::vector<Move>& moves, Color side) {
+std::size_t count_rook_queenside_castling(const std::vector<Move>& moves, Color side) {
   Square from = (side == Color::WHITE) ? Squares::A1 : Squares::A8;
   Square target = (side == Color::WHITE) ? Squares::D1 : Squares::D8;
   return count_if(moves, [&](const Move& m) { return m.is_castling && m.to == target && m.from == from; });
