@@ -63,6 +63,10 @@ class Board {
    */
   Board(const std::string& fen);
 
+  [[nodiscard]] static Board StartingPosition() noexcept {
+    return {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+  }
+
   [[nodiscard]] static Board Empty() noexcept { return {"8/8/8/8/8/8/8/8 w KQkq - 0 1"}; }
 
   /**
