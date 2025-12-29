@@ -19,6 +19,7 @@
     {
       "name": "clang_debug",
       "inherits": "default",
+      "generator": "Ninja",
       "description": "Debug build with debug symbols and no optimizations",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -28,6 +29,7 @@
     {
       "name": "clang_release",
       "inherits": "default",
+      "generator": "Ninja",
       "description": "Release build with optimizations",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
