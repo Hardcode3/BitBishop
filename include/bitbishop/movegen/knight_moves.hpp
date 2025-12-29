@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+// pinned knights cannot move at all due to knight's l-shaped move geometry
 void generate_knight_legal_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& check_mask,
                                  const PinResult& pins) {
   const Bitboard own = board.friendly(us);
