@@ -102,98 +102,107 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
   }
 }
 
+inline void generate_single_push(std::vector<Move>& moves, Square from, Color us, const Bitboard& occupied,
+                                 const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const auto& single_push = Lookups::PAWN_SINGLE_PUSH[ColorUtil::to_index(us)];
+
+  Bitboard bb = single_push[from.flat_index()];
+  bb &= ~occupied;
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  if (bb) {
+    Square to = bb.pop_lsb().value();
+    if (is_promotion_rank(to, us)) {
+      add_pawn_promotions(moves, from, to, us, false);
+    } else {
+      moves.emplace_back(from, to, std::nullopt, false, false, false);
+    }
+  }
+}
+
+inline void generate_captures(std::vector<Move>& moves, Square from, Color us, const Bitboard& enemy,
+                              const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const auto& captures = Lookups::PAWN_ATTACKS[ColorUtil::to_index(us)];
+
+  Bitboard bb = captures[from.flat_index()];
+  bb &= enemy;
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  for (Square to : bb) {
+    if (is_promotion_rank(to, us)) {
+      add_pawn_promotions(moves, from, to, us, true);
+    } else {
+      moves.emplace_back(from, to, std::nullopt, true, false, false);
+    }
+  }
+}
+
+inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us, const Board& board, Square king_sq,
+                                const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const std::optional<Square> epsq_opt = board.en_passant_square();
+
+  if (!epsq_opt || !can_capture_en_passant(from, epsq_opt.value(), us)) {
+    return;
+  }
+
+  Square epsq = epsq_opt.value();
+  auto bb = Bitboard(epsq);
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  if (!bb) {
+    return;
+  }
+
+  Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
+                                       : Square(epsq.flat_index() + Const::BOARD_WIDTH);
+
+  Board tmp(board);
+  tmp.remove_piece(cap_sq);
+  tmp.move_piece(from, epsq);
+
+  if (!attackers_to(king_sq, us)) {
+    moves.emplace_back(from, epsq, std::nullopt, true, true, false);
+  }
+}
+
+inline void generate_double_push(std::vector<Move>& moves, Square from, Color us, const Bitboard& occupied,
+                                 const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const auto& single_push = Lookups::PAWN_SINGLE_PUSH[ColorUtil::to_index(us)];
+  const auto& double_push = Lookups::PAWN_DOUBLE_PUSH[ColorUtil::to_index(us)];
+
+  if (!is_starting_rank(from, us)) {
+    return;
+  }
+
+  Bitboard bb = double_push[from.flat_index()];
+  bb &= ~occupied;
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  Bitboard single_bb = single_push[from.flat_index()] & occupied;
+  if (single_bb.empty() && bb) {
+    Square to = bb.pop_lsb().value();
+    moves.emplace_back(from, to, std::nullopt, false, false, false);
+  }
+}
+
 void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
                                const Bitboard& check_mask, const PinResult& pins) {
-  using namespace Lookups;
-
-  const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();
   Bitboard pawns = board.pawns(us);
 
-  const auto& single_push = PAWN_SINGLE_PUSH[ColorUtil::to_index(us)];
-  const auto& double_push = PAWN_DOUBLE_PUSH[ColorUtil::to_index(us)];
-  const auto& captures = PAWN_ATTACKS[ColorUtil::to_index(us)];
-
-  const std::optional<Square> epsq_opt = board.en_passant_square();
-
-  // warning: this loop is destructive on Bitboard pawns
   while (auto from_sq = pawns.pop_lsb()) {
     Square from = from_sq.value();
     const bool is_pinned = pins.pinned.test(from);
-    const Bitboard pin_mask = is_pinned ? pins.pin_ray[from.value()] : Bitboard::Ones();
+    const Bitboard pin_mask = is_pinned ? pins.pin_ray[from.flat_index()] : Bitboard::Ones();
 
-    // Single push
-    {
-      Bitboard single_push_bb = single_push[from.value()];
-      single_push_bb &= ~occupied;
-      single_push_bb &= check_mask;
-      single_push_bb &= pin_mask;
-
-      if (single_push_bb) {
-        Square to = single_push_bb.pop_lsb().value();
-
-        if (is_promotion_rank(to, us)) {
-          add_pawn_promotions(moves, from, to, us, false);
-        } else {
-          moves.emplace_back(from, to, std::nullopt, false, false, false);
-        }
-      }
-    }
-
-    // Double push
-    {
-      if (is_starting_rank(from, us)) {
-        Bitboard double_push_bb = double_push[from.value()];
-        double_push_bb &= ~occupied;
-        double_push_bb &= check_mask;
-        double_push_bb &= pin_mask;
-
-        Bitboard single_push_bb = single_push[from.value()];
-        single_push_bb &= occupied;
-
-        if (single_push_bb.empty() && double_push_bb) {
-          Square to = double_push_bb.pop_lsb().value();
-          moves.emplace_back(from, to, std::nullopt, false, false, false);
-        }
-      }
-    }
-
-    // Captures
-    {
-      Bitboard captures_bb = captures[from.value()];
-      captures_bb &= enemy;
-      captures_bb &= check_mask;
-      captures_bb &= pin_mask;
-
-      for (Square to : captures_bb) {
-        if (is_promotion_rank(to, us)) {
-          add_pawn_promotions(moves, from, to, us, true);
-        } else {
-          moves.emplace_back(from, to, std::nullopt, true, false, false);
-        }
-      }
-    }
-
-    // En passant
-    if (epsq_opt && can_capture_en_passant(from, epsq_opt.value(), us)) {
-      Square epsq = epsq_opt.value();
-      Bitboard en_passant_bb = Bitboard(epsq);
-      en_passant_bb &= check_mask;
-      en_passant_bb &= pin_mask;
-
-      if (en_passant_bb) {
-        Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
-                                             : Square(epsq.flat_index() + Const::BOARD_WIDTH);
-
-        Board tmp(board);
-        tmp.remove_piece(cap_sq);
-        tmp.move_piece(from, epsq_opt.value());
-
-        if (!attackers_to(king_sq, us)) {
-          moves.emplace_back(from, epsq_opt.value(), std::nullopt, true, true, false);
-        }
-      }
-    }
+    generate_single_push(moves, from, us, occupied, check_mask, pin_mask);
+    generate_double_push(moves, from, us, occupied, check_mask, pin_mask);
+    generate_captures(moves, from, us, enemy, check_mask, pin_mask);
+    generate_en_passant(moves, from, us, board, king_sq, check_mask, pin_mask);
   }
 }
