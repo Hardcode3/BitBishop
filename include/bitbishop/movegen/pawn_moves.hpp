@@ -115,7 +115,7 @@ void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Col
   const auto& double_push = PAWN_DOUBLE_PUSH[ColorUtil::to_index(us)];
   const auto& captures = PAWN_ATTACKS[ColorUtil::to_index(us)];
 
-  const std::optional<Square> epsq = board.en_passant_square();
+  const std::optional<Square> epsq_opt = board.en_passant_square();
 
   // warning: this loop is destructive on Bitboard pawns
   while (auto from_sq = pawns.pop_lsb()) {
@@ -176,23 +176,23 @@ void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Col
     }
 
     // En passant
-    if (epsq && can_capture_en_passant(from, epsq.value(), us)) {
-      Bitboard en_passant_bb = Bitboard(epsq.value());
+    if (epsq_opt && can_capture_en_passant(from, epsq_opt.value(), us)) {
+      Square epsq = epsq_opt.value();
+      Bitboard en_passant_bb = Bitboard(epsq);
       en_passant_bb &= check_mask;
       en_passant_bb &= pin_mask;
 
       if (en_passant_bb) {
-        Square cap_sq = (us == Color::WHITE) ? Square(epsq.value() - Const::BOARD_WIDTH)
-                                             : Square(epsq.value() + Const::BOARD_WIDTH);
+        Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
+                                             : Square(epsq.flat_index() + Const::BOARD_WIDTH);
 
-        Board tmp = board;  // TODO copy constructor + equality op for Board object
+        Board tmp(board);
         tmp.remove_piece(cap_sq);
-        tmp.remove_piece(from);  // TODO move_piece() function
-        tmp.set_piece(epsq.value(), Piece(Piece::Type::PAWN, ColorUtil::opposite(us)));
-        Square king_sq = tmp.king(us).pop_lsb().value();  // TODO board.king_square()
+        tmp.move_piece(from, epsq_opt.value());
+        Square king_sq = tmp.king_square(us).value();
 
         if (!attackers_to(king_sq, us)) {
-          moves.emplace_back(from, epsq.value(), std::nullopt, true, true, false);
+          moves.emplace_back(from, epsq_opt.value(), std::nullopt, true, true, false);
         }
       }
     }
