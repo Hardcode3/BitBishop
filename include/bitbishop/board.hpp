@@ -56,6 +56,8 @@ class Board {
    */
   Board();
 
+  Board(const Board&) = default;
+
   /**
    * @brief Constructs a board from a FEN string.
    * @param fen Forsyth–Edwards Notation describing a chess position.
@@ -76,6 +78,19 @@ class Board {
    * @return Piece located on `sq' or std::nullopt if no piece lays on that square.
    */
   [[nodiscard]] std::optional<Piece> get_piece(Square square) const;
+
+  /**
+   * @brief Moves a piece from one square to another.
+   *
+   * The function will move the piece of any type/color from `from` to `to`.
+   * If a piece already exists on `to`, it is removed (captured).
+   * If no piece exists on `from`, sinlently returns.
+   * If `from` and `to` are identical, silently returns.
+   *
+   * @param from Source square
+   * @param to Destination square
+   */
+  void move_piece(Square from, Square to);
 
   /**
    * @brief (Re)Places a piece on a given square.
@@ -129,6 +144,18 @@ class Board {
    * @return Bitboard with bits set where no piece occupies a square.
    */
   [[nodiscard]] Bitboard unoccupied() const { return ~occupied(); }
+
+  /**
+   * @brief Returns the square of the king for the given color.
+   *
+   * In standard chess, a king is always present. However, for tests, variants,
+   * or incomplete board setups, the king may be missing. To handle this safely,
+   * the result is returned as a std::optional.
+   *
+   * @param us Color of the king
+   * @return std::optional<Square> containing the king's square if present, std::nullopt otherwise
+   */
+  [[nodiscard]] std::optional<Square> king_square(Color us) const { return king(us).pop_lsb(); }
 
   /**
    * @brief Returns a bitboard representing all pawns belonging to the given side to move.
@@ -254,4 +281,27 @@ class Board {
    * @return true if queenside castling is legal, false otherwise
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
+
+  Board& operator=(const Board& other) = default;
+
+  /**
+   * @brief Checks if two boards represent the same chess position.
+   *
+   * Compares piece placement, side to move, en passant square, and castling rights.
+   * Ignores half-move clock and full-move number.
+   *
+   * @param other The board to compare against
+   * @return true if positions are identical, false otherwise
+   */
+  [[nodiscard]] bool operator==(const Board& other) const;
+
+  /**
+   * @brief Checks if two boards represent different positions.
+   *
+   * Logical negation of operator==().
+   *
+   * @param other The board to compare against
+   * @return true if positions differ, false otherwise
+   */
+  [[nodiscard]] bool operator!=(const Board& other) const;
 };
