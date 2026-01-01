@@ -102,8 +102,8 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
   }
 }
 
-void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& check_mask,
-                               const PinResult& pins) {
+void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
+                               const Bitboard& check_mask, const PinResult& pins) {
   using namespace Lookups;
 
   const Bitboard own = board.friendly(us);
@@ -189,7 +189,6 @@ void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Col
         Board tmp(board);
         tmp.remove_piece(cap_sq);
         tmp.move_piece(from, epsq_opt.value());
-        Square king_sq = tmp.king_square(us).value();
 
         if (!attackers_to(king_sq, us)) {
           moves.emplace_back(from, epsq_opt.value(), std::nullopt, true, true, false);
