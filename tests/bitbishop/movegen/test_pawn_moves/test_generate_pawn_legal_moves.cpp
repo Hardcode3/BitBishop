@@ -549,3 +549,212 @@ TEST(GeneratePawnLegalMovesTest, NoDoublePushOffStartingRank) {
   EXPECT_TRUE(contains_move(moves, {E3, E4, std::nullopt, false, false, false}));
   EXPECT_FALSE(contains_move(moves, {E3, E5, std::nullopt, false, false, false}));
 }
+
+/**
+ * @test White en passant capture.
+ * @brief Confirms generate_pawn_legal_moves() generates en passant capture
+ *        for white pawn.
+ */
+TEST(GeneratePawnLegalMovesTest, WhiteEnPassantCapture) {
+  Board board("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E1, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // Should include en passant capture
+  EXPECT_TRUE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test Black en passant capture.
+ * @brief Confirms generate_pawn_legal_moves() generates en passant capture
+ *        for black pawn.
+ */
+TEST(GeneratePawnLegalMovesTest, BlackEnPassantCapture) {
+  Board board("rnbqkbnr/ppp1pppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E8, board, Color::BLACK);
+
+  generate_pawn_legal_moves(moves, board, Color::BLACK, E8, check_mask, pins);
+
+  // Should include en passant capture
+  EXPECT_TRUE(contains_move(moves, {D4, E3, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant on both sides.
+ * @brief Confirms generate_pawn_legal_moves() generates en passant when
+ *        two pawns can capture same target.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantBothSides) {
+  Board board("rnbqkbnr/ppp1pppp/8/2PpP3/8/8/PP1P1PPP/RNBQKBNR w KQkq d6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E1, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // Both pawns can capture en passant
+  EXPECT_TRUE(contains_move(moves, {C5, D6, std::nullopt, true, true, false}));
+  EXPECT_TRUE(contains_move(moves, {E5, D6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test No en passant without target square.
+ * @brief Confirms generate_pawn_legal_moves() does not generate en passant
+ *        when no en passant square is set.
+ */
+TEST(GeneratePawnLegalMovesTest, NoEnPassantWithoutTarget) {
+  Board board = Board::Empty();
+  board.set_piece(E1, WHITE_KING);
+  board.set_piece(D5, WHITE_PAWN);
+  board.set_piece(E5, BLACK_PAWN);
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins;
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // No en passant without target square
+  EXPECT_FALSE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant blocked by check mask.
+ * @brief Confirms generate_pawn_legal_moves() does not generate en passant
+ *        when target square not in check mask.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantBlockedByCheckMask) {
+  Board board("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
+
+  Bitboard check_mask = Bitboard::Zeros();
+  check_mask.set(D6);  // En passant square E6 not in mask
+
+  std::vector<Move> moves;
+  PinResult pins = compute_pins(E1, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // En passant not allowed
+  EXPECT_FALSE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant blocked by pin.
+ * @brief Confirms generate_pawn_legal_moves() does not generate en passant
+ *        when pawn is pinned perpendicular to en passant direction.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantBlockedByPin) {
+  Board board = Board::Empty();
+  board.set_piece(E1, WHITE_KING);
+  board.set_piece(E5, WHITE_PAWN);
+  board.set_piece(D5, BLACK_PAWN);
+  board.set_piece(E8, BLACK_ROOK);
+
+  // Manually set en passant square
+  Board board_with_ep("8/8/8/3pP3/8/8/8/4K2r b - e6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E1, board_with_ep, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board_with_ep, Color::WHITE, E1, check_mask, pins);
+
+  // Pinned pawn cannot capture en passant
+  EXPECT_FALSE(contains_move(moves, {E5, D6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant reveals check (horizontal pin).
+ * @brief Confirms generate_pawn_legal_moves() does not generate en passant
+ *        when capturing would expose king to horizontal attack.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantRevealsHorizontalCheck) {
+  // White king on E5, white pawn on D5, black pawn on E5, black rook on A5
+  // If white captures en passant on E6, removes both pawns and exposes king
+  Board board("8/8/8/r2PpK2/8/8/8/8 w - e6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(F5, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, F5, check_mask, pins);
+
+  // En passant not allowed as it would expose king
+  EXPECT_FALSE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant legal when safe.
+ * @brief Confirms generate_pawn_legal_moves() generates en passant when
+ *        it doesn't expose king to check.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantLegalWhenSafe) {
+  Board board("rnbqkbnr/ppp2ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E1, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // En passant is safe
+  EXPECT_TRUE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant with promotion (edge case).
+ * @brief Confirms en passant is only available on correct ranks
+ *        (5th for white, 4th for black).
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantOnlyOnCorrectRank) {
+  // White pawn on 6th rank - cannot do en passant from here
+  Board board = Board::Empty();
+  board.set_piece(E1, WHITE_KING);
+  board.set_piece(D6, WHITE_PAWN);
+  board.set_piece(E6, BLACK_PAWN);
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins;
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // No en passant from 6th rank
+  EXPECT_FALSE(contains_move(moves, {D6, E7, std::nullopt, true, true, false}));
+}
+
+/**
+ * @test En passant move properties correct.
+ * @brief Confirms en passant move has correct flags set.
+ */
+TEST(GeneratePawnLegalMovesTest, EnPassantMoveProperties) {
+  Board board("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
+
+  std::vector<Move> moves;
+  Bitboard check_mask = Bitboard::Ones();
+  PinResult pins = compute_pins(E1, board, Color::WHITE);
+
+  generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
+
+  // Find en passant move
+  bool found = false;
+  for (const Move& move : moves) {
+    if (move.from == D5 && move.to == E6) {
+      EXPECT_TRUE(move.is_capture);
+      EXPECT_TRUE(move.is_en_passant);
+      EXPECT_FALSE(move.is_castling);
+      EXPECT_FALSE(move.promotion.has_value());
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+}

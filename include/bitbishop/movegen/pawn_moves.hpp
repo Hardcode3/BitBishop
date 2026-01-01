@@ -1,8 +1,8 @@
 #pragma once
 
+#include <bitbishop/attacks/generate_attacks.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
-#include <bitbishop/lookups/attackers.hpp>
 #include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/move.hpp>
 #include <bitbishop/movegen/pins.hpp>
@@ -102,6 +102,19 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
   }
 }
 
+/**
+ * @brief Generates all single-square pawn pushes from the given square.
+ *
+ * Applies occupancy, check mask, and pin mask filters. If the target square
+ * is a promotion rank, all promotion moves are added.
+ *
+ * @param moves Vector to append generated moves to
+ * @param from Source square of the pawn
+ * @param us Color of the pawn
+ * @param occupied Bitboard of all occupied squares
+ * @param check_mask Bitboard mask to restrict moves under check
+ * @param pin_mask Bitboard mask to restrict moves due to pins
+ */
 inline void generate_single_push(std::vector<Move>& moves, Square from, Color us, const Bitboard& occupied,
                                  const Bitboard& check_mask, const Bitboard& pin_mask) {
   const auto& single_push = Lookups::PAWN_SINGLE_PUSH[ColorUtil::to_index(us)];
@@ -121,53 +134,19 @@ inline void generate_single_push(std::vector<Move>& moves, Square from, Color us
   }
 }
 
-inline void generate_captures(std::vector<Move>& moves, Square from, Color us, const Bitboard& enemy,
-                              const Bitboard& check_mask, const Bitboard& pin_mask) {
-  const auto& captures = Lookups::PAWN_ATTACKS[ColorUtil::to_index(us)];
-
-  Bitboard bb = captures[from.flat_index()];
-  bb &= enemy;
-  bb &= check_mask;
-  bb &= pin_mask;
-
-  for (Square to : bb) {
-    if (is_promotion_rank(to, us)) {
-      add_pawn_promotions(moves, from, to, us, true);
-    } else {
-      moves.emplace_back(from, to, std::nullopt, true, false, false);
-    }
-  }
-}
-
-inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us, const Board& board, Square king_sq,
-                                const Bitboard& check_mask, const Bitboard& pin_mask) {
-  const std::optional<Square> epsq_opt = board.en_passant_square();
-
-  if (!epsq_opt || !can_capture_en_passant(from, epsq_opt.value(), us)) {
-    return;
-  }
-
-  Square epsq = epsq_opt.value();
-  auto bb = Bitboard(epsq);
-  bb &= check_mask;
-  bb &= pin_mask;
-
-  if (!bb) {
-    return;
-  }
-
-  Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
-                                       : Square(epsq.flat_index() + Const::BOARD_WIDTH);
-
-  Board tmp(board);
-  tmp.remove_piece(cap_sq);
-  tmp.move_piece(from, epsq);
-
-  if (!attackers_to(king_sq, us)) {
-    moves.emplace_back(from, epsq, std::nullopt, true, true, false);
-  }
-}
-
+/**
+ * @brief Generates all double-square pawn pushes from the given square.
+ *
+ * Only allowed from the starting rank. Ensures the intermediate square is empty
+ * and respects occupancy, check mask, and pin mask constraints.
+ *
+ * @param moves Vector to append generated moves to
+ * @param from Source square of the pawn
+ * @param us Color of the pawn
+ * @param occupied Bitboard of all occupied squares
+ * @param check_mask Bitboard mask to restrict moves under check
+ * @param pin_mask Bitboard mask to restrict moves due to pins
+ */
 inline void generate_double_push(std::vector<Move>& moves, Square from, Color us, const Bitboard& occupied,
                                  const Bitboard& check_mask, const Bitboard& pin_mask) {
   const auto& single_push = Lookups::PAWN_SINGLE_PUSH[ColorUtil::to_index(us)];
@@ -189,6 +168,97 @@ inline void generate_double_push(std::vector<Move>& moves, Square from, Color us
   }
 }
 
+/**
+ * @brief Generates all pawn capture moves from the given square.
+ *
+ * Only captures squares occupied by enemy pieces. Applies check mask and pin mask.
+ * Automatically adds promotion moves if the destination is on the promotion rank.
+ *
+ * @param moves Vector to append generated moves to
+ * @param from Source square of the pawn
+ * @param us Color of the pawn
+ * @param enemy Bitboard of enemy pieces
+ * @param check_mask Bitboard mask to restrict moves under check
+ * @param pin_mask Bitboard mask to restrict moves due to pins
+ */
+inline void generate_captures(std::vector<Move>& moves, Square from, Color us, const Bitboard& enemy,
+                              const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const auto& captures = Lookups::PAWN_ATTACKS[ColorUtil::to_index(us)];
+
+  Bitboard bb = captures[from.flat_index()];
+  bb &= enemy;
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  for (Square to : bb) {
+    if (is_promotion_rank(to, us)) {
+      add_pawn_promotions(moves, from, to, us, true);
+    } else {
+      moves.emplace_back(from, to, std::nullopt, true, false, false);
+    }
+  }
+}
+
+/**
+ * @brief Generates a pawn en passant move from the given square, if legal.
+ *
+ * Verifies en passant square exists, the pawn can capture, and that
+ * performing the move does not leave the king in check.
+ *
+ * @param moves Vector to append generated moves to
+ * @param from Source square of the pawn
+ * @param us Color of the pawn
+ * @param board Current board position
+ * @param king_sq Square of the king for this side
+ * @param check_mask Bitboard mask to restrict moves under check
+ * @param pin_mask Bitboard mask to restrict moves due to pins
+ */
+inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us, const Board& board, Square king_sq,
+                                const Bitboard& check_mask, const Bitboard& pin_mask) {
+  const std::optional<Square> epsq_opt = board.en_passant_square();
+
+  if (!epsq_opt || !can_capture_en_passant(from, epsq_opt.value(), us)) {
+    return;
+  }
+
+  const Color them = ColorUtil::opposite(us);
+  Square epsq = epsq_opt.value();
+  auto bb = Bitboard(epsq);
+  bb &= check_mask;
+  bb &= pin_mask;
+
+  if (!bb) {
+    return;
+  }
+
+  Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
+                                       : Square(epsq.flat_index() + Const::BOARD_WIDTH);
+
+  Board tmp(board);
+  tmp.remove_piece(cap_sq);
+  tmp.move_piece(from, epsq);
+
+  Bitboard attackers = generate_attacks(tmp, them);
+
+  if (!attackers.test(king_sq)) {
+    moves.emplace_back(from, epsq, std::nullopt, true, true, false);
+  }
+}
+
+/**
+ * @brief Generates all legal pawn moves for the given side.
+ *
+ * Includes single pushes, double pushes, captures, promotions, and en passant,
+ * taking into account occupancy, checks, and pins. Iterates over all pawns of
+ * the specified color.
+ *
+ * @param moves Vector to append generated moves to
+ * @param board Current board position
+ * @param us Color of the side to generate moves for
+ * @param king_sq Square of the king for this side
+ * @param check_mask Bitboard mask to restrict moves under check
+ * @param pins Pin result structure indicating which pieces are pinned
+ */
 void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
                                const Bitboard& check_mask, const PinResult& pins) {
   const Bitboard enemy = board.enemy(us);
