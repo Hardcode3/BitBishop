@@ -3,7 +3,6 @@
 #include <bitbishop/attacks/bishop_attacks.hpp>
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
-#include <bitbishop/moves/bishop_move_gen.hpp>
 
 /**
  * @test bishop_north_east_attacks() with no blockers
