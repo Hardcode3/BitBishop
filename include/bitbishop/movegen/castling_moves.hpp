@@ -38,20 +38,20 @@ void generate_castling_moves(std::vector<Move>& moves, const Board& board, Color
   const Square king_from = (us == Color::WHITE) ? E1 : E8;
 
   if (board.can_castle_kingside(us)) {
-    Square f = (us == Color::WHITE) ? F1 : F8;
-    Square g = (us == Color::WHITE) ? G1 : G8;
+    Square f_square = (us == Color::WHITE) ? F1 : F8;
+    Square g_square = (us == Color::WHITE) ? G1 : G8;
 
-    if (!enemy_attacks.test(f) && !enemy_attacks.test(g)) {
-      moves.emplace_back(king_from, g, std::nullopt, false, false, true);
+    if (!enemy_attacks.test(f_square) && !enemy_attacks.test(g_square)) {
+      moves.emplace_back(king_from, g_square, std::nullopt, false, false, true);
     }
   }
 
   if (board.can_castle_queenside(us)) {
-    Square d = (us == Color::WHITE) ? D1 : D8;
-    Square c = (us == Color::WHITE) ? C1 : C8;
+    Square d_square = (us == Color::WHITE) ? D1 : D8;
+    Square c_square = (us == Color::WHITE) ? C1 : C8;
 
-    if (!enemy_attacks.test(d) && !enemy_attacks.test(c)) {
-      moves.emplace_back(king_from, c, std::nullopt, false, false, true);
+    if (!enemy_attacks.test(d_square) && !enemy_attacks.test(c_square)) {
+      moves.emplace_back(king_from, c_square, std::nullopt, false, false, true);
     }
   }
 }
