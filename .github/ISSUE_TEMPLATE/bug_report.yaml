@@ -1,0 +1,64 @@
+name: 🐛 Bug Report
+description: Report a move generation error, search instability, or crash.
+title: "[Meaningful and short bug description]"
+labels: ["bug"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 🔍 Description
+      description: Clearly describe the bug and its impact.
+      placeholder: What went wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 🧩 Reproduction Steps
+      description: Provide everything needed to reproduce the issue.
+      value: |
+        **FEN:** insert_fen_here
+        **Depth:** 5 (if applicable)
+
+        **Expected Output:**
+        **Actual Output:**
+    validations:
+      required: true
+
+  - type: dropdown
+    id: failure_area
+    attributes:
+      label: 📉 Failure Analysis
+      description: Which subsystem is most likely responsible?
+      multiple: true
+      options:
+        - Move Generation (illegal move, missing move)
+        - Search / Evaluation (hash collision, TT bug)
+        - Bitboard Logic (incorrect slider rays)
+        - Other / Unknown
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📸 Evidence / Logs
+      description: Paste logs, stack traces, or screenshots if available.
+
+  - type: input
+    id: os
+    attributes:
+      label: 💻 OS
+      placeholder: Windows / Linux / macOS
+
+  - type: input
+    id: compiler
+    attributes:
+      label: 💻 Compiler
+      placeholder: GCC / Clang / MSVC
+
+  - type: input
+    id: commit
+    attributes:
+      label: 🔢 Commit Hash
+      placeholder: abcdef12345

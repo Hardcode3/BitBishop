@@ -129,6 +129,25 @@ std::optional<Piece> Board::get_piece(Square square) const {
   return std::nullopt;  // NO_PIECE
 }
 
+void Board::move_piece(Square from, Square to) {
+  if (from == to) {
+    return;
+  }
+
+  if (auto captured = get_piece(to)) {
+    remove_piece(to);
+  }
+
+  auto moving_piece = get_piece(from);
+  if (!moving_piece) {
+    return;
+  }
+
+  remove_piece(from);
+
+  set_piece(to, moving_piece.value());
+}
+
 void Board::set_piece(Square square, Piece piece) {
   // Remove any existing piece if existent
   const std::optional<Piece> existing_piece = get_piece(square);
@@ -249,3 +268,23 @@ bool Board::can_castle_queenside(Color side) const noexcept {
   const Bitboard occupied = this->occupied();
   return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
 }
+
+bool Board::operator==(const Board& other) const {
+  if (this == &other) {
+    return true;
+  }
+
+  // Do not compare half-move clock and full-move number
+  // This is not relevant for position identity and we don't care about game history equality
+  return m_w_pawns == other.m_w_pawns && m_w_rooks == other.m_w_rooks && m_w_bishops == other.m_w_bishops &&
+         m_w_knights == other.m_w_knights && m_w_king == other.m_w_king && m_w_queens == other.m_w_queens &&
+         m_b_pawns == other.m_b_pawns && m_b_rooks == other.m_b_rooks && m_b_bishops == other.m_b_bishops &&
+         m_b_knights == other.m_b_knights && m_b_king == other.m_b_king && m_b_queens == other.m_b_queens &&
+         m_is_white_turn == other.m_is_white_turn && m_en_passant_sq == other.m_en_passant_sq &&
+         m_white_castle_kingside == other.m_white_castle_kingside &&
+         m_white_castle_queenside == other.m_white_castle_queenside &&
+         m_black_castle_kingside == other.m_black_castle_kingside &&
+         m_black_castle_queenside == other.m_black_castle_queenside;
+}
+
+bool Board::operator!=(const Board& other) const { return !this->operator==(other); }

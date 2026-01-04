@@ -3,6 +3,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/color.hpp>
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
@@ -167,7 +168,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() cons
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, 64> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
+constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
 
 /**
  * @brief Precomputed bitboards of BLACK pawn attackers (reverse pawn attacks).
@@ -186,6 +187,112 @@ constexpr std::array<Bitboard, 64> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, 64> BLACK_PAWN_ATTACKERS = WHITE_PAWN_ATTACKS;
+constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKERS = WHITE_PAWN_ATTACKS;
+
+/**
+ * @brief Precomputed single-push destinations for pawns of both colors.
+ *
+ * For each color and source square, contains a bitboard with the destination
+ * square if a pawn moves one square forward:
+ * - White pawns move north (+1 rank)
+ * - Black pawns move south (-1 rank)
+ *
+ * This table represents theoretical move destinations only.
+ * The caller must ensure:
+ * - The destination square is empty
+ * - The move satisfies check and pin constraints
+ *
+ * Indexed as [color][source_square].
+ */
+constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_SINGLE_PUSH = []() constexpr {
+  using namespace Const;
+
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+
+  for (Color color : ColorUtil::all()) {
+    const auto idx = ColorUtil::to_index(color);
+    switch (color) {
+      case Color::WHITE:
+        table[idx] = WHITE_PAWN_SINGLE_PUSH;
+        break;
+      case Color::BLACK:
+        table[idx] = BLACK_PAWN_SINGLE_PUSH;
+        break;
+    }
+  }
+
+  return table;
+}();
+
+/**
+ * @brief Precomputed double-push destinations for pawns of both colors.
+ *
+ * For each color and source square, contains a bitboard with the destination
+ * square if a pawn moves two squares forward from its starting rank:
+ * - White: rank 2 → rank 4
+ * - Black: rank 7 → rank 5
+ *
+ * This table represents theoretical move destinations only.
+ * The caller must ensure:
+ * - The pawn is on its starting rank
+ * - Both the intermediate and destination squares are empty
+ * - The move satisfies check and pin constraints
+ *
+ * Indexed as [color][source_square].
+ */
+constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_DOUBLE_PUSH = []() constexpr {
+  using namespace Const;
+
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+
+  for (Color color : ColorUtil::all()) {
+    const auto idx = ColorUtil::to_index(color);
+    switch (color) {
+      case Color::WHITE:
+        table[idx] = WHITE_PAWN_DOUBLE_PUSH;
+        break;
+      case Color::BLACK:
+        table[idx] = BLACK_PAWN_DOUBLE_PUSH;
+        break;
+    }
+  }
+
+  return table;
+}();
+
+/**
+ * @brief Precomputed diagonal capture targets for pawns of both colors.
+ *
+ * For each color and source square, contains a bitboard with all squares
+ * a pawn could capture to diagonally:
+ * - White: north-west and north-east
+ * - Black: south-west and south-east
+ *
+ * This table is independent of board occupancy.
+ * The caller must verify that:
+ * - An enemy piece occupies the target square, or
+ * - The square corresponds to a valid en passant target
+ *
+ * Indexed as [color][source_square].
+ */
+constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_ATTACKS = []() constexpr {
+  using namespace Const;
+
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+
+  for (Color color : ColorUtil::all()) {
+    const auto idx = ColorUtil::to_index(color);
+    switch (color) {
+      case Color::WHITE:
+        table[idx] = WHITE_PAWN_ATTACKS;
+        break;
+      case Color::BLACK:
+        table[idx] = BLACK_PAWN_ATTACKS;
+        break;
+    }
+  }
+
+  return table;
+}();
 
 }  // namespace Lookups

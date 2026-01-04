@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <bitbishop/moves/pawn_move_gen.hpp>
+#include <bitbishop/movegen/pawn_moves.hpp>
 
 /**
  * @brief Test case structure for en passant validation.
@@ -30,7 +30,7 @@ TEST(PawnMoveGeneratorTest, WhiteCanCaptureEnPassant) {
   };
 
   for (const EnPassantCase& c : cases) {
-    ASSERT_EQ(PawnMoveGenerator::can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
+    ASSERT_EQ(can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
         << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=WHITE";
   }
 }
@@ -53,7 +53,7 @@ TEST(PawnMoveGeneratorTest, BlackCanCaptureEnPassant) {
   };
 
   for (const EnPassantCase& c : cases) {
-    ASSERT_EQ(PawnMoveGenerator::can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
+    ASSERT_EQ(can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
         << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=BLACK";
   }
 }
@@ -95,7 +95,7 @@ TEST(PawnMoveGeneratorTest, BlackCannotCaptureEnPassant_InvalidCombinations) {
   };
 
   for (const EnPassantCase& c : cases) {
-    ASSERT_EQ(PawnMoveGenerator::can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
+    ASSERT_EQ(can_capture_en_passant(c.from, c.en_passant, c.color), c.expected)
         << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=BLACK";
   }
 }

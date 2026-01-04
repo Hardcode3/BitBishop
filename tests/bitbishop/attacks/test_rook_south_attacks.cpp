@@ -3,7 +3,6 @@
 #include <bitbishop/attacks/rook_attacks.hpp>
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
-#include <bitbishop/moves/rook_move_gen.hpp>
 
 /**
  * @test rook_south_attacks() with no blockers

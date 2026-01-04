@@ -1,0 +1,54 @@
+name: 🚀 Feature / Task
+description: Plan and track the development of engine features and logic.
+title: "[Meaningful and short feature name]"
+labels: ["feat", "testing"]
+
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 🎯 Goal
+      description: What problem does this feature solve?
+      placeholder: Describe the feature at a high level.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logic
+    attributes:
+      label: 🧠 Key Idea / Logic
+      description: Explain the core idea, formulas, or heuristics.
+      placeholder: |
+        Example:
+        - Score = Material + PST[piece][square]
+        - Knights prefer central squares
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: 🛠️ Tasks
+      description: List implementation steps (use markdown checkboxes if you want).
+      placeholder: |
+        - Define 8x8 PST arrays for each piece
+        - Implement table flipping for Black
+        - Integrate PST into evaluate()
+        - Ensure dynamic updates during search
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: ✅ Acceptance Criteria
+      description: How do we know this feature is complete?
+      placeholder: |
+        - Engine prefers central development in the opening
+        - Evaluation is symmetrical when mirrored
+        - No search speed regression
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 📝 Notes
+      description: Constraints, tuning advice, or future considerations.
+      placeholder: Keep PST values small to avoid overpowering material.

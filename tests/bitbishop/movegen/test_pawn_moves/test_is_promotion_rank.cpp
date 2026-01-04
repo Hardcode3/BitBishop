@@ -1,14 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <bitbishop/moves/pawn_move_gen.hpp>
+#include <bitbishop/movegen/pawn_moves.hpp>
 
 /**
  * @test Verifies is_promotion_rank returns true for White pawns on rank 8 (A8-H8).
  */
 TEST(PawnMoveGeneratorTest, IsPromotionRankFromPromotionRankForWhite) {
   for (int sq = Square::A8; sq <= Square::H8; sq++) {
-    ASSERT_TRUE(PawnMoveGenerator::is_promotion_rank(Square(sq), Color::WHITE))
-        << "for square " << Square(sq).to_string();
+    ASSERT_TRUE(is_promotion_rank(Square(sq), Color::WHITE)) << "for square " << Square(sq).to_string();
   }
 }
 
@@ -17,8 +16,7 @@ TEST(PawnMoveGeneratorTest, IsPromotionRankFromPromotionRankForWhite) {
  */
 TEST(PawnMoveGeneratorTest, IsPromotionRankFromPromotionRankForBlack) {
   for (int sq = Square::A1; sq <= Square::H1; sq++) {
-    ASSERT_TRUE(PawnMoveGenerator::is_promotion_rank(Square(sq), Color::BLACK))
-        << "for square " << Square(sq).to_string();
+    ASSERT_TRUE(is_promotion_rank(Square(sq), Color::BLACK)) << "for square " << Square(sq).to_string();
   }
 }
 
@@ -27,8 +25,7 @@ TEST(PawnMoveGeneratorTest, IsPromotionRankFromPromotionRankForBlack) {
  */
 TEST(PawnMoveGeneratorTest, IsPromotionRankNotFromPromotionRankForWhite) {
   for (int sq = Square::A1; sq <= Square::H7; sq++) {
-    ASSERT_FALSE(PawnMoveGenerator::is_promotion_rank(Square(sq), Color::WHITE))
-        << "for square " << Square(sq).to_string();
+    ASSERT_FALSE(is_promotion_rank(Square(sq), Color::WHITE)) << "for square " << Square(sq).to_string();
   }
 }
 
@@ -37,7 +34,6 @@ TEST(PawnMoveGeneratorTest, IsPromotionRankNotFromPromotionRankForWhite) {
  */
 TEST(PawnMoveGeneratorTest, IsPromotionRankNotFromPromotionRankForBlack) {
   for (int sq = Square::A2; sq <= Square::H8; sq++) {
-    ASSERT_FALSE(PawnMoveGenerator::is_promotion_rank(Square(sq), Color::BLACK))
-        << "for square " << Square(sq).to_string();
+    ASSERT_FALSE(is_promotion_rank(Square(sq), Color::BLACK)) << "for square " << Square(sq).to_string();
   }
 }

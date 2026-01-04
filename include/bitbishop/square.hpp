@@ -135,6 +135,12 @@ class Square {
   [[nodiscard]] constexpr Value value() const { return m_value; }
 
   /**
+   * @brief Get the underlying flqttened square index.
+   * @return std::uint8_t Flattened index corresponding to this square.
+   */
+  [[nodiscard]] constexpr std::uint8_t flat_index() const { return static_cast<std::uint8_t>(m_value); }
+
+  /**
    * @brief Get the file index (column).
    * @return Integer 0–7, where 0 = 'a' and 7 = 'h'.
    */
