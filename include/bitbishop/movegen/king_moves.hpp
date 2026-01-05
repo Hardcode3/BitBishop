@@ -8,7 +8,7 @@
 #include <vector>
 
 void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
-                               const Bitboard& enemy_attacks, const Bitboard& check_mask) {
+                               const Bitboard& enemy_attacks) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
 
@@ -16,7 +16,6 @@ void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Col
 
   candidates &= ~own;
   candidates &= ~enemy_attacks;
-  candidates &= check_mask;
 
   for (Square to : candidates) {
     const bool is_capture = enemy.test(to);
