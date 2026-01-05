@@ -298,8 +298,6 @@ TEST(ComputePinsTest, MaximumPinsAllDirections) {
   board.set_piece(D3, WHITE_PAWN);
   board.set_piece(B1, BLACK_BISHOP);
 
-  board.print();
-
   PinResult result = compute_pins(E4, board, Color::WHITE);
 
   EXPECT_EQ(result.pinned.count(), 8);
