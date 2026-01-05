@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitbishop/attacks/checkers.hpp>
 #include <bitbishop/attacks/generate_attacks.hpp>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/board.hpp>
@@ -40,16 +41,16 @@
  * @note The move list is appended to; it is not cleared by this function.
  * @note Assumes the board position is internally consistent and legal.
  */
-void generate_legal_moves(std::vector<Move> moves, const Board& board, Color us) {
+void generate_legal_moves(std::vector<Move>& moves, const Board& board, Color us) {
   Square king_sq = board.king_square(us).value();
   Color them = ColorUtil::opposite(us);
 
-  Bitboard checkers = attackers_to(king_sq, them);
+  Bitboard checkers = compute_checkers(board, king_sq, them);
   Bitboard check_mask = compute_check_mask(king_sq, checkers, board);
   PinResult pins = compute_pins(king_sq, board, us);
   Bitboard enemy_attacks = generate_attacks(board, them);
 
-  generate_legal_king_moves(moves, board, us, king_sq, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, us, king_sq, enemy_attacks);
 
   generate_castling_moves(moves, board, us, checkers, enemy_attacks);
 
