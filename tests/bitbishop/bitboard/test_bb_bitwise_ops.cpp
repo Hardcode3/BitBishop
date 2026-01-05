@@ -36,10 +36,28 @@ TEST(BitboardTest, AndOperatorFindsIntersection) {
 }
 
 /**
- * @test Compound OR and AND operators.
- * @brief Ensures |= adds squares and &= keeps only intersections.
+ * @test Exclusive bitwise (X)OR operator.
+ * @brief Returns the bitboard with common bits set to zero.
  */
-TEST(BitboardTest, CompoundOrAnd) {
+TEST(BitboardTest, ExlusiveOrOperatorDeletesCommonBits) {
+  Bitboard a, b;
+  a.set(Square::E2);
+  a.set(Square::E4);
+  b.set(Square::E2);
+  b.set(Square::D2);
+
+  Bitboard c = a ^ b;
+
+  EXPECT_FALSE(c.test(Square::E2));
+  EXPECT_TRUE(c.test(Square::E4));
+  EXPECT_TRUE(c.test(Square::D2));
+}
+
+/**
+ * @test Compound OR operator.
+ * @brief Ensures |= adds squares.
+ */
+TEST(BitboardTest, CompoundOr) {
   Bitboard a, b;
   a.set(Square::A1);
   b.set(Square::B2);
@@ -47,12 +65,38 @@ TEST(BitboardTest, CompoundOrAnd) {
   a |= b;
   EXPECT_TRUE(a.test(Square::A1));
   EXPECT_TRUE(a.test(Square::B2));
+}
 
-  Bitboard c;
-  c.set(Square::A1);
-  a &= c;
+/**
+ * @test Compound AND operator.
+ * @brief Ensures &= keeps only intersections.
+ */
+TEST(BitboardTest, CompoundAnd) {
+  Bitboard a, b;
+  a.set(Square::A1);
+  a.set(Square::B2);
+  b.set(Square::A1);
+  a &= b;
+
   EXPECT_TRUE(a.test(Square::A1));
   EXPECT_FALSE(a.test(Square::B2));
+}
+
+/**
+ * @test Compound XOR.
+ * @brief Ensures ^= removes common set bits.
+ */
+TEST(BitboardTest, CompoundXOr) {
+  Bitboard a;
+  a.set(Square::A1);
+  a.set(Square::B3);
+
+  Bitboard b;
+  b.set(Square::A1);
+  b ^= a;
+
+  EXPECT_FALSE(b.test(Square::A1));
+  EXPECT_TRUE(b.test(Square::B3));
 }
 
 /**
