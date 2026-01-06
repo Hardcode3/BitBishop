@@ -2,9 +2,27 @@
 
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/move.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 #include <optional>
+#include <vector>
+
+struct UndoInfo {
+  std::optional<Piece> captured_piece;
+  Square captured_square;
+
+  bool white_castle_kingside;
+  bool white_castle_queenside;
+  bool black_castle_kingside;
+  bool black_castle_queenside;
+
+  std::optional<Square> en_passant_sq;
+  int halfmove_clock;
+  int fullmove_number;
+
+  bool was_pawn_promotion;  // true if a pawn was promoted
+};
 
 /**
  * @class Board
@@ -45,6 +63,8 @@ class Board {
 
   // Move number (starts at 1, incremented after Black’s move)
   int m_fullmove_number;
+
+  std::vector<UndoInfo> m_undo_stack;
 
  public:
   /**
@@ -281,6 +301,10 @@ class Board {
    * @return true if queenside castling is legal, false otherwise
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
+
+  void make_move(const Move& move);
+
+  void unmake_move(const Move& move);
 
   Board& operator=(const Board& other) = default;
 

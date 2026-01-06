@@ -269,6 +269,169 @@ bool Board::can_castle_queenside(Color side) const noexcept {
   return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
 }
 
+void Board::make_move(const Move& move) {
+  using namespace Squares;
+  using namespace Const;
+
+  Piece moving_piece = *get_piece(move.from);
+  bool is_white = moving_piece.is_white();
+  bool is_pawn_move = moving_piece.type() == Piece::Type::PAWN;
+
+  // 1. Update halfmove clock BEFORE altering board state
+  if (is_pawn_move || move.is_capture || move.is_en_passant) {
+    m_halfmove_clock = 0;
+  } else {
+    m_halfmove_clock++;
+  }
+
+  // 2. En passant capture (remove pawn behind destination)
+  if (move.is_en_passant) {
+    int direction = is_white ? -BOARD_WIDTH : +BOARD_WIDTH;
+    Square captured = Square(move.to.value() + direction);
+    remove_piece(captured);
+  }
+
+  // 3. Move the piece
+  move_piece(move.from, move.to);
+
+  // 4. Promotion
+  if (move.promotion) {
+    set_piece(move.to, *move.promotion);
+  }
+
+  // 5. Castling rook movement
+  if (move.is_castling) {
+    // clang-format off
+    if (move.to == C1) {move_piece(A1, D1);}
+    if (move.to == G1) {move_piece(H1, F1);}
+    if (move.to == C8) {move_piece(A8, D8);}
+    if (move.to == G8) {move_piece(H8, F8);}
+    // clang-format on
+  }
+
+  // 6. Reset en passant square
+  m_en_passant_sq = std::nullopt;
+
+  // 7. Double pawn push sets en passant square
+  if (is_pawn_move && std::abs(move.to.rank() - move.from.rank()) == 2) {
+    int ep_rank = (move.to.rank() + move.from.rank()) / 2;
+    m_en_passant_sq = Square(move.from.file(), ep_rank);
+  }
+
+  // 8. Update castling rights
+  // king moved
+  if (moving_piece.type() == Piece::Type::KING) {
+    if (is_white) {
+      m_white_castle_kingside = false;
+      m_white_castle_queenside = false;
+    } else {
+      m_black_castle_kingside = false;
+      m_black_castle_queenside = false;
+    }
+  }
+
+  // rook moved
+  if (moving_piece.type() == Piece::Type::ROOK) {
+    // clang-format off
+    if (move.from == A1) {m_white_castle_queenside = false;}
+    if (move.from == H1) {m_white_castle_kingside = false;}
+    if (move.from == A8) {m_black_castle_queenside = false;}
+    if (move.from == H8) {m_black_castle_kingside = false;}
+    // clang-format on
+  }
+
+  // rook captured
+  if (move.is_capture || move.is_en_passant) {
+    // clang-format off
+    if (move.to == A1) {m_white_castle_queenside = false;}
+    if (move.to == H1) {m_white_castle_kingside = false;}
+    if (move.to == A8) {m_black_castle_queenside = false;}
+    if (move.to == H8) {m_black_castle_kingside = false;}
+    // clang-format on
+  }
+
+  // 9. Flip side to move
+  m_is_white_turn = !m_is_white_turn;
+
+  // 10. Fullmove counter
+  if (!m_is_white_turn) {
+    m_fullmove_number++;
+  }
+
+  // 11. Save move information for undo
+  UndoInfo undo = {
+      .captured_piece = get_piece(move.to),
+      .captured_square = move.to,
+      .white_castle_kingside = m_white_castle_kingside,
+      .white_castle_queenside = m_white_castle_queenside,
+      .black_castle_kingside = m_black_castle_kingside,
+      .black_castle_queenside = m_black_castle_queenside,
+      .en_passant_sq = m_en_passant_sq,
+      .halfmove_clock = m_halfmove_clock,
+      .fullmove_number = m_fullmove_number,
+      .was_pawn_promotion = move.promotion.has_value(),
+  };
+  m_undo_stack.push_back(undo);
+}
+
+void Board::unmake_move(const Move& move) {
+  UndoInfo undo = m_undo_stack.back();
+  m_undo_stack.pop_back();
+
+  // 1. Flip side to move back
+  m_is_white_turn = !m_is_white_turn;
+
+  // 2. Restore halfmove clock and fullmove number
+  m_halfmove_clock = undo.halfmove_clock;
+  m_fullmove_number = undo.fullmove_number;
+
+  // 3. Restore en passant square
+  m_en_passant_sq = undo.en_passant_sq;
+
+  // 4. Move piece back
+  Piece moving_piece = *get_piece(move.to);
+
+  // Undo promotion if any
+  if (undo.was_pawn_promotion) {
+    moving_piece = Piece(Piece::Type::PAWN, moving_piece.color());
+  }
+
+  move_piece(move.to, move.from);
+  set_piece(move.from, moving_piece);
+
+  // 5. Restore captured piece if any
+  if (undo.captured_piece) {
+    set_piece(undo.captured_square, undo.captured_piece.value());
+  }
+
+  // 6. Undo castling rook moves
+  if (move.is_castling) {
+    using namespace Squares;
+    // clang-format off
+    if (move.to == C1) {move_piece(D1, A1);}
+    if (move.to == G1) {move_piece(F1, H1);}
+    if (move.to == C8) {move_piece(D8, A8);}
+    if (move.to == G8) {move_piece(F8, H8);}
+    // clang-format on
+  }
+
+  // 7. Restore castling rights
+  m_white_castle_kingside = undo.white_castle_kingside;
+  m_white_castle_queenside = undo.white_castle_queenside;
+  m_black_castle_kingside = undo.black_castle_kingside;
+  m_black_castle_queenside = undo.black_castle_queenside;
+
+  // 8. Undo en passant capture if applicable
+  if (move.is_en_passant) {
+    using namespace Const;
+    int direction = m_is_white_turn ? BOARD_WIDTH : -BOARD_WIDTH;
+    Square captured = Square(move.to.value() - direction);
+    set_piece(captured, *undo.captured_piece);
+    remove_piece(move.to);             // Remove the capturing pawn temporarily moved
+    move_piece(move.from, move.from);  // fix positions if necessary
+  }
+}
+
 bool Board::operator==(const Board& other) const {
   if (this == &other) {
     return true;
