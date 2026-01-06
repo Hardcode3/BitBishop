@@ -410,7 +410,7 @@ TEST(GenerateBishopLegalMovesTest, MovesVectorAccumulates) {
 
   std::vector<Move> moves;
   // Add a dummy move first
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   Bitboard check_mask = Bitboard::Ones();
   PinResult pins;

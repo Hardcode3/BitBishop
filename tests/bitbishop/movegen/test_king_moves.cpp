@@ -54,9 +54,9 @@ TEST(GenerateLegalKingMovesTest, CornerKingLimitedMoves) {
   EXPECT_EQ(moves.size(), 3);
 
   // Corner king can only move to 3 squares
-  EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {A1, B1, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {A1, B2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, B1)));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, B2)));
 }
 
 /**
@@ -352,7 +352,7 @@ TEST(GenerateLegalKingMovesTest, MovesVectorAccumulates) {
 
   std::vector<Move> moves;
   // Add a dummy move first
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   Bitboard enemy_attacks = Bitboard::Zeros();
 
@@ -360,7 +360,7 @@ TEST(GenerateLegalKingMovesTest, MovesVectorAccumulates) {
 
   // Should have 1 dummy + 8 king moves = 9 total
   EXPECT_EQ(moves.size(), 9);
-  EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
 }
 
 /**

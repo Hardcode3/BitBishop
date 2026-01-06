@@ -26,7 +26,7 @@ void generate_knight_legal_moves(std::vector<Move>& moves, const Board& board, C
 
     for (Square to : candidates) {
       const bool is_capture = enemy.test(to);
-      moves.emplace_back(from, to, std::nullopt, is_capture, false, false);
+      moves.emplace_back(Move::make(from, to, is_capture));
     }
   }
 }

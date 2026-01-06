@@ -471,7 +471,7 @@ TEST(GeneratePawnLegalMovesTest, MovesVectorAccumulates) {
   board.set_piece(E2, WHITE_PAWN);
 
   std::vector<Move> moves;
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   Bitboard check_mask = Bitboard::Ones();
   PinResult pins;
@@ -479,7 +479,7 @@ TEST(GeneratePawnLegalMovesTest, MovesVectorAccumulates) {
   generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
 
   EXPECT_EQ(moves.size(), 3);
-  EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
 }
 
 /**
