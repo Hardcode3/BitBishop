@@ -390,7 +390,7 @@ TEST(GenerateQueenLegalMovesTest, MovesVectorAccumulates) {
 
   std::vector<Move> moves;
   // Add a dummy move first
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   Bitboard check_mask = Bitboard::Ones();
   PinResult pins;
@@ -399,7 +399,7 @@ TEST(GenerateQueenLegalMovesTest, MovesVectorAccumulates) {
 
   // Should have 1 dummy + 27 queen moves = 28 total
   EXPECT_EQ(moves.size(), 28);
-  EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
 }
 
 /**

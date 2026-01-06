@@ -42,7 +42,7 @@ void generate_castling_moves(std::vector<Move>& moves, const Board& board, Color
     Square g_square = (us == Color::WHITE) ? G1 : G8;
 
     if (!enemy_attacks.test(f_square) && !enemy_attacks.test(g_square)) {
-      moves.emplace_back(king_from, g_square, std::nullopt, false, false, true);
+      moves.emplace_back(Move::make_castling(king_from, g_square));
     }
   }
 
@@ -51,7 +51,7 @@ void generate_castling_moves(std::vector<Move>& moves, const Board& board, Color
     Square c_square = (us == Color::WHITE) ? C1 : C8;
 
     if (!enemy_attacks.test(d_square) && !enemy_attacks.test(c_square)) {
-      moves.emplace_back(king_from, c_square, std::nullopt, false, false, true);
+      moves.emplace_back(Move::make_castling(king_from, c_square));
     }
   }
 }

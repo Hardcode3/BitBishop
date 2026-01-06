@@ -271,13 +271,13 @@ TEST(GenerateLegalMovesTest, MovesVectorNotCleared) {
   board.set_piece(E8, BLACK_KING);
 
   std::vector<Move> moves;
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   size_t initial_size = moves.size();
   generate_legal_moves(moves, board, Color::WHITE);
 
   EXPECT_GT(moves.size(), initial_size);
-  EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
 }
 
 /**

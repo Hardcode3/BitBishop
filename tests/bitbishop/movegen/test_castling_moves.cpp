@@ -398,7 +398,7 @@ TEST(GenerateCastlingMovesTest, MovesVectorAccumulates) {
   Board board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
 
   std::vector<Move> moves;
-  moves.emplace_back(A1, A2, std::nullopt, false, false, false);
+  moves.emplace_back(Move::make(A1, A2));
 
   Bitboard checkers = Bitboard::Zeros();
   Bitboard enemy_attacks = Bitboard::Zeros();

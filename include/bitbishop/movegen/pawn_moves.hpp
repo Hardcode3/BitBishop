@@ -98,7 +98,7 @@ void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color
   const auto& promotion_pieces = (side == Color::WHITE) ? WHITE_PROMOTIONS : BLACK_PROMOTIONS;
 
   for (auto piece : promotion_pieces) {
-    moves.emplace_back(from, to, piece, capture, false, false);
+    moves.emplace_back(Move::make_promotion(from, to, piece, capture));
   }
 }
 
@@ -129,7 +129,7 @@ inline void generate_single_push(std::vector<Move>& moves, Square from, Color us
     if (is_promotion_rank(to, us)) {
       add_pawn_promotions(moves, from, to, us, false);
     } else {
-      moves.emplace_back(from, to, std::nullopt, false, false, false);
+      moves.emplace_back(Move::make(from, to));
     }
   }
 }
@@ -164,7 +164,7 @@ inline void generate_double_push(std::vector<Move>& moves, Square from, Color us
   Bitboard single_bb = single_push[from.flat_index()] & occupied;
   if (single_bb.empty() && bb) {
     Square to = bb.pop_lsb().value();
-    moves.emplace_back(from, to, std::nullopt, false, false, false);
+    moves.emplace_back(Move::make(from, to));
   }
 }
 
@@ -190,11 +190,12 @@ inline void generate_captures(std::vector<Move>& moves, Square from, Color us, c
   bb &= check_mask;
   bb &= pin_mask;
 
+  constexpr bool is_capture = true;
   for (Square to : bb) {
     if (is_promotion_rank(to, us)) {
-      add_pawn_promotions(moves, from, to, us, true);
+      add_pawn_promotions(moves, from, to, us, is_capture);
     } else {
-      moves.emplace_back(from, to, std::nullopt, true, false, false);
+      moves.emplace_back(Move::make(from, to, is_capture));
     }
   }
 }
@@ -241,7 +242,7 @@ inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us,
   Bitboard attackers = generate_attacks(tmp, them);
 
   if (!attackers.test(king_sq)) {
-    moves.emplace_back(from, epsq, std::nullopt, true, true, false);
+    moves.emplace_back(Move::make_en_passant(from, epsq));
   }
 }
 

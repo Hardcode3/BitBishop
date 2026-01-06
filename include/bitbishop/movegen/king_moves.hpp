@@ -19,6 +19,6 @@ void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Col
 
   for (Square to : candidates) {
     const bool is_capture = enemy.test(to);
-    moves.emplace_back(king_sq, to, std::nullopt, is_capture, false, false);
+    moves.emplace_back(Move::make(king_sq, to, is_capture));
   }
 }
