@@ -147,6 +147,7 @@ class Bitboard {
 
   constexpr bool operator==(const Bitboard& other) const { return m_bb == other.m_bb; }
   constexpr bool operator!=(const Bitboard& other) const { return m_bb != other.m_bb; }
+  constexpr Bitboard operator^(const Bitboard& other) const { return m_bb ^ other.m_bb; }
   constexpr Bitboard operator|(const Bitboard& other) const { return m_bb | other.m_bb; }
   constexpr Bitboard operator&(const Bitboard& other) const { return m_bb & other.m_bb; }
   constexpr Bitboard operator~() const { return ~m_bb; }
@@ -158,6 +159,10 @@ class Bitboard {
   }
   constexpr Bitboard& operator&=(const Bitboard& other) {
     m_bb &= other.m_bb;
+    return *this;
+  }
+  constexpr Bitboard& operator^=(const Bitboard& other) {
+    m_bb ^= other.m_bb;
     return *this;
   }
   constexpr operator bool() const noexcept { return m_bb != 0ULL; }

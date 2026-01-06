@@ -166,10 +166,8 @@ TEST(GenerateAttacksTest, MultiplePawnsAttacks) {
 TEST(GenerateAttacksTest, PawnOnEdgeAttacks) {
   Board board = Board::Empty();
   board.set_piece(A4, BLACK_PAWN);
-  board.print();
 
   Bitboard attacks = generate_attacks(board, Color::BLACK);
-  attacks.print();
 
   EXPECT_EQ(attacks.count(), 1);
   EXPECT_TRUE(attacks.test(B3));
@@ -451,17 +449,36 @@ TEST(GenerateAttacksTest, AttacksIncludeFriendlySquares) {
  * @brief Confirms generate_attacks() does not include squares beyond
  *        blockers (no x-ray vision).
  */
-TEST(GenerateAttacksTest, NoXRayAttacks) {
+TEST(GenerateAttacksTest, NoXRayAttacksThroughAnyPieceThatIsNotKing) {
   Board board = Board::Empty();
   board.set_piece(E4, BLACK_ROOK);
-  board.set_piece(E5, WHITE_KING);  // Blocker
-  board.set_piece(E6, WHITE_PAWN);  // Beyond blocker
+  board.set_piece(E5, WHITE_KNIGHT);  // Blocker
+  board.set_piece(E6, WHITE_PAWN);    // Beyond blocker
 
   Bitboard attacks = generate_attacks(board, Color::BLACK);
 
   EXPECT_TRUE(attacks.test(E5));   // Up to blocker
   EXPECT_FALSE(attacks.test(E6));  // Beyond blocker (no x-ray)
   EXPECT_FALSE(attacks.test(E7));  // Beyond blocker
+}
+
+/**
+ * @test X-ray attacks included only for king pieces.
+ * @brief Confirms generate_attacks() includes squares beyond
+ *        blockers if there is a king.
+ */
+TEST(GenerateAttacksTest, XRayAttacksThroughKing) {
+  Board board = Board::Empty();
+  board.set_piece(E4, BLACK_ROOK);
+  board.set_piece(E5, WHITE_KING);  // Blocker
+  board.set_piece(E7, WHITE_PAWN);  // Beyond blocker
+
+  Bitboard attacks = generate_attacks(board, Color::BLACK);
+
+  EXPECT_TRUE(attacks.test(E5));   // Up to blocker
+  EXPECT_TRUE(attacks.test(E6));   // Beyond blocker (x-ray)
+  EXPECT_TRUE(attacks.test(E7));   // Beyond blocker
+  EXPECT_FALSE(attacks.test(E8));  // Blocked by non-king piece
 }
 
 /**

@@ -21,9 +21,8 @@ TEST(GenerateLegalKingMovesTest, CenterKingEmptyBoard) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 8);
 
@@ -49,9 +48,8 @@ TEST(GenerateLegalKingMovesTest, CornerKingLimitedMoves) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, A1, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, A1, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 3);
 
@@ -72,9 +70,8 @@ TEST(GenerateLegalKingMovesTest, EdgeKingLimitedMoves) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E1, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E1, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 5);
 
@@ -100,9 +97,8 @@ TEST(GenerateLegalKingMovesTest, FriendlyPiecesBlocked) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 5);
 
@@ -134,9 +130,8 @@ TEST(GenerateLegalKingMovesTest, EnemyAttacksBlocked) {
   enemy_attacks.set(D5);
 
   std::vector<Move> moves;
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 5);
 
@@ -154,49 +149,6 @@ TEST(GenerateLegalKingMovesTest, EnemyAttacksBlocked) {
 }
 
 /**
- * @test Check mask restricts king moves.
- * @brief Confirms generate_legal_king_moves() only generates moves within
- *        the check mask.
- */
-TEST(GenerateLegalKingMovesTest, CheckMaskRestriction) {
-  Board board = Board::Empty();
-  board.set_piece(E4, WHITE_KING);
-
-  Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Zeros();
-  check_mask.set(D3);
-  check_mask.set(E3);
-
-  std::vector<Move> moves;
-
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
-
-  EXPECT_EQ(moves.size(), 2);
-
-  // Only moves to D3 and E3 should be generated
-  EXPECT_TRUE(contains_move(moves, {E4, D3, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {E4, E3, std::nullopt, false, false, false}));
-}
-
-/**
- * @test Empty check mask generates no moves.
- * @brief Confirms generate_legal_king_moves() generates no moves when
- *        check mask is empty (double check).
- */
-TEST(GenerateLegalKingMovesTest, EmptyCheckMaskNoMoves) {
-  Board board = Board::Empty();
-  board.set_piece(E4, WHITE_KING);
-
-  std::vector<Move> moves;
-  Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Zeros();
-
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
-
-  EXPECT_EQ(moves.size(), 0);
-}
-
-/**
  * @test King captures enemy pieces.
  * @brief Confirms generate_legal_king_moves() generates capture moves
  *        and marks them correctly.
@@ -209,9 +161,8 @@ TEST(GenerateLegalKingMovesTest, KingCapturesEnemyPieces) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   // Should generate 8 moves (6 empty + 2 captures)
   EXPECT_EQ(moves.size(), 8);
@@ -243,9 +194,8 @@ TEST(GenerateLegalKingMovesTest, CannotCaptureOnAttackedSquare) {
   enemy_attacks.set(D3);  // Square is defended
 
   std::vector<Move> moves;
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   // Should generate 7 moves (D3 is excluded)
   EXPECT_EQ(moves.size(), 7);
@@ -256,7 +206,7 @@ TEST(GenerateLegalKingMovesTest, CannotCaptureOnAttackedSquare) {
 /**
  * @test All restrictions combined.
  * @brief Confirms generate_legal_king_moves() correctly applies friendly
- *        pieces, enemy attacks, and check mask simultaneously.
+ *        pieces and enemy attacks simultaneously.
  */
 TEST(GenerateLegalKingMovesTest, AllRestrictionsCombined) {
   Board board = Board::Empty();
@@ -270,20 +220,17 @@ TEST(GenerateLegalKingMovesTest, AllRestrictionsCombined) {
   enemy_attacks.set(E5);  // Knight square defended
   enemy_attacks.set(F3);  // Attacked by knight
 
-  Bitboard check_mask = Bitboard::Ones();
-  check_mask.clear(F5);  // Not in check mask
-
   std::vector<Move> moves;
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
-  // Available: D5, E3, F4 (3 moves)
-  // Blocked: D3 (friendly + attacked), D4 (attacked), E5 (attacked/defended), F3 (attacked by knight), F5 (not in mask)
-  EXPECT_EQ(moves.size(), 3);
+  // Available: D5, E3, F4, F5 (4 moves)
+  EXPECT_EQ(moves.size(), 4);
 
   EXPECT_TRUE(contains_move(moves, {E4, D5, std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {E4, E3, std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {E4, F4, std::nullopt, false, false, false}));
+  EXPECT_TRUE(contains_move(moves, {E4, F5, std::nullopt, false, false, false}));
 }
 
 /**
@@ -298,9 +245,8 @@ TEST(GenerateLegalKingMovesTest, MovePropertiesCorrect) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   for (const Move& move : moves) {
     EXPECT_EQ(move.from, E4);
@@ -326,9 +272,8 @@ TEST(GenerateLegalKingMovesTest, BlackKingMoves) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::BLACK, E8, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::BLACK, E8, enemy_attacks);
 
   // Should generate 4 moves (D7 blocked, E7 capturable), D8, F8 and F7 free
   EXPECT_EQ(moves.size(), 4);
@@ -364,9 +309,8 @@ TEST(GenerateLegalKingMovesTest, KingSurroundedNoMoves) {
 
   std::vector<Move> moves;
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -391,9 +335,8 @@ TEST(GenerateLegalKingMovesTest, AllSquaresAttackedNoMoves) {
   enemy_attacks.set(F5);
 
   std::vector<Move> moves;
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -412,41 +355,12 @@ TEST(GenerateLegalKingMovesTest, MovesVectorAccumulates) {
   moves.emplace_back(A1, A2, std::nullopt, false, false, false);
 
   Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   // Should have 1 dummy + 8 king moves = 9 total
   EXPECT_EQ(moves.size(), 9);
   EXPECT_TRUE(contains_move(moves, {A1, A2, std::nullopt, false, false, false}));
-}
-
-/**
- * @test Partial check mask allows some moves.
- * @brief Confirms generate_legal_king_moves() correctly filters moves
- *        based on non-trivial check mask patterns.
- */
-TEST(GenerateLegalKingMovesTest, PartialCheckMask) {
-  Board board = Board::Empty();
-  board.set_piece(E4, WHITE_KING);
-
-  Bitboard enemy_attacks = Bitboard::Zeros();
-  Bitboard check_mask = Bitboard::Zeros();
-  check_mask.set(D3);
-  check_mask.set(D4);
-  check_mask.set(D5);
-  check_mask.set(E3);
-
-  std::vector<Move> moves;
-
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
-
-  EXPECT_EQ(moves.size(), 4);
-
-  EXPECT_TRUE(contains_move(moves, {E4, D3, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {E4, D4, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {E4, D5, std::nullopt, false, false, false}));
-  EXPECT_TRUE(contains_move(moves, {E4, E3, std::nullopt, false, false, false}));
 }
 
 /**
@@ -464,9 +378,8 @@ TEST(GenerateLegalKingMovesTest, CaptureUndefendedOnly) {
   enemy_attacks.set(E5);  // E5 is defended
 
   std::vector<Move> moves;
-  Bitboard check_mask = Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks, check_mask);
+  generate_legal_king_moves(moves, board, Color::WHITE, E4, enemy_attacks);
 
   // Verify D3 capture is allowed
   EXPECT_TRUE(contains_move(moves, {E4, D3, std::nullopt, true, false, false}));
