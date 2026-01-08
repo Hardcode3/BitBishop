@@ -1,0 +1,22 @@
+#pragma once
+
+#include <bitbishop/board.hpp>
+#include <bitbishop/piece.hpp>
+#include <bitbishop/square.hpp>
+
+struct MoveEffect {
+  enum class Type : uint8_t { Place, Remove, BoardState };
+
+  Type type;
+  Square square;
+  Piece piece;
+  BoardState prev_state;
+  BoardState next_state;
+
+  static MoveEffect place(Square sq, Piece p);
+  static MoveEffect remove(Square sq, Piece p);
+  static MoveEffect state_change(const BoardState& prev, const BoardState& next);
+
+  void apply(Board& board) const;
+  void revert(Board& board) const;
+};
