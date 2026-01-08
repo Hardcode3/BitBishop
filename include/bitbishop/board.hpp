@@ -8,21 +8,24 @@
 #include <optional>
 #include <vector>
 
-struct UndoInfo {
-  std::optional<Piece> captured_piece;
-  Square captured_square;
+struct BoardState {
+  bool m_is_white_turn;                   ///< True if it is White's turn
+  std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
 
-  bool white_castle_kingside;
-  bool white_castle_queenside;
-  bool black_castle_kingside;
-  bool black_castle_queenside;
+  // Castling abilities
+  bool m_white_castle_kingside;   ///< White may castle kingside
+  bool m_white_castle_queenside;  ///< White may castle queenside
+  bool m_black_castle_kingside;   ///< Black may castle kingside
+  bool m_black_castle_queenside;  ///< Black may castle queenside
 
-  std::optional<Square> en_passant_sq;
-  int halfmove_clock;
-  int fullmove_number;
+  // 50-move rule state
+  int m_halfmove_clock;  ///< Counts halfmoves since last pawn move or capture
 
-  bool was_pawn_promotion;  // true if a pawn was promoted
+  // Move number (starts at 1, incremented after Black’s move)
+  int m_fullmove_number;
 };
+
+struct MoveExecution;
 
 /**
  * @class Board
@@ -49,22 +52,8 @@ class Board {
   Bitboard m_b_pawns, m_b_rooks, m_b_bishops, m_b_knights, m_b_king, m_b_queens;
 
   // Game state
-  bool m_is_white_turn;                   ///< True if it is White's turn
-  std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
-
-  // Castling abilities
-  bool m_white_castle_kingside;   ///< White may castle kingside
-  bool m_white_castle_queenside;  ///< White may castle queenside
-  bool m_black_castle_kingside;   ///< Black may castle kingside
-  bool m_black_castle_queenside;  ///< Black may castle queenside
-
-  // 50-move rule state
-  int m_halfmove_clock;  ///< Counts halfmoves since last pawn move or capture
-
-  // Move number (starts at 1, incremented after Black’s move)
-  int m_fullmove_number;
-
-  std::vector<UndoInfo> m_undo_stack;
+  BoardState m_state;
+  std::vector<MoveExecution> m_move_history;
 
  public:
   /**
@@ -241,6 +230,9 @@ class Board {
    */
   [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
+  BoardState get_state() const { return m_state; }
+  void set_state(BoardState state) { m_state = state; }
+
   /**
    * @brief Returns the current en passant target square, if any.
    *
@@ -254,7 +246,7 @@ class Board {
    * }
    * @endcode
    */
-  [[nodiscard]] std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
+  [[nodiscard]] std::optional<Square> en_passant_square() const noexcept { return m_state.m_en_passant_sq; }
 
   /**
    * @brief Checks if the given side has kingside castling rights.
@@ -262,7 +254,7 @@ class Board {
    * @return true if kingside castling rights is available, false otherwise
    */
   [[nodiscard]] bool has_kingside_castling_rights(Color side) const {
-    return (side == Color::WHITE) ? m_white_castle_kingside : m_black_castle_kingside;
+    return (side == Color::WHITE) ? m_state.m_white_castle_kingside : m_state.m_black_castle_kingside;
   }
 
   /**
@@ -271,7 +263,7 @@ class Board {
    * @return true if queenside castling rights is available, false otherwise
    */
   [[nodiscard]] bool has_queenside_castling_rights(Color side) const {
-    return (side == Color::WHITE) ? m_white_castle_queenside : m_black_castle_queenside;
+    return (side == Color::WHITE) ? m_state.m_white_castle_queenside : m_state.m_black_castle_queenside;
   }
 
   /**
@@ -302,8 +294,24 @@ class Board {
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
 
+  //   void Board::make_move(const Move& move) {
+  //   MoveExecution exec = MoveExecutor::build_execution(*this, move);
+  //   exec.apply(*this);
+  //   m_move_history.push_back(exec);
+  // }
+  // not relevant in board
   void make_move(const Move& move);
 
+  // void Board::unmake_move(const Move& move) {
+  //   if (m_move_history.empty()) {
+  //     throw std::runtime_error("No moves to unmake");
+  //   }
+
+  //   MoveExecution exec = m_move_history.back();
+  //   m_move_history.pop_back();
+  //   exec.revert(*this);
+  // }
+  // not relevant in board
   void unmake_move(const Move& move);
 
   Board& operator=(const Board& other) = default;
@@ -328,4 +336,283 @@ class Board {
    * @return true if positions differ, false otherwise
    */
   [[nodiscard]] bool operator!=(const Board& other) const;
+};
+
+struct MoveEffect {
+  enum class Type : uint8_t { Place, Remove, BoardState, Dummy };
+
+  Type type;
+  Square square;
+  Piece piece;
+  BoardState prev_state;
+  BoardState new_state;
+
+  MoveEffect(Type t, Square sq, Piece p, BoardState prev = BoardState{}, BoardState next = BoardState{})
+      : type(t), square(sq), piece(p), prev_state(prev), new_state(next) {}
+
+  MoveEffect() : type(Type::Dummy), square(Squares::A1), piece(Pieces::WHITE_KING), prev_state(), new_state() { ; }
+
+  static MoveEffect place(Square sq, Piece p) { return MoveEffect(Type::Place, sq, p); }
+
+  static MoveEffect remove(Square sq, Piece p) { return MoveEffect(Type::Remove, sq, p); }
+
+  static MoveEffect state_change(BoardState prev, BoardState next) {
+    return MoveEffect(Type::BoardState, Squares::A1, Pieces::WHITE_KING, prev, next);
+  }
+
+  inline void apply(Board& board) const {
+    switch (type) {
+      case Type::Place:
+        board.set_piece(square, piece);
+        break;
+      case Type::Remove:
+        board.remove_piece(square);
+        break;
+      case Type::BoardState:
+        board.set_state(new_state);
+        break;
+      case Type::Dummy:
+        break;
+    }
+  }
+
+  inline void revert(Board& board) const {
+    switch (type) {
+      case Type::Place:
+        board.remove_piece(square);
+        break;
+      case Type::Remove:
+        board.set_piece(square, piece);
+        break;
+      case Type::BoardState:
+        board.set_state(prev_state);
+        break;
+      case Type::Dummy:
+        break;
+    }
+  }
+};
+
+struct MoveExecution {
+  static constexpr int MAX_EFFECTS = 6;
+  MoveEffect effects[MAX_EFFECTS];
+  int count = 0;
+
+  inline void add(const MoveEffect& e) { effects[count++] = e; }
+
+  inline void apply(Board& board) const {
+    for (int i = 0; i < count; ++i) {
+      effects[i].apply(board);
+    }
+  }
+
+  inline void revert(Board& board) const {
+    for (int i = count - 1; i >= 0; --i) {
+      effects[i].revert(board);
+    }
+  }
+};
+
+struct MoveContext {
+  const Board& board;
+  const Move& move;
+  Piece moving_piece;
+  bool is_white;
+  bool is_pawn_move;
+  BoardState prev_state;
+};
+
+// Rule function signature: takes context, generates effects into execution
+using MoveRule = void (*)(const MoveContext& ctx, MoveExecution& exec);
+
+namespace MoveRules {
+
+inline void basic_movement(const MoveContext& ctx, MoveExecution& exec) {
+  if (ctx.move.is_capture && !ctx.move.is_en_passant) {
+    Piece captured = *ctx.board.get_piece(ctx.move.to);
+    exec.add(MoveEffect::remove(ctx.move.to, captured));
+  }
+
+  exec.add(MoveEffect::remove(ctx.move.from, ctx.moving_piece));
+  exec.add(MoveEffect::place(ctx.move.to, ctx.moving_piece));
+}
+
+inline void en_passant_capture(const MoveContext& ctx, MoveExecution& exec) {
+  if (!ctx.move.is_en_passant) {
+    return;
+  }
+
+  using namespace Const;
+  int direction = ctx.is_white ? -BOARD_WIDTH : +BOARD_WIDTH;
+  Square captured = Square(ctx.move.to.value() + direction);
+  Piece captured_piece = *ctx.board.get_piece(captured);
+  exec.add(MoveEffect::remove(captured, captured_piece));
+}
+
+inline void pawn_promotion(const MoveContext& ctx, MoveExecution& exec) {
+  if (!ctx.move.promotion) {
+    return;
+  }
+
+  exec.add(MoveEffect::remove(ctx.move.to, ctx.moving_piece));
+  exec.add(MoveEffect::place(ctx.move.to, *ctx.move.promotion));
+}
+
+inline void castling_rook(const MoveContext& ctx, MoveExecution& exec) {
+  if (!ctx.move.is_castling) {
+    return;
+  }
+
+  using namespace Squares;
+
+  // dummy inits
+  Square rook_from = Squares::A1;
+  Square rook_to = Squares::A1;
+
+  if (ctx.move.to == C1) {
+    rook_from = A1;
+    rook_to = D1;
+  } else if (ctx.move.to == G1) {
+    rook_from = H1;
+    rook_to = F1;
+  } else if (ctx.move.to == C8) {
+    rook_from = A8;
+    rook_to = D8;
+  } else if (ctx.move.to == G8) {
+    rook_from = H8;
+    rook_to = F8;
+  } else {
+    return;
+  }
+
+  Piece rook = *ctx.board.get_piece(rook_from);
+  exec.add(MoveEffect::remove(rook_from, rook));
+  exec.add(MoveEffect::place(rook_to, rook));
+}
+
+}  // namespace MoveRules
+
+class BoardStateBuilder {
+ private:
+  BoardState state;
+
+ public:
+  explicit BoardStateBuilder(const BoardState& prev) : state(prev) {}
+
+  // Halfmove clock
+  void reset_halfmove_clock() { state.m_halfmove_clock = 0; }
+  void increment_halfmove_clock() { state.m_halfmove_clock++; }
+
+  // En passant
+  void clear_en_passant() { state.m_en_passant_sq = std::nullopt; }
+  void set_en_passant(Square sq) { state.m_en_passant_sq = sq; }
+
+  // Castling rights
+  void revoke_white_castling() {
+    state.m_white_castle_kingside = false;
+    state.m_white_castle_queenside = false;
+  }
+
+  void revoke_black_castling() {
+    state.m_black_castle_kingside = false;
+    state.m_black_castle_queenside = false;
+  }
+
+  void revoke_castling_if_rook_at(Square sq) {
+    using namespace Squares;
+    if (sq == A1) state.m_white_castle_queenside = false;
+    if (sq == H1) state.m_white_castle_kingside = false;
+    if (sq == A8) state.m_black_castle_queenside = false;
+    if (sq == H8) state.m_black_castle_kingside = false;
+  }
+
+  // Turn
+  void flip_turn() { state.m_is_white_turn = !state.m_is_white_turn; }
+
+  // Fullmove
+  void increment_fullmove_if_black_moved() {
+    if (state.m_is_white_turn) {  // White is about to move = black just moved
+      state.m_fullmove_number++;
+    }
+  }
+
+  BoardState build() const { return state; }
+};
+
+namespace StateRules {
+
+// Single function that builds the new state
+inline void update_board_state(const MoveContext& ctx, MoveExecution& exec) {
+  BoardStateBuilder builder(ctx.prev_state);
+
+  // Halfmove clock
+  if (ctx.is_pawn_move || ctx.move.is_capture || ctx.move.is_en_passant) {
+    builder.reset_halfmove_clock();
+  } else {
+    builder.increment_halfmove_clock();
+  }
+
+  // En passant
+  builder.clear_en_passant();
+  if (ctx.is_pawn_move && std::abs(ctx.move.to.rank() - ctx.move.from.rank()) == 2) {
+    int ep_rank = (ctx.move.to.rank() + ctx.move.from.rank()) / 2;
+    builder.set_en_passant(Square(ctx.move.from.file(), ep_rank));
+  }
+
+  // Castling rights
+  if (ctx.moving_piece.type() == Piece::Type::KING) {
+    if (ctx.is_white) {
+      builder.revoke_white_castling();
+    } else {
+      builder.revoke_black_castling();
+    }
+  }
+
+  if (ctx.moving_piece.type() == Piece::Type::ROOK) {
+    builder.revoke_castling_if_rook_at(ctx.move.from);
+  }
+
+  if (ctx.move.is_capture || ctx.move.is_en_passant) {
+    builder.revoke_castling_if_rook_at(ctx.move.to);
+  }
+
+  // Turn and fullmove
+  builder.flip_turn();
+  builder.increment_fullmove_if_black_moved();
+
+  // Add the state change effect
+  exec.add(MoveEffect::state_change(ctx.prev_state, builder.build()));
+}
+
+}  // namespace StateRules
+
+class MoveExecutor {
+ public:
+  static MoveExecution build_execution(const Board& board, const Move& move) {
+    const MoveRule STANDARD_RULES[5] = {
+        // clang-format off
+      MoveRules::en_passant_capture,
+      MoveRules::basic_movement,
+      MoveRules::pawn_promotion,
+      MoveRules::castling_rook,
+      StateRules::update_board_state,  // Single state update at end
+        // clang-format on
+    };
+
+    MoveContext ctx = {
+        .board = board,
+        .move = move,
+        .moving_piece = *board.get_piece(move.from),
+        .is_white = board.get_piece(move.from)->is_white(),
+        .is_pawn_move = board.get_piece(move.from)->type() == Piece::Type::PAWN,
+        .prev_state = board.get_state(),
+    };
+
+    MoveExecution exec{};
+    for (MoveRule rule : STANDARD_RULES) {
+      rule(ctx, exec);
+    }
+
+    return exec;
+  }
 };
