@@ -4,30 +4,38 @@
 
 class MoveBuilder {
  private:
-  MoveExecution m_effects;
+  MoveExecution effects;
 
-  Move m_move;
-  Board m_board;
+  const Move& move;
+  const Board& board;
 
-  Piece m_final_piece;
-  Piece m_moving_piece;
-  std::optional<Piece> m_captured;
-  BoardState m_prev_state, m_next_state;
+  Piece final_piece = Pieces::WHITE_KING;   // place holder
+  Piece moving_piece = Pieces::WHITE_KING;  // place holder
+  std::optional<Piece> opt_captured_piece;
+  BoardState prev_state, next_state;
 
  public:
   MoveBuilder() = delete;
   MoveBuilder(const Board& board, const Move& move);
+  MoveExecution build();
 
-  MoveExecution build() const;
+ private:
+  // utilities
+  void revoke_castling_if_rook_at(Square sq);
+  void revoke_castling_if_king_at(Square sq);
 
+  void prepare_base_state();
+  void prepare_next_state();
+
+  // move execution builder steps
   void remove_moving_piece();
-  void regular_capture();
-  void en_passant_capture();
-  void handle_promotion();
   void place_final_piece();
+  void handle_regular_capture();
+  void handle_en_passant_capture();
+  void handle_promotion();
   void handle_rook_castling();
   void update_castling_rights();
-  void add_en_passant_square();
+  void update_en_passant_square();
   void commit_state();
   void update_half_move_clock();
   void update_full_move_number();

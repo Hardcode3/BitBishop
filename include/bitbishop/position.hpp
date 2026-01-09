@@ -1,22 +1,21 @@
 #pragma once
 
-#include <move_builder.hpp>
+#include <bitbishop/board.hpp>
+#include <vector>
 
 class Position {
  private:
-  Board m_board;
-  std::vector<MoveExecution> m_history;
+  Board board;
+  std::vector<MoveExecution> move_execution_history;
 
  public:
-  Position() {}
+  Position() = delete;
+  explicit Position(Board initial) : board(std::move(initial)) { ; }
 
-  explicit Position(const Board& initial) {}
+  void apply_move(const Move& move);
+  void revert_move();
 
-  void apply_move(const Move& move) {}
-  void revert_move() {}
+  const Board& get_board() const { return board; }
 
-  const Board& get_board() const {}
-  Board& board() {}
-
-  bool can_unmake() const {}
+  bool can_unmake() const { return !move_execution_history.empty(); }
 };

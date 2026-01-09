@@ -8,8 +8,8 @@ struct MoveEffect {
   enum class Type : uint8_t { Place, Remove, BoardState };
 
   Type type;
-  Square square;
-  Piece piece;
+  Square square = Squares::A1;       // place holder
+  Piece piece = Pieces::WHITE_KING;  // place holder
   BoardState prev_state;
   BoardState next_state;
 

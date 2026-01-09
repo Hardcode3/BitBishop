@@ -269,22 +269,6 @@ bool Board::can_castle_queenside(Color side) const noexcept {
   return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
 }
 
-void Board::make_move(const Move& move) {
-  MoveExecution exec = MoveExecutor::build_execution(*this, move);
-  exec.apply(*this);
-  m_move_history.push_back(exec);
-}
-
-void Board::unmake_move(const Move& move) {
-  if (m_move_history.empty()) {
-    throw std::runtime_error("No moves to unmake");
-  }
-
-  MoveExecution exec = m_move_history.back();
-  m_move_history.pop_back();
-  exec.revert(*this);
-}
-
 bool Board::operator==(const Board& other) const {
   if (this == &other) {
     return true;
