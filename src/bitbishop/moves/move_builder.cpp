@@ -54,7 +54,7 @@ void MoveBuilder::handle_en_passant_capture() {
 
   using namespace Const;
   int direction = prev_state.m_is_white_turn ? -BOARD_WIDTH : +BOARD_WIDTH;
-  Square en_passant_sq = Square(move.to.value() + direction);
+  Square en_passant_sq(move.to.value() + direction);
   Piece captured_piece = *board.get_piece(en_passant_sq);
   effects.add(MoveEffect::remove(en_passant_sq, captured_piece));
 }
@@ -124,32 +124,29 @@ void MoveBuilder::revoke_castling_if_king_at(Square sq) {
 }
 
 void MoveBuilder::update_castling_rights() {
-  const bool is_king_moving = moving_piece.type() == Piece::Type::KING;
-  if (is_king_moving) {
+  if (moving_piece.is_king()) {
     revoke_castling_if_king_at(move.from);
   }
 
-  const bool is_rook_moving = moving_piece.type() == Piece::Type::ROOK;
-  if (is_rook_moving) {
+  if (moving_piece.is_rook()) {
     revoke_castling_if_rook_at(move.from);
   }
 
-  const bool is_rook_captured = opt_captured_piece ? (*opt_captured_piece).type() == Piece::Type::ROOK : false;
+  const bool is_rook_captured = opt_captured_piece ? (*opt_captured_piece).is_rook() : false;
   if (is_rook_captured) {
     revoke_castling_if_rook_at(move.to);
   }
 }
 
 void MoveBuilder::update_en_passant_square() {
-  const bool is_pawn_moving = moving_piece.type() == Piece::Type::PAWN;
-  if (!is_pawn_moving) {
+  if (!moving_piece.is_pawn()) {
     return;
   }
 
-  const int dr = move.to.rank() - move.from.rank();
-  if (dr == 2) {
+  const int delta_rank = move.to.rank() - move.from.rank();
+  if (delta_rank == 2) {
     next_state.m_en_passant_sq = Square(move.from.file(), move.from.rank() + 1);
-  } else if (dr == -2) {
+  } else if (delta_rank == -2) {
     next_state.m_en_passant_sq = Square(move.from.file(), move.from.rank() - 1);
   }
 }
@@ -157,9 +154,7 @@ void MoveBuilder::update_en_passant_square() {
 void MoveBuilder::commit_state() { effects.add(MoveEffect::state_change(prev_state, next_state)); }
 
 void MoveBuilder::update_half_move_clock() {
-  const bool is_pawn_moving = moving_piece.type() == Piece::Type::PAWN;
-
-  if (move.is_capture || is_pawn_moving) {
+  if (move.is_capture || moving_piece.is_pawn()) {
     next_state.m_halfmove_clock = 0;
   } else {
     next_state.m_halfmove_clock++;

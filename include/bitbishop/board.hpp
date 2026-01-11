@@ -76,8 +76,8 @@ class Board {
    */
   Board();
 
-  Board(const Board&) noexcept;
-  explicit Board(Board&& other) noexcept;
+  Board(const Board&) noexcept = default;
+  explicit Board(Board&& other) noexcept = default;
 
   /**
    * @brief Constructs a board from a FEN string.
@@ -306,8 +306,8 @@ class Board {
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
 
-  Board& operator=(const Board& other) noexcept;
-  Board& operator=(const Board&& other) noexcept;
+  Board& operator=(const Board& other) noexcept = default;
+  Board& operator=(Board&& other) noexcept = default;
 
   /**
    * @brief Checks if two boards represent the same chess position.

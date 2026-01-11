@@ -12,7 +12,9 @@ class Position {
  public:
   Position() = delete;
   Position(Board&) = delete;
-  explicit Position(Board&& initial) : board(std::move(initial)) { ; }
+  explicit Position(Board&& initial) : board(initial) {
+    ;  // board is trivially copyable, no move, just a copy behind the scenes
+  }
 
   void apply_move(const Move& move);
   void revert_move();

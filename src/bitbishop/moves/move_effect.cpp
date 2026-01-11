@@ -1,12 +1,12 @@
 #include <bitbishop/moves/move_effect.hpp>
 #include <utility>
 
-MoveEffect MoveEffect::place(Square sq, Piece p) {
-  return MoveEffect{.type = Type::Place, .square = sq, .piece = p, .prev_state = {}, .next_state = {}};
+MoveEffect MoveEffect::place(Square sq, Piece piece) {
+  return MoveEffect{.type = Type::Place, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
 }
 
-MoveEffect MoveEffect::remove(Square sq, Piece p) {
-  return MoveEffect{.type = Type::Remove, .square = sq, .piece = p, .prev_state = {}, .next_state = {}};
+MoveEffect MoveEffect::remove(Square sq, Piece piece) {
+  return MoveEffect{.type = Type::Remove, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
 }
 
 MoveEffect MoveEffect::state_change(const BoardState& prev, const BoardState& next) {

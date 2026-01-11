@@ -48,10 +48,10 @@ class Bitboard {
   constexpr Bitboard(uint64_t value) : m_bb(value) {}
 
   /** @brief Constructs a bitboard from another bitboard by copy. */
-  constexpr Bitboard(const Bitboard& bitboard) : m_bb(bitboard.value()) {}
+  constexpr Bitboard(const Bitboard& bitboard) noexcept = default;
 
   /** @brief Move-constructs a bitboard. */
-  constexpr explicit Bitboard(Bitboard&& other) noexcept : m_bb(std::move(other.m_bb)) { ; }
+  constexpr explicit Bitboard(Bitboard&& other) noexcept = default;
 
   /** @brief Constructs a bitboard with the given square being the only bit set to one. */
   constexpr Bitboard(Square square) : m_bb(0ULL) { set(square); }
@@ -169,18 +169,8 @@ class Bitboard {
     return *this;
   }
   constexpr operator bool() const noexcept { return m_bb != 0ULL; }
-  constexpr Bitboard& operator=(const Bitboard& other) noexcept {
-    if (this != &other) {
-      m_bb = other.m_bb;
-    }
-    return *this;
-  }
-  constexpr Bitboard& operator=(Bitboard&& other) noexcept {
-    if (this != &other) {
-      m_bb = std::move(other.m_bb);
-    }
-    return *this;
-  }
+  constexpr Bitboard& operator=(const Bitboard& other) noexcept = default;
+  constexpr Bitboard& operator=(Bitboard&& other) noexcept = default;
 
   /**
    * @brief Counts the number of set bits in the bitboard.
