@@ -1,5 +1,5 @@
-#include <bitbishop/move_builder.hpp>
-#include <bitbishop/position.hpp>
+#include <bitbishop/moves/move_builder.hpp>
+#include <bitbishop/moves/position.hpp>
 
 void Position::apply_move(const Move& move) {
   MoveBuilder builder(board, move);

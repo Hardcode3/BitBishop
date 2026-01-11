@@ -1,4 +1,4 @@
-#include <bitbishop/move_effect.hpp>
+#include <bitbishop/moves/move_effect.hpp>
 #include <utility>
 
 MoveEffect MoveEffect::place(Square sq, Piece p) {

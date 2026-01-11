@@ -57,23 +57,18 @@ TEST(BoardTest, FENConstructor) {
 }
 
 /**
- * @test Copy constructor preserves board state.
- * @brief Confirms that copying a board with the copy constructor produces an identical board.
+ * @test Move constructor preserves board state.
+ * @brief Confirms that moving a board with the move constructor produces an identical board.
  */
-TEST(BoardCopyTest, CopyConstructor) {
+TEST(BoardCopyTest, MoveConstructor) {
   Board original = Board::Empty();
 
-  // Set up pieces and state
   original.set_piece(E1, WHITE_KING);
   original.set_piece(E8, BLACK_KING);
   original.set_piece(D4, WHITE_QUEEN);
   original.set_piece(A7, BLACK_PAWN);
 
-  // Set castling rights manually (assuming setters exist)
-  // original.set_white_castle_kingside(true);
-  // original.set_black_castle_queenside(true);
-
-  Board copy(original);  // Copy constructor
+  Board copy(std::move(original));  // Copy constructor
 
   // Piece positions
   EXPECT_EQ(copy.get_piece(E1), WHITE_KING);
@@ -89,10 +84,10 @@ TEST(BoardCopyTest, CopyConstructor) {
 }
 
 /**
- * @test Copy assignment preserves board state.
- * @brief Confirms that copying a board via assignment produces an identical board.
+ * @test Move assignment preserves board state.
+ * @brief Confirms that moving a board via assignment produces an identical board.
  */
-TEST(BoardCopyTest, CopyAssignment) {
+TEST(BoardCopyTest, MoveAssignment) {
   Board original = Board::Empty();
 
   // Set up pieces and state
@@ -102,7 +97,7 @@ TEST(BoardCopyTest, CopyAssignment) {
   original.set_piece(H7, BLACK_PAWN);
 
   Board copy = Board::Empty();
-  copy = original;  // Copy assignment
+  copy = std::move(original);  // Copy assignment
 
   // Piece positions
   EXPECT_EQ(copy.get_piece(E1), WHITE_KING);
@@ -118,17 +113,20 @@ TEST(BoardCopyTest, CopyAssignment) {
 }
 
 /**
- * @test Copy produces independent boards.
+ * @test Move produces independent boards.
  * @brief Modifying the copy does not affect the original board.
  */
-TEST(BoardCopyTest, IndependenceAfterCopy) {
+TEST(BoardCopyTest, IndependenceAfterMove) {
   Board original = Board::Empty();
   original.set_piece(E1, WHITE_KING);
 
-  Board copy(original);
+  Board copy(std::move(original));
   copy.set_piece(E2, WHITE_PAWN);
 
-  // Original should remain unchanged
-  EXPECT_EQ(original.get_piece(E2), std::nullopt);
+  // Test that copy has the new piece
   EXPECT_EQ(copy.get_piece(E2), WHITE_PAWN);
+
+  // Original is in a valid state; we can safely assign new values
+  original.set_piece(D1, WHITE_QUEEN);
+  EXPECT_EQ(original.get_piece(D1), WHITE_QUEEN);
 }

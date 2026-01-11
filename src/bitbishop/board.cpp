@@ -5,6 +5,36 @@
 
 Board::Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {}
 
+Board::Board(const Board& other) noexcept
+    : m_w_pawns(other.m_w_pawns),
+      m_w_rooks(other.m_w_rooks),
+      m_w_bishops(other.m_w_bishops),
+      m_w_knights(other.m_w_knights),
+      m_w_king(other.m_w_king),
+      m_w_queens(other.m_w_queens),
+      m_b_pawns(other.m_b_pawns),
+      m_b_rooks(other.m_b_rooks),
+      m_b_bishops(other.m_b_bishops),
+      m_b_knights(other.m_b_knights),
+      m_b_king(other.m_b_king),
+      m_b_queens(other.m_b_queens),
+      m_state(other.m_state) {}
+
+Board::Board(Board&& other) noexcept
+    : m_w_pawns(std::move(other.m_w_pawns)),
+      m_w_rooks(std::move(other.m_w_rooks)),
+      m_w_bishops(std::move(other.m_w_bishops)),
+      m_w_knights(std::move(other.m_w_knights)),
+      m_w_king(std::move(other.m_w_king)),
+      m_w_queens(std::move(other.m_w_queens)),
+      m_b_pawns(std::move(other.m_b_pawns)),
+      m_b_rooks(std::move(other.m_b_rooks)),
+      m_b_bishops(std::move(other.m_b_bishops)),
+      m_b_knights(std::move(other.m_b_knights)),
+      m_b_king(std::move(other.m_b_king)),
+      m_b_queens(std::move(other.m_b_queens)),
+      m_state(std::move(other.m_state)) {}
+
 Board::Board(const std::string& fen) {
   /*
    * https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
@@ -289,3 +319,49 @@ bool Board::operator==(const Board& other) const {
 }
 
 bool Board::operator!=(const Board& other) const { return !this->operator==(other); }
+
+Board& Board::operator=(const Board& other) noexcept {
+  if (this != &other) {
+    m_w_pawns = other.m_w_pawns;
+    m_w_rooks = other.m_w_rooks;
+    m_w_bishops = other.m_w_bishops;
+    m_w_knights = other.m_w_knights;
+    m_w_king = other.m_w_king;
+    m_w_queens = other.m_w_queens;
+
+    m_b_pawns = other.m_b_pawns;
+    m_b_rooks = other.m_b_rooks;
+    m_b_bishops = other.m_b_bishops;
+    m_b_knights = other.m_b_knights;
+    m_b_king = other.m_b_king;
+    m_b_queens = other.m_b_queens;
+
+    m_state = other.m_state;
+  }
+
+  return *this;
+}
+
+Board& Board::operator=(const Board&& other) noexcept {
+  if (this != &other) {
+    // Move all bitboards
+    m_w_pawns = std::move(other.m_w_pawns);
+    m_w_rooks = std::move(other.m_w_rooks);
+    m_w_bishops = std::move(other.m_w_bishops);
+    m_w_knights = std::move(other.m_w_knights);
+    m_w_king = std::move(other.m_w_king);
+    m_w_queens = std::move(other.m_w_queens);
+
+    m_b_pawns = std::move(other.m_b_pawns);
+    m_b_rooks = std::move(other.m_b_rooks);
+    m_b_bishops = std::move(other.m_b_bishops);
+    m_b_knights = std::move(other.m_b_knights);
+    m_b_king = std::move(other.m_b_king);
+    m_b_queens = std::move(other.m_b_queens);
+
+    // Move the board state
+    m_state = std::move(other.m_state);
+  }
+
+  return *this;
+}

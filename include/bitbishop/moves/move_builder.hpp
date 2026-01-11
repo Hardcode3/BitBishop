@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bitbishop/move_execution.hpp>
+#include <bitbishop/moves/move_execution.hpp>
 
 class MoveBuilder {
  private:

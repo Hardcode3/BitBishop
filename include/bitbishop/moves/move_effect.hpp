@@ -13,8 +13,8 @@ struct MoveEffect {
   BoardState prev_state;
   BoardState next_state;
 
-  static MoveEffect place(Square sq, Piece p);
-  static MoveEffect remove(Square sq, Piece p);
+  static MoveEffect place(Square sq, Piece piece);
+  static MoveEffect remove(Square sq, Piece piece);
   static MoveEffect state_change(const BoardState& prev, const BoardState& next);
 
   void apply(Board& board) const;

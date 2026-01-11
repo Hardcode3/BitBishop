@@ -1,5 +1,5 @@
 #include <bitbishop/constants.hpp>
-#include <bitbishop/move_builder.hpp>
+#include <bitbishop/moves/move_builder.hpp>
 
 MoveBuilder::MoveBuilder(const Board& board, const Move& move) : board(board), move(move) {
   moving_piece = *board.get_piece(move.from);

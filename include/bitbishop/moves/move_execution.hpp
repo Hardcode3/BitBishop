@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <bitbishop/move_effect.hpp>
+#include <bitbishop/moves/move_effect.hpp>
 
 struct MoveExecution {
   static constexpr int MAX_EFFECTS = 6;

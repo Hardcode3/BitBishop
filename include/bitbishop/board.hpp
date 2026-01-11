@@ -23,9 +23,21 @@ struct BoardState {
 
   // Move number (starts at 1, incremented after Black’s move)
   int m_fullmove_number;
-};
 
-struct MoveExecution;
+  bool operator==(const BoardState& other) const {
+    if (this == &other) {
+      return true;
+    }
+    return m_is_white_turn == other.m_is_white_turn && m_en_passant_sq == other.m_en_passant_sq &&
+           m_white_castle_kingside == other.m_white_castle_kingside &&
+           m_white_castle_queenside == other.m_white_castle_queenside &&
+           m_black_castle_kingside == other.m_black_castle_kingside &&
+           m_black_castle_queenside == other.m_black_castle_queenside && m_halfmove_clock == other.m_halfmove_clock &&
+           m_fullmove_number == other.m_fullmove_number;
+  }
+
+  bool operator!=(const BoardState& other) const { return !(*this == other); }
+};
 
 /**
  * @class Board
@@ -64,7 +76,8 @@ class Board {
    */
   Board();
 
-  Board(const Board&) = default;
+  Board(const Board&) noexcept;
+  explicit Board(Board&& other) noexcept;
 
   /**
    * @brief Constructs a board from a FEN string.
@@ -229,7 +242,7 @@ class Board {
    */
   [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
-  BoardState get_state() const { return m_state; }
+  [[nodiscard]] BoardState get_state() const { return m_state; }
   void set_state(BoardState state) { m_state = state; }
 
   /**
@@ -293,7 +306,8 @@ class Board {
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
 
-  Board& operator=(const Board& other) = default;
+  Board& operator=(const Board& other) noexcept;
+  Board& operator=(const Board&& other) noexcept;
 
   /**
    * @brief Checks if two boards represent the same chess position.
