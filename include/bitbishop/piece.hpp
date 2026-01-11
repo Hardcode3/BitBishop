@@ -148,8 +148,12 @@ class Piece {
    * @throw std::invalid_argument If the character is not alphabetic
    */
   [[nodiscard]] static constexpr Color color_from_char(char character) {
-    if (character >= 'A' && character <= 'Z') return Color::WHITE;
-    if (character >= 'a' && character <= 'z') return Color::BLACK;
+    if (character >= 'A' && character <= 'Z') {
+      return Color::WHITE;
+    }
+    if (character >= 'a' && character <= 'z') {
+      return Color::BLACK;
+    }
     const std::string msg = std::format("Invalid piece character {}", character);
     throw std::invalid_argument(msg);
   }
