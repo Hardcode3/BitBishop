@@ -2,9 +2,42 @@
 
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/move.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 #include <optional>
+#include <vector>
+
+struct BoardState {
+  bool m_is_white_turn;                   ///< True if it is White's turn
+  std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
+
+  // Castling abilities
+  bool m_white_castle_kingside;   ///< White may castle kingside
+  bool m_white_castle_queenside;  ///< White may castle queenside
+  bool m_black_castle_kingside;   ///< Black may castle kingside
+  bool m_black_castle_queenside;  ///< Black may castle queenside
+
+  // 50-move rule state
+  int m_halfmove_clock;  ///< Counts halfmoves since last pawn move or capture
+
+  // Move number (starts at 1, incremented after Black’s move)
+  int m_fullmove_number;
+
+  bool operator==(const BoardState& other) const {
+    if (this == &other) {
+      return true;
+    }
+    return m_is_white_turn == other.m_is_white_turn && m_en_passant_sq == other.m_en_passant_sq &&
+           m_white_castle_kingside == other.m_white_castle_kingside &&
+           m_white_castle_queenside == other.m_white_castle_queenside &&
+           m_black_castle_kingside == other.m_black_castle_kingside &&
+           m_black_castle_queenside == other.m_black_castle_queenside && m_halfmove_clock == other.m_halfmove_clock &&
+           m_fullmove_number == other.m_fullmove_number;
+  }
+
+  bool operator!=(const BoardState& other) const { return !(*this == other); }
+};
 
 /**
  * @class Board
@@ -31,20 +64,7 @@ class Board {
   Bitboard m_b_pawns, m_b_rooks, m_b_bishops, m_b_knights, m_b_king, m_b_queens;
 
   // Game state
-  bool m_is_white_turn;                   ///< True if it is White's turn
-  std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
-
-  // Castling abilities
-  bool m_white_castle_kingside;   ///< White may castle kingside
-  bool m_white_castle_queenside;  ///< White may castle queenside
-  bool m_black_castle_kingside;   ///< Black may castle kingside
-  bool m_black_castle_queenside;  ///< Black may castle queenside
-
-  // 50-move rule state
-  int m_halfmove_clock;  ///< Counts halfmoves since last pawn move or capture
-
-  // Move number (starts at 1, incremented after Black’s move)
-  int m_fullmove_number;
+  BoardState m_state;
 
  public:
   /**
@@ -56,7 +76,8 @@ class Board {
    */
   Board();
 
-  Board(const Board&) = default;
+  Board(const Board&) noexcept = default;
+  explicit Board(Board&& other) noexcept = default;
 
   /**
    * @brief Constructs a board from a FEN string.
@@ -221,6 +242,9 @@ class Board {
    */
   [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
+  [[nodiscard]] BoardState get_state() const { return m_state; }
+  void set_state(BoardState state) { m_state = state; }
+
   /**
    * @brief Returns the current en passant target square, if any.
    *
@@ -234,7 +258,7 @@ class Board {
    * }
    * @endcode
    */
-  [[nodiscard]] std::optional<Square> en_passant_square() const noexcept { return m_en_passant_sq; }
+  [[nodiscard]] std::optional<Square> en_passant_square() const noexcept { return m_state.m_en_passant_sq; }
 
   /**
    * @brief Checks if the given side has kingside castling rights.
@@ -242,7 +266,7 @@ class Board {
    * @return true if kingside castling rights is available, false otherwise
    */
   [[nodiscard]] bool has_kingside_castling_rights(Color side) const {
-    return (side == Color::WHITE) ? m_white_castle_kingside : m_black_castle_kingside;
+    return (side == Color::WHITE) ? m_state.m_white_castle_kingside : m_state.m_black_castle_kingside;
   }
 
   /**
@@ -251,7 +275,7 @@ class Board {
    * @return true if queenside castling rights is available, false otherwise
    */
   [[nodiscard]] bool has_queenside_castling_rights(Color side) const {
-    return (side == Color::WHITE) ? m_white_castle_queenside : m_black_castle_queenside;
+    return (side == Color::WHITE) ? m_state.m_white_castle_queenside : m_state.m_black_castle_queenside;
   }
 
   /**
@@ -282,7 +306,8 @@ class Board {
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
 
-  Board& operator=(const Board& other) = default;
+  Board& operator=(const Board& other) noexcept = default;
+  Board& operator=(Board&& other) noexcept = default;
 
   /**
    * @brief Checks if two boards represent the same chess position.

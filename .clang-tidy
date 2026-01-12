@@ -13,4 +13,4 @@ CheckOptions:
   - key: readability-identifier-length.IgnoredParameterNames
     value: "^(sq|to|from|bb|us)$"
   - key: readability-identifier-length.IgnoredLoopCounterNames
-    value: "^(r|f)$"
+    value: "^(r|f|i)$"

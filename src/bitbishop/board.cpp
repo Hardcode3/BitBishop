@@ -46,28 +46,28 @@ Board::Board(const std::string& fen) {
 
   // Second token: side to move
   iss >> token;
-  m_is_white_turn = (token == "w");
+  m_state.m_is_white_turn = (token == "w");
 
   // Third token: Castling Rights
   iss >> token;
-  m_white_castle_kingside = token.find('K') != std::string::npos;
-  m_white_castle_queenside = token.find('Q') != std::string::npos;
-  m_black_castle_kingside = token.find('k') != std::string::npos;
-  m_black_castle_queenside = token.find('q') != std::string::npos;
+  m_state.m_white_castle_kingside = token.find('K') != std::string::npos;
+  m_state.m_white_castle_queenside = token.find('Q') != std::string::npos;
+  m_state.m_black_castle_kingside = token.find('k') != std::string::npos;
+  m_state.m_black_castle_queenside = token.find('q') != std::string::npos;
 
   // Fourth token: en passant
   iss >> token;
   if (token == "-") {
-    m_en_passant_sq = std::nullopt;
+    m_state.m_en_passant_sq = std::nullopt;
   } else {
-    m_en_passant_sq = Square(token);
+    m_state.m_en_passant_sq = Square(token);
   }
 
   // Fifth token: Halfmove clock
-  iss >> m_halfmove_clock;
+  iss >> m_state.m_halfmove_clock;
 
   // Sixth token: Fullmove number
-  iss >> m_fullmove_number;
+  iss >> m_state.m_fullmove_number;
 }
 
 Bitboard Board::white_pieces() const {
@@ -280,11 +280,12 @@ bool Board::operator==(const Board& other) const {
          m_w_knights == other.m_w_knights && m_w_king == other.m_w_king && m_w_queens == other.m_w_queens &&
          m_b_pawns == other.m_b_pawns && m_b_rooks == other.m_b_rooks && m_b_bishops == other.m_b_bishops &&
          m_b_knights == other.m_b_knights && m_b_king == other.m_b_king && m_b_queens == other.m_b_queens &&
-         m_is_white_turn == other.m_is_white_turn && m_en_passant_sq == other.m_en_passant_sq &&
-         m_white_castle_kingside == other.m_white_castle_kingside &&
-         m_white_castle_queenside == other.m_white_castle_queenside &&
-         m_black_castle_kingside == other.m_black_castle_kingside &&
-         m_black_castle_queenside == other.m_black_castle_queenside;
+         m_state.m_is_white_turn == other.m_state.m_is_white_turn &&
+         m_state.m_en_passant_sq == other.m_state.m_en_passant_sq &&
+         m_state.m_white_castle_kingside == other.m_state.m_white_castle_kingside &&
+         m_state.m_white_castle_queenside == other.m_state.m_white_castle_queenside &&
+         m_state.m_black_castle_kingside == other.m_state.m_black_castle_kingside &&
+         m_state.m_black_castle_queenside == other.m_state.m_black_castle_queenside;
 }
 
 bool Board::operator!=(const Board& other) const { return !this->operator==(other); }
