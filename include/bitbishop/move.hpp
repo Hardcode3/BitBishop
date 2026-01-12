@@ -22,6 +22,42 @@ struct Move {
   bool is_castling;                ///< True if the move is a castling move (kingside or queenside).
 
   /**
+   * @brief Converts move to UCI notation.
+   * @return String in UCI format (e.g., "e2e4", "e7e8q")
+   */
+  std::string to_uci() const {
+    static constexpr std::size_t MAX_NB_CHARS_IN_UCI_MOVE_REPR = 5;
+
+    std::string uci;
+    uci.reserve(MAX_NB_CHARS_IN_UCI_MOVE_REPR);
+
+    uci += from.to_string();
+    uci += to.to_string();
+
+    using namespace Squares;
+    if (promotion) {
+      switch (promotion.value().type()) {
+        case Piece::Type::QUEEN:
+          uci += 'q';
+          break;
+        case Piece::Type::ROOK:
+          uci += 'r';
+          break;
+        case Piece::Type::BISHOP:
+          uci += 'b';
+          break;
+        case Piece::Type::KNIGHT:
+          uci += 'n';
+          break;
+        default:
+          break;
+      }
+    }
+
+    return uci;
+  }
+
+  /**
    * @brief Creates a normal (non-special) move.
    * @param from The starting square of the move.
    * @param to The target square of the move.
