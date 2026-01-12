@@ -12,7 +12,7 @@ TEST(PositionTest, ApplyMoveUpdatesBoard) {
   Board board = Board::Empty();
   board.set_piece(E2, WHITE_PAWN);
 
-  Position pos(std::move(std::move(board)));
+  Position pos(board);
 
   Move move = Move::make(E2, E4, false);
 
@@ -29,7 +29,7 @@ TEST(PositionTest, RevertMoveRestoresBoard) {
   Board board = Board::Empty();
   board.set_piece(E2, WHITE_PAWN);
 
-  Position pos(std::move(board));
+  Position pos(board);
 
   Move move = Move::make(E2, E4, false);
 
@@ -50,7 +50,7 @@ TEST(PositionTest, CanUnmakeReflectsMoveHistory) {
   Board board = Board::Empty();
   board.set_piece(E2, WHITE_PAWN);
 
-  Position pos(std::move(board));
+  Position pos(board);
 
   // No moves yet
   EXPECT_FALSE(pos.can_unmake());
