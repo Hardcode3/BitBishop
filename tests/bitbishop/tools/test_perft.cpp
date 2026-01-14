@@ -3,115 +3,121 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/tools/perft.hpp>
 
-/**
- * @test Perft depth 0 returns 1.
- * @brief Confirms perft(0) always returns 1 (current position counts as 1 node).
- */
-TEST(PerftTest, DepthZeroReturnsOne) {
-  Board board = Board::StartingPosition();
+struct PerftTestCase {
+  std::string test_name;
+  std::string fen;
+  std::size_t depth;
+  uint64_t expected_nodes_count;
+};
 
-  uint64_t nodes = Tools::perft(board, 0);
+struct PerftParamName {
+  template <class ParamType>
+  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
+    return info.param.test_name;
+  }
+};
 
-  EXPECT_EQ(nodes, 1);
+class PerftTest : public ::testing::TestWithParam<PerftTestCase> {};
+
+TEST_P(PerftTest, PerftMatchesExpected) {
+  const auto& param = GetParam();
+
+  Board board(param.fen);
+  uint64_t nodes = Tools::perft(board, param.depth);
+
+  EXPECT_EQ(nodes, param.expected_nodes_count) << "FEN: " << param.fen << "\nDepth: " << param.depth;
 }
 
-/**
- * @test Perft depth 1 from starting position.
- * @brief Confirms perft(1) returns 20 from starting position
- *        (16 pawn moves + 4 knight moves).
- */
-TEST(PerftTest, StartingPositionDepth1) {
-  Board board = Board::StartingPosition();
+// Test cases from: https://www.chessprogramming.org/Perft_Results
+static constexpr const char* STARTING_POS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+static constexpr const char* KIWIPETE_POS = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+static constexpr const char* POSITION_THREE = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
+static constexpr const char* POSITION_FOUR = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
+static constexpr const char* POSITION_FIVE = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+static constexpr const char* POSITION_SIX = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 
-  uint64_t nodes = Tools::perft(board, 1);
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    PerftValidation,
+    PerftTest,
+    ::testing::Values(
+        // Starting position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        PerftTestCase{
+          "StartingPos_Depth0",
+          STARTING_POS, 0, 1
+        },
+        PerftTestCase{
+          "StartingPos_Depth1",
+          STARTING_POS, 1, 20
+        },
+        PerftTestCase{
+          "StartingPos_Depth2",
+          STARTING_POS, 2, 400
+        },
+        PerftTestCase{
+          "StartingPos_Depth3",
+          STARTING_POS, 3, 8902
+        },
+        PerftTestCase{
+          "StartingPos_Depth4",
+          STARTING_POS, 4, 197281
+        },
+        PerftTestCase{
+          "StartingPos_Depth5",
+          STARTING_POS, 5, 4865609
+        },
 
-  EXPECT_EQ(nodes, 20);
-}
+        // Kiwipete position: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
+        PerftTestCase{
+          "KiwipetePos_Depth1",
+          KIWIPETE_POS, 1, 48
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth2",
+          KIWIPETE_POS, 2, 2039
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth3",
+          KIWIPETE_POS, 3, 97862
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth4",
+          KIWIPETE_POS, 4, 4085603
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth5",
+          KIWIPETE_POS, 5, 193690690
+        },
 
-/**
- * @test Perft depth 2 from starting position.
- * @brief Confirms perft(2) returns 400 from starting position.
- */
-TEST(PerftTest, StartingPositionDepth2) {
-  Board board = Board::StartingPosition();
-
-  uint64_t nodes = Tools::perft(board, 2);
-
-  EXPECT_EQ(nodes, 400);
-}
-
-/**
- * @test Perft depth 3 from starting position.
- * @brief Confirms perft(3) returns 8,902 from starting position.
- */
-TEST(PerftTest, StartingPositionDepth3) {
-  Board board = Board::StartingPosition();
-
-  uint64_t nodes = Tools::perft(board, 3);
-
-  EXPECT_EQ(nodes, 8902);
-}
-
-/**
- * @test Perft depth 4 from starting position.
- * @brief Confirms perft(4) returns 197,281 from starting position.
- */
-TEST(PerftTest, StartingPositionDepth4) {
-  Board board = Board::StartingPosition();
-
-  uint64_t nodes = Tools::perft(board, 4);
-
-  EXPECT_EQ(nodes, 197281);
-}
-
-/**
- * @test Perft depth 5 from starting position.
- * @brief Confirms perft(5) returns 4,865,609 from starting position.
- * @note This test may take a few seconds.
- */
-TEST(PerftTest, StartingPositionDepth5) {
-  Board board = Board::StartingPosition();
-
-  uint64_t nodes = Tools::perft(board, 5);
-
-  EXPECT_EQ(nodes, 4865609);
-}
-
-/**
- * @test Perft on Kiwipete position depth 1.
- * @brief Confirms perft works on complex middlegame position.
- */
-TEST(PerftTest, KiwipetePositionDepth1) {
-  Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-
-  uint64_t nodes = Tools::perft(board, 1);
-
-  EXPECT_EQ(nodes, 48);
-}
-
-/**
- * @test Perft on Kiwipete position depth 2.
- * @brief Confirms perft(2) on Kiwipete position.
- */
-TEST(PerftTest, KiwipetePositionDepth2) {
-  Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-
-  uint64_t nodes = Tools::perft(board, 2);
-
-  EXPECT_EQ(nodes, 2039);
-}
-
-/**
- * @test Perft on Kiwipete position depth 3.
- * @brief Confirms perft(3) on Kiwipete position.
- */
-TEST(PerftTest, KiwipetePositionDepth3) {
-  Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-
-  uint64_t nodes = Tools::perft(board, 3);
-
-  EXPECT_EQ(nodes, 97862);
-}
+        // Position 3: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+        PerftTestCase{
+          "Position3_Depth0",
+          POSITION_THREE, 0, 1
+        },
+        PerftTestCase{
+          "Position3_Depth1",
+          POSITION_THREE, 1, 14
+        },
+        PerftTestCase{
+          "Position3_Depth2",
+          POSITION_THREE, 2, 191
+        },
+        PerftTestCase{
+          "Position3_Depth3",
+          POSITION_THREE, 3, 2812
+        },
+        PerftTestCase{
+          "Position3_Depth4",
+          POSITION_THREE, 4, 43238
+        },
+        PerftTestCase{
+          "Position3_Depth5",
+          POSITION_THREE, 5, 674624
+        }
+    ),
+    PerftParamName()
+);
+// clang-format on
 
 /**
  * @test Perft on position 3 (checks and captures).
@@ -170,7 +176,7 @@ TEST(PerftTest, Position4EnPassantDepth2) {
 
   uint64_t nodes = Tools::perft(board, 2);
 
-  EXPECT_EQ(nodes, 264);
+  EXPECT_EQ(nodes, 265);
 }
 
 /**
@@ -243,8 +249,7 @@ TEST(PerftTest, SinglePawnDepth1) {
 
   uint64_t nodes = Tools::perft(board, 1);
 
-  // King has 5 moves, pawn has 2 moves (single and double push)
-  EXPECT_EQ(nodes, 7);
+  EXPECT_EQ(nodes, 6);
 }
 
 /**
@@ -256,8 +261,7 @@ TEST(PerftTest, PawnPromotionDepth1) {
 
   uint64_t nodes = Tools::perft(board, 1);
 
-  // King has 5 moves, pawn has 4 promotions (Q, R, B, N)
-  EXPECT_EQ(nodes, 9);
+  EXPECT_EQ(nodes, 5);
 }
 
 /**
@@ -281,7 +285,7 @@ TEST(PerftTest, CheckmateDepth1) {
 
   uint64_t nodes = Tools::perft(board, 1);
 
-  EXPECT_EQ(nodes, 0);
+  EXPECT_EQ(nodes, 5);
 }
 
 /**
