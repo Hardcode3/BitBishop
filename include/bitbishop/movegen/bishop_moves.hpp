@@ -44,8 +44,8 @@
  * - This function assumes that @p check_mask and @p pins have already been
  *   computed for the current position.
  */
-void generate_bishop_legal_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& check_mask,
-                                 const PinResult& pins) {
+inline void generate_bishop_legal_moves(std::vector<Move>& moves, const Board& board, Color us,
+                                        const Bitboard& check_mask, const PinResult& pins) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();

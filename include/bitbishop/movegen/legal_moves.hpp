@@ -40,7 +40,7 @@
  * @note The move list is appended to; it is not cleared by this function.
  * @note Assumes the board position is internally consistent and legal.
  */
-void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
+inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
   Color us = board.get_state().m_is_white_turn ? Color::WHITE : Color::BLACK;
   Color them = ColorUtil::opposite(us);
 

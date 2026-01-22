@@ -27,8 +27,8 @@
  * @param checkers Bitboard of pieces currently checking the king
  * @param enemy_attacks Bitboard of squares attacked by the opponent
  */
-void generate_castling_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& checkers,
-                             const Bitboard& enemy_attacks) {
+inline void generate_castling_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& checkers,
+                                    const Bitboard& enemy_attacks) {
   using namespace Squares;
 
   if (checkers.any()) {
