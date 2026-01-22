@@ -1,49 +1,29 @@
 #pragma once
 
-#include <bitbishop/movegen/legal_moves.hpp>
-#include <bitbishop/moves/position.hpp>
-#include <iomanip>
-#include <iostream>
+#include <bitbishop/board.hpp>
 
 namespace Tools {
 
-uint64_t perft(Board& board, std::size_t depth) {
-  uint64_t nodes = 0;
+/**
+ * @brief Perft (Performance Test) debug function to walk through the move generation tree
+ *  of legal moves of a certain depth.
+ *
+ * @param board Reference to the board on which perft must be executed
+ * @param depth Recursion depth
+ *
+ * @see https://www.chessprogramming.org/Perft
+ */
+uint64_t perft(Board& board, std::size_t depth);
 
-  if (depth == 0) {
-    return 1;
-  }
-
-  std::vector<Move> moves;
-  generate_legal_moves(moves, board);
-
-  Position position(board);
-  for (const Move& move : moves) {
-    position.apply_move(move);
-    nodes += perft(board, depth - 1);
-    position.revert_move();
-  }
-  return nodes;
-}
-
-// Perft divide - shows count for each root move
-void perft_divide(Board& board, std::size_t depth) {
-  uint64_t total_nodes = 0;
-
-  std::vector<Move> moves;
-  generate_legal_moves(moves, board);
-
-  Position position(board);
-  for (const Move& move : moves) {
-    position.apply_move(move);
-    uint64_t nodes = (depth == 1) ? 1 : perft(board, depth - 1);
-    position.revert_move();
-
-    std::cout << move.to_uci() << ": " << nodes << "\n";
-    total_nodes += nodes;
-  }
-
-  std::cout << "\nNodes searched: " << total_nodes << "\n";
-}
+/**
+ * @brief Perft Divide (Performance Test) debug function to walk through the move generation tree
+ *  of legal moves of a certain depth and print move count for each move.
+ *
+ * @param board Reference to the board on which perft divide must be executed
+ * @param depth Recursion depth
+ *
+ * @see https://www.chessprogramming.org/Perft
+ */
+void perft_divide(Board& board, std::size_t depth);
 
 }  // namespace Tools
