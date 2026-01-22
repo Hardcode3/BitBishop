@@ -56,15 +56,19 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "StartingPos_Depth3",
-          STARTING_POS, 3, 8902
+          STARTING_POS, 3, 8'902
         },
         PerftTestCase{
           "StartingPos_Depth4",
-          STARTING_POS, 4, 197281
+          STARTING_POS, 4, 197'281
         },
         PerftTestCase{
           "StartingPos_Depth5",
-          STARTING_POS, 5, 4865609
+          STARTING_POS, 5, 4'865'609
+        },
+        PerftTestCase{
+          "StartingPos_Depth6",
+          STARTING_POS, 6, 119'060'324
         },
 
         // Kiwipete position: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
@@ -78,20 +82,24 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "KiwipetePos_Depth2",
-          KIWIPETE_POS, 2, 2039
+          KIWIPETE_POS, 2, 2'039
         },
         PerftTestCase{
           "KiwipetePos_Depth3",
-          KIWIPETE_POS, 3, 97862
+          KIWIPETE_POS, 3, 97'862
         },
         PerftTestCase{
           "KiwipetePos_Depth4",
-          KIWIPETE_POS, 4, 4085603
+          KIWIPETE_POS, 4, 4'085'603
         },
-        // PerftTestCase{ // too long for github runners
-        //   "KiwipetePos_Depth5",
-        //   KIWIPETE_POS, 5, 193690690
-        // },
+        PerftTestCase{
+          "KiwipetePos_Depth5",
+          KIWIPETE_POS, 5, 193'690'690
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth6",
+          KIWIPETE_POS, 6, 8'031'647'685
+        },
 
         // Position 3: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
         PerftTestCase{
@@ -108,35 +116,20 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "Position3_Depth3",
-          POSITION_THREE, 3, 2812
+          POSITION_THREE, 3, 2'812
         },
         PerftTestCase{
           "Position3_Depth4",
-          POSITION_THREE, 4, 43238
+          POSITION_THREE, 4, 43'238
         },
-        // PerftTestCase{ // broken
-        //   "Position3_Depth5",
-        //   POSITION_THREE, 5, 674624
-        // }
-        // Stockfish output for debug:
-        // position fen 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
-        // go perft 5
-        // ...
-        // e2e3: 45326
-        // g2g3: 14747
-        // a5a6: 59028
-        // e2e4: 36889
-        // g2g4: 53895
-        // b4b1: 69665
-        // b4b2: 48498
-        // b4b3: 59719
-        // b4a4: 45591
-        // b4c4: 63781
-        // b4d4: 59574
-        // b4e4: 54192
-        // b4f4: 10776
-        // a5a4: 52943
-        // Nodes searched: 674624
+        PerftTestCase{
+          "Position3_Depth5",
+          POSITION_THREE, 5, 674'624
+        },
+        PerftTestCase{
+          "Position3_Depth6",
+          POSITION_THREE, 6, 11'030'083
+        },
 
         // Position 4: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
         PerftTestCase{
@@ -153,15 +146,19 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "Position4_Depth3",
-          POSITION_FOUR, 3, 9467
+          POSITION_FOUR, 3, 9'467
         },
         PerftTestCase{
           "Position4_Depth4",
-          POSITION_FOUR, 4, 422333
+          POSITION_FOUR, 4, 422'333
         },
         PerftTestCase{
           "Position4_Depth5",
-          POSITION_FOUR, 5, 15833292
+          POSITION_FOUR, 5, 15'833'292
+        },
+        PerftTestCase{
+          "Position4_Depth6",
+          POSITION_FOUR, 6, 706'045'033
         },
 
         // Position 5: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8
@@ -175,20 +172,24 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "Position5_Depth2",
-          POSITION_FIVE, 2, 1486
+          POSITION_FIVE, 2, 1'486
         },
         PerftTestCase{
           "Position5_Depth3",
-          POSITION_FIVE, 3, 62379
+          POSITION_FIVE, 3, 62'379
         },
         PerftTestCase{
           "Position5_Depth4",
-          POSITION_FIVE, 4, 2103487
+          POSITION_FIVE, 4, 2'103'487
         },
-        // PerftTestCase{ // too long for github runners
-        //   "Position5_Depth5",
-        //   POSITION_FIVE, 5, 89941194
-        // },
+        PerftTestCase{
+          "Position5_Depth5",
+          POSITION_FIVE, 5, 89'941'194
+        },
+        PerftTestCase{
+          "Position5_Depth6",
+          POSITION_FIVE, 6, 3'048'196'529
+        },
 
         // Position 6: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10
         PerftTestCase{
@@ -201,20 +202,24 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PerftTestCase{
           "Position6_Depth2",
-          POSITION_SIX, 2, 2079
+          POSITION_SIX, 2, 2'079
         },
         PerftTestCase{
           "Position6_Depth3",
-          POSITION_SIX, 3, 89890
+          POSITION_SIX, 3, 89'890
         },
         PerftTestCase{
           "Position6_Depth4",
-          POSITION_SIX, 4, 3894594
+          POSITION_SIX, 4, 3'894'594
         },
-        // PerftTestCase{ // too long for github runners
-        //   "Position6_Depth5",
-        //   POSITION_SIX, 5, 164075551
-        // },
+        PerftTestCase{
+          "Position6_Depth5",
+          POSITION_SIX, 5, 164'075'551
+        },
+        PerftTestCase{
+          "Position6_Depth6",
+          POSITION_SIX, 6, 6'923'051'137
+        },
 
         // Custom and specialized positions
         PerftTestCase{
