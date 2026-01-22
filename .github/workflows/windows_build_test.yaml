@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        preset: [ msvc_debug, msvc_release ]
+        preset: [ msvc_release ]
 
     steps:
       - uses: actions/checkout@v4

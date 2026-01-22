@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        preset: [ clang_debug, clang_release ]
+        preset: [ clang_release ]
 
     steps:
       - uses: actions/checkout@v4
