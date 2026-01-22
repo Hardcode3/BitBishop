@@ -136,17 +136,7 @@ class Bitboard {
    *
    * The output starts from rank 8 down to rank 1.
    */
-  void print() const {
-    using namespace Const;
-
-    for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
-      for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
-        const Square square(file, rank);
-        std::cout << (test(square) ? "1 " : ". ");
-      }
-      std::cout << "\n";
-    }
-  }
+  void print() const;
 
   constexpr bool operator==(const Bitboard& other) const { return m_bb == other.m_bb; }
   constexpr bool operator!=(const Bitboard& other) const { return m_bb != other.m_bb; }
