@@ -627,11 +627,11 @@ TEST(GeneratePawnLegalMovesTest, NoEnPassantWithoutTarget) {
 }
 
 /**
- * @test En passant blocked by check mask.
- * @brief Confirms generate_pawn_legal_moves() does not generate en passant
+ * @test En passant is not blocked by check mask.
+ * @brief Confirms generate_pawn_legal_moves() does generate en passant
  *        when target square not in check mask.
  */
-TEST(GeneratePawnLegalMovesTest, EnPassantBlockedByCheckMask) {
+TEST(GeneratePawnLegalMovesTest, EnPassantAllowedByCheckMask) {
   Board board("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
 
   Bitboard check_mask = Bitboard::Zeros();
@@ -642,8 +642,8 @@ TEST(GeneratePawnLegalMovesTest, EnPassantBlockedByCheckMask) {
 
   generate_pawn_legal_moves(moves, board, Color::WHITE, E1, check_mask, pins);
 
-  // En passant not allowed
-  EXPECT_FALSE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
+  // En passant still allowed
+  EXPECT_TRUE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
 }
 
 /**
