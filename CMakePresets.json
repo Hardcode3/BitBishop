@@ -2,7 +2,7 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 24,
+    "minor": 27,
     "patch": 0
   },
   "configurePresets": [
@@ -29,6 +29,11 @@
         "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-Wl,-force_load,${sourceDir}/build/${presetName}/src/bitbishop/libBitbishop.a",
         "CMAKE_SHARED_LINKER_FLAGS_DEBUG": "-Wl,-no_dead_strip",
         "CMAKE_MODULE_LINKER_FLAGS_DEBUG": "-Wl,-no_dead_strip"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     },
     {
@@ -39,6 +44,11 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang++"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     },
     {
@@ -49,6 +59,11 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     },
     {
@@ -59,6 +74,11 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     }
   ],
@@ -84,20 +104,128 @@
   ],
   "testPresets": [
     {
-      "name": "clang_debug",
+      "name": "test-base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "default"
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      }
+    },
+    {
+      "name": "tier-quick",
+      "hidden": true,
+      "inherits": "test-base",
+      "description": "Quick validation (fast unit & smoke tests)",
+      "filter": {
+        "include": { "label": "^tier_quick$" }
+      }
+    },
+    {
+      "name": "tier-intermediate",
+      "hidden": true,
+      "inherits": "test-base",
+      "description": "Intermediate validation (standard perft)",
+      "filter": {
+        "include": { "label": "^tier_intermediate$" }
+      }
+    },
+    {
+      "name": "tier-deep",
+      "hidden": true,
+      "inherits": "test-base",
+      "description": "Deep validation (exhaustive perft)",
+      "filter": {
+        "include": { "label": "^tier_deep$" }
+      }
+    },
+    {
+      "name": "tier-all",
+      "hidden": true,
+      "inherits": "test-base"
+    },
+    {
+      "name": "quick-validation-clang-debug",
+      "inherits": "tier-quick",
       "configurePreset": "clang_debug"
     },
     {
-      "name": "clang_release",
+      "name": "intermediate-validation-clang-debug",
+      "inherits": "tier-intermediate",
+      "configurePreset": "clang_debug"
+    },
+    {
+      "name": "deep-validation-clang-debug",
+      "inherits": "tier-deep",
+      "configurePreset": "clang_debug"
+    },
+    {
+      "name": "full-suite-clang-debug",
+      "inherits": "tier-all",
+      "configurePreset": "clang_debug"
+    },
+    {
+      "name": "quick-validation-clang-release",
+      "inherits": "tier-quick",
       "configurePreset": "clang_release"
     },
     {
-      "name": "msvc_debug",
+      "name": "intermediate-validation-clang-release",
+      "inherits": "tier-intermediate",
+      "configurePreset": "clang_release"
+    },
+    {
+      "name": "deep-validation-clang-release",
+      "inherits": "tier-deep",
+      "configurePreset": "clang_release"
+    },
+    {
+      "name": "full-suite-clang-release",
+      "inherits": "tier-all",
+      "configurePreset": "clang_release"
+    },
+    {
+      "name": "quick-validation-msvc-debug",
+      "inherits": "tier-quick",
       "configurePreset": "msvc_debug",
       "configuration": "Debug"
     },
     {
-      "name": "msvc_release",
+      "name": "intermediate-validation-msvc-debug",
+      "inherits": "tier-intermediate",
+      "configurePreset": "msvc_debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "full-suite-msvc-debug",
+      "inherits": "tier-all",
+      "configurePreset": "msvc_debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "quick-validation-msvc-release",
+      "inherits": "tier-quick",
+      "configurePreset": "msvc_release",
+      "configuration": "Release"
+    },
+    {
+      "name": "intermediate-validation-msvc-release",
+      "inherits": "tier-intermediate",
+      "configurePreset": "msvc_release",
+      "configuration": "Release"
+    },
+    {
+      "name": "deep-validation-msvc-release",
+      "inherits": "tier-deep",
+      "configurePreset": "msvc_release",
+      "configuration": "Release"
+    },
+    {
+      "name": "full-suite-msvc-release",
+      "inherits": "tier-all",
       "configurePreset": "msvc_release",
       "configuration": "Release"
     }

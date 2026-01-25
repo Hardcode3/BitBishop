@@ -17,16 +17,28 @@ struct PerftParamName {
   }
 };
 
-class PerftTest : public ::testing::TestWithParam<PerftTestCase> {};
+class PerftSmokeTest : public ::testing::TestWithParam<PerftTestCase> {};
+class PerftValidationTest : public ::testing::TestWithParam<PerftTestCase> {};
+class PerftExhaustiveTest : public ::testing::TestWithParam<PerftTestCase> {};
 
-TEST_P(PerftTest, PerftMatchesExpected) {
-  const auto& param = GetParam();
-
+template <typename T>
+void RunPerftTest(const PerftTestCase& param) {
   Board board(param.fen);
   uint64_t nodes = Tools::perft(board, param.depth);
-
   EXPECT_EQ(nodes, param.expected_nodes_count) << "FEN: " << param.fen << "\nDepth: " << param.depth;
 }
+
+// Perft depth <= 3
+// Catches most of the bugs and runs in milliseconds
+TEST_P(PerftSmokeTest, MatchesExpected) { RunPerftTest<PerftSmokeTest>(GetParam()); }
+
+// Perft depth 4 & 5
+// Good coverage but longer to run, catching more subtle bugs, longer to run
+TEST_P(PerftValidationTest, MatchesExpected) { RunPerftTest<PerftValidationTest>(GetParam()); }
+
+// Perft depth >= 6
+// Catches nearly every bug, very long to run
+TEST_P(PerftExhaustiveTest, MatchesExpected) { RunPerftTest<PerftExhaustiveTest>(GetParam()); }
 
 // Test cases from: https://www.chessprogramming.org/Perft_Results
 static constexpr const char* STARTING_POS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -38,8 +50,8 @@ static constexpr const char* POSITION_SIX = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    PerftValidation,
-    PerftTest,
+    Smoke,
+    PerftSmokeTest,
     ::testing::Values(
         // Starting position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         PerftTestCase{
@@ -57,18 +69,6 @@ INSTANTIATE_TEST_SUITE_P(
         PerftTestCase{
           "StartingPos_Depth3",
           STARTING_POS, 3, 8'902
-        },
-        PerftTestCase{
-          "StartingPos_Depth4",
-          STARTING_POS, 4, 197'281
-        },
-        PerftTestCase{
-          "StartingPos_Depth5",
-          STARTING_POS, 5, 4'865'609
-        },
-        PerftTestCase{
-          "StartingPos_Depth6",
-          STARTING_POS, 6, 119'060'324
         },
 
         // Kiwipete position: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
@@ -88,18 +88,6 @@ INSTANTIATE_TEST_SUITE_P(
           "KiwipetePos_Depth3",
           KIWIPETE_POS, 3, 97'862
         },
-        PerftTestCase{
-          "KiwipetePos_Depth4",
-          KIWIPETE_POS, 4, 4'085'603
-        },
-        PerftTestCase{
-          "KiwipetePos_Depth5",
-          KIWIPETE_POS, 5, 193'690'690
-        },
-        PerftTestCase{
-          "KiwipetePos_Depth6",
-          KIWIPETE_POS, 6, 8'031'647'685
-        },
 
         // Position 3: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
         PerftTestCase{
@@ -117,18 +105,6 @@ INSTANTIATE_TEST_SUITE_P(
         PerftTestCase{
           "Position3_Depth3",
           POSITION_THREE, 3, 2'812
-        },
-        PerftTestCase{
-          "Position3_Depth4",
-          POSITION_THREE, 4, 43'238
-        },
-        PerftTestCase{
-          "Position3_Depth5",
-          POSITION_THREE, 5, 674'624
-        },
-        PerftTestCase{
-          "Position3_Depth6",
-          POSITION_THREE, 6, 11'030'083
         },
 
         // Position 4: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
@@ -148,18 +124,6 @@ INSTANTIATE_TEST_SUITE_P(
           "Position4_Depth3",
           POSITION_FOUR, 3, 9'467
         },
-        PerftTestCase{
-          "Position4_Depth4",
-          POSITION_FOUR, 4, 422'333
-        },
-        PerftTestCase{
-          "Position4_Depth5",
-          POSITION_FOUR, 5, 15'833'292
-        },
-        PerftTestCase{
-          "Position4_Depth6",
-          POSITION_FOUR, 6, 706'045'033
-        },
 
         // Position 5: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8
         PerftTestCase{
@@ -178,18 +142,6 @@ INSTANTIATE_TEST_SUITE_P(
           "Position5_Depth3",
           POSITION_FIVE, 3, 62'379
         },
-        PerftTestCase{
-          "Position5_Depth4",
-          POSITION_FIVE, 4, 2'103'487
-        },
-        PerftTestCase{
-          "Position5_Depth5",
-          POSITION_FIVE, 5, 89'941'194
-        },
-        PerftTestCase{
-          "Position5_Depth6",
-          POSITION_FIVE, 6, 3'048'196'529
-        },
 
         // Position 6: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10
         PerftTestCase{
@@ -207,18 +159,6 @@ INSTANTIATE_TEST_SUITE_P(
         PerftTestCase{
           "Position6_Depth3",
           POSITION_SIX, 3, 89'890
-        },
-        PerftTestCase{
-          "Position6_Depth4",
-          POSITION_SIX, 4, 3'894'594
-        },
-        PerftTestCase{
-          "Position6_Depth5",
-          POSITION_SIX, 5, 164'075'551
-        },
-        PerftTestCase{
-          "Position6_Depth6",
-          POSITION_SIX, 6, 6'923'051'137
         },
 
         // Custom and specialized positions
@@ -245,6 +185,116 @@ INSTANTIATE_TEST_SUITE_P(
         PerftTestCase{
           "EnPassantAvailable_Depth1",
           "rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1", 1, 30
+        }
+    ),
+    PerftParamName()
+);
+
+INSTANTIATE_TEST_SUITE_P(
+    Validation,
+    PerftValidationTest,
+    ::testing::Values(
+        // Starting position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        PerftTestCase{
+          "StartingPos_Depth4",
+          STARTING_POS, 4, 197'281
+        },
+        PerftTestCase{
+          "StartingPos_Depth5",
+          STARTING_POS, 5, 4'865'609
+        },
+
+        // Kiwipete position: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
+        PerftTestCase{
+          "KiwipetePos_Depth4",
+          KIWIPETE_POS, 4, 4'085'603
+        },
+        PerftTestCase{
+          "KiwipetePos_Depth5",
+          KIWIPETE_POS, 5, 193'690'690
+        },
+
+        // Position 3: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+        PerftTestCase{
+          "Position3_Depth4",
+          POSITION_THREE, 4, 43'238
+        },
+        PerftTestCase{
+          "Position3_Depth5",
+          POSITION_THREE, 5, 674'624
+        },
+
+        // Position 4: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+        PerftTestCase{
+          "Position4_Depth4",
+          POSITION_FOUR, 4, 422'333
+        },
+        PerftTestCase{
+          "Position4_Depth5",
+          POSITION_FOUR, 5, 15'833'292
+        },
+
+        // Position 5: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8
+        PerftTestCase{
+          "Position5_Depth4",
+          POSITION_FIVE, 4, 2'103'487
+        },
+        PerftTestCase{
+          "Position5_Depth5",
+          POSITION_FIVE, 5, 89'941'194
+        },
+
+        // Position 6: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10
+        PerftTestCase{
+          "Position6_Depth4",
+          POSITION_SIX, 4, 3'894'594
+        },
+        PerftTestCase{
+          "Position6_Depth5",
+          POSITION_SIX, 5, 164'075'551
+        }
+    ),
+    PerftParamName()
+);
+
+INSTANTIATE_TEST_SUITE_P(
+    Exhaustive,
+    PerftExhaustiveTest,
+    ::testing::Values(
+        // Starting position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        PerftTestCase{
+          "StartingPos_Depth6",
+          STARTING_POS, 6, 119'060'324
+        },
+
+        // Kiwipete position: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
+        PerftTestCase{
+          "KiwipetePos_Depth6",
+          KIWIPETE_POS, 6, 8'031'647'685
+        },
+
+        // Position 3: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1
+        PerftTestCase{
+          "Position3_Depth6",
+          POSITION_THREE, 6, 11'030'083
+        },
+
+        // Position 4: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1
+        PerftTestCase{
+          "Position4_Depth6",
+          POSITION_FOUR, 6, 706'045'033
+        },
+
+        // Position 5: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8
+        PerftTestCase{
+          "Position5_Depth6",
+          POSITION_FIVE, 6, 3'048'196'529
+        },
+
+        // Position 6: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10
+        PerftTestCase{
+          "Position6_Depth6",
+          POSITION_SIX, 6, 6'923'051'137
         }
     ),
     PerftParamName()
