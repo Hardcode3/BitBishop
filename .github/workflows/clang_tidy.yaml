@@ -11,6 +11,7 @@ permissions:
 jobs:
   clang-tidy-linting:
     runs-on: ubuntu-latest
+    name: Clang Tidy Linting (${{ matrix.name }})
 
     strategy:
       matrix:
