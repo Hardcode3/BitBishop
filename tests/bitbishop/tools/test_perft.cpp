@@ -33,7 +33,7 @@ void RunPerftTest(const PerftTestCase& param) {
 TEST_P(PerftSmokeTest, MatchesExpected) { RunPerftTest<PerftSmokeTest>(GetParam()); }
 
 // Perft depth 4 & 5
-// Good coverage but longer to run, catching more subtle bugs, longer to run
+// Good coverage but longer to run, catching more subtle bugs
 TEST_P(PerftValidationTest, MatchesExpected) { RunPerftTest<PerftValidationTest>(GetParam()); }
 
 // Perft depth >= 6
