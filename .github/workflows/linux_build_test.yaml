@@ -11,7 +11,7 @@ permissions:
 jobs:
   linux-build:
     runs-on: ubuntu-latest
-    name: Linux Build Test (${{ matrix.name }})
+    name: ${{ matrix.test_preset }}
 
     strategy:
       matrix:

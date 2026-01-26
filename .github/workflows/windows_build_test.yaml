@@ -7,7 +7,7 @@ on:
 jobs:
   windows-build:
     runs-on: windows-2022
-    name: Windows Build Test (${{ matrix.name }})
+    name: ${{ matrix.test_preset }}
 
     strategy:
       matrix:
