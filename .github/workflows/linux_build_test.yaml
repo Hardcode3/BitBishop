@@ -15,10 +15,10 @@ jobs:
     strategy:
       matrix:
         include:
-          name: clang_release
-          configure_preset: clang_release
-          build_preset: clang_release
-          test_preset: quick-validation-clang-release
+          - name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4

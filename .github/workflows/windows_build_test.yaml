@@ -11,10 +11,10 @@ jobs:
     strategy:
       matrix:
         include:
-          name: msvc_release
-          configure_preset: msvc_release
-          build_preset: msvc_release
-          test_preset: quick-validation-msvc_release
+          - name: msvc_release
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc_release
 
     steps:
       - uses: actions/checkout@v4

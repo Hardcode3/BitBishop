@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         include:
-          name: clang_release
-          configure_preset: clang_release
-          build_preset: clang_release
+          - name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
 
     steps:
       - uses: actions/checkout@v4
