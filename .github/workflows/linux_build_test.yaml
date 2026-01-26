@@ -11,10 +11,15 @@ permissions:
 jobs:
   linux-build:
     runs-on: ubuntu-latest
+    name: ${{ matrix.test_preset }}
 
     strategy:
       matrix:
-        preset: [ clang_debug, clang_release ]
+        include:
+          - name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
@@ -50,21 +55,21 @@ jobs:
             /tmp/vcpkg/downloads
             /tmp/vcpkg/installed
             ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
-      - name: Configure (${{ matrix.preset }})
+      - name: Configure (${{ matrix.configure_preset }})
         shell: bash
         run: |
           set +e
-          cmake --preset ${{ matrix.preset }} 2>&1 | tee configure_output.txt
+          cmake --preset ${{ matrix.configure_preset }} 2>&1 | tee configure_output.txt
           CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
@@ -83,11 +88,11 @@ jobs:
 
           exit $CONFIGURE_EXIT_CODE
 
-      - name: Build (${{ matrix.preset }})
+      - name: Build (${{ matrix.build_preset }})
         shell: bash
         run: |
           set +e
-          cmake --build --preset ${{ matrix.preset }} 2>&1 | tee build_output.txt
+          cmake --build --preset ${{ matrix.build_preset }} 2>&1 | tee build_output.txt
           BUILD_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
@@ -106,11 +111,11 @@ jobs:
 
           exit $BUILD_EXIT_CODE
 
-      - name: Test (${{ matrix.preset }})
+      - name: Test (${{ matrix.test_preset }})
         shell: bash
         run: |
           set +e
-          ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | tee test_output.txt
+          ctest --preset ${{ matrix.test_preset }} --output-on-failure 2>&1 | tee test_output.txt
           TEST_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 

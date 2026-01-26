@@ -94,7 +94,7 @@ constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noex
  * @param side Color of the promoting pawn
  * @param is_capture Whether the promotion involves capturing an enemy piece
  */
-void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color side, bool capture) {
+inline void add_pawn_promotions(std::vector<Move>& moves, Square from, Square to, Color side, bool capture) {
   const auto& promotion_pieces = (side == Color::WHITE) ? WHITE_PROMOTIONS : BLACK_PROMOTIONS;
 
   for (auto piece : promotion_pieces) {
@@ -224,14 +224,6 @@ inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us,
 
   const Color them = ColorUtil::opposite(us);
   Square epsq = epsq_opt.value();
-  auto bb = Bitboard(epsq);
-  bb &= check_mask;
-  bb &= pin_mask;
-
-  if (!bb) {
-    return;
-  }
-
   Square cap_sq = (us == Color::WHITE) ? Square(epsq.flat_index() - Const::BOARD_WIDTH)
                                        : Square(epsq.flat_index() + Const::BOARD_WIDTH);
 
@@ -260,8 +252,8 @@ inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us,
  * @param check_mask Bitboard mask to restrict moves under check
  * @param pins Pin result structure indicating which pieces are pinned
  */
-void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
-                               const Bitboard& check_mask, const PinResult& pins) {
+inline void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
+                                      const Bitboard& check_mask, const PinResult& pins) {
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();
   Bitboard pawns = board.pawns(us);

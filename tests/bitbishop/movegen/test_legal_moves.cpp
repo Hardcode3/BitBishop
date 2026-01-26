@@ -17,9 +17,12 @@ using namespace Pieces;
  */
 TEST(GenerateLegalMovesTest, StartingPositionWhite) {
   Board board = Board::StartingPosition();
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
 
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // 16 pawn moves (8 single + 8 double)
   // 4 knight moves (2 knights * 2 each)
@@ -33,9 +36,12 @@ TEST(GenerateLegalMovesTest, StartingPositionWhite) {
  */
 TEST(GenerateLegalMovesTest, StartingPositionBlack) {
   Board board = Board::StartingPosition();
+  BoardState state = board.get_state();
+  state.m_is_white_turn = false;
+  board.set_state(state);
 
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::BLACK);
+  generate_legal_moves(moves, board);
 
   // 16 pawn moves + 4 knight moves
   EXPECT_EQ(moves.size(), 20);
@@ -51,8 +57,12 @@ TEST(GenerateLegalMovesTest, OnlyKingsOnBoard) {
   board.set_piece(E1, WHITE_KING);
   board.set_piece(E8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // King has 5 moves (on edge, some squares attacked by black king)
   EXPECT_GT(moves.size(), 0);
@@ -66,9 +76,12 @@ TEST(GenerateLegalMovesTest, OnlyKingsOnBoard) {
  */
 TEST(GenerateLegalMovesTest, KingInSingleCheck) {
   Board board("rnb1kbnr/pppp1ppp/8/4p3/6Pq/3P1P2/PPP1P2P/RNBQKBNR b KQkq - 0 1");
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
 
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_GT(moves.size(), 0);
 }
@@ -80,9 +93,12 @@ TEST(GenerateLegalMovesTest, KingInSingleCheck) {
  */
 TEST(GenerateLegalMovesTest, KingInDoubleCheck) {
   Board board("4k3/8/8/8/8/3r4/3r4/4K3 w - - 0 1");
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
 
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Only king moves allowed in double check
   for (const Move& move : moves) {
@@ -101,8 +117,12 @@ TEST(GenerateLegalMovesTest, PinnedPiecesCanMove) {
   board.set_piece(E4, WHITE_ROOK);
   board.set_piece(E8, BLACK_ROOK);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Pinned rook can move along pin ray
   EXPECT_TRUE(contains_move(moves, {E4, E5, std::nullopt, false, false, false}));
@@ -120,8 +140,12 @@ TEST(GenerateLegalMovesTest, PinnedPiecesCanMove) {
 TEST(GenerateLegalMovesTest, CastlingIncluded) {
   Board board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_TRUE(contains_move(moves, {E1, G1, std::nullopt, false, false, true}));
   EXPECT_TRUE(contains_move(moves, {E1, C1, std::nullopt, false, false, true}));
@@ -135,8 +159,12 @@ TEST(GenerateLegalMovesTest, CastlingIncluded) {
 TEST(GenerateLegalMovesTest, NoCastlingWhenInCheck) {
   Board board("r3k2r/8/8/8/8/8/4q3/R3K2R w KQkq - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_FALSE(contains_move(moves, {E1, G1, std::nullopt, false, false, true}));
   EXPECT_FALSE(contains_move(moves, {E1, C1, std::nullopt, false, false, true}));
@@ -156,8 +184,12 @@ TEST(GenerateLegalMovesTest, AllPieceTypesGenerate) {
   board.set_piece(B1, WHITE_QUEEN);
   board.set_piece(E8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Should have moves from all piece types
   bool has_king_move = false;
@@ -194,8 +226,12 @@ TEST(GenerateLegalMovesTest, PawnPromotionsIncluded) {
   board.set_piece(E7, WHITE_PAWN);
   board.set_piece(A8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Should have 4 promotion moves
   EXPECT_TRUE(contains_move(moves, {E7, E8, WHITE_QUEEN, false, false, false}));
@@ -211,8 +247,12 @@ TEST(GenerateLegalMovesTest, PawnPromotionsIncluded) {
 TEST(GenerateLegalMovesTest, EnPassantIncluded) {
   Board board("rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_TRUE(contains_move(moves, {D5, E6, std::nullopt, true, true, false}));
 }
@@ -228,8 +268,12 @@ TEST(GenerateLegalMovesTest, CapturesIncluded) {
   board.set_piece(E7, BLACK_PAWN);
   board.set_piece(E8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_TRUE(contains_move(moves, {E4, E7, std::nullopt, true, false, false}));
 }
@@ -245,8 +289,12 @@ TEST(GenerateLegalMovesTest, NoIllegalMoves) {
   board.set_piece(E2, WHITE_QUEEN);
   board.set_piece(E8, BLACK_ROOK);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // White queen cannot move east or west as it would expose the king
   EXPECT_FALSE(contains_move(moves, {E2, D2, std::nullopt, false, false, false}));
@@ -270,11 +318,15 @@ TEST(GenerateLegalMovesTest, MovesVectorNotCleared) {
   board.set_piece(E1, WHITE_KING);
   board.set_piece(E8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
   moves.emplace_back(Move::make(A1, A2));
 
   size_t initial_size = moves.size();
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   EXPECT_GT(moves.size(), initial_size);
   EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
@@ -287,8 +339,12 @@ TEST(GenerateLegalMovesTest, MovesVectorNotCleared) {
 TEST(GenerateLegalMovesTest, StalemateNoMoves) {
   Board board("7k/5Q2/6K1/8/8/8/8/8 b - - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = false;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::BLACK);
+  generate_legal_moves(moves, board);
 
   EXPECT_EQ(moves.size(), 0);
 }
@@ -300,8 +356,12 @@ TEST(GenerateLegalMovesTest, StalemateNoMoves) {
 TEST(GenerateLegalMovesTest, CheckmatePosition) {
   Board board("8/8/8/8/8/8/1r6/r2K4 w - - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // King in checkmate - no legal moves
   EXPECT_EQ(moves.size(), 0);
@@ -315,8 +375,12 @@ TEST(GenerateLegalMovesTest, CheckmatePosition) {
 TEST(GenerateLegalMovesTest, BackRankMateThreat) {
   Board board("6k1/5ppp/8/8/8/8/5PPP/5RK1 w - - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Should generate moves but not illegal king moves
   EXPECT_GT(moves.size(), 0);
@@ -333,8 +397,12 @@ TEST(GenerateLegalMovesTest, DiscoveredCheckRestriction) {
   board.set_piece(E4, WHITE_BISHOP);
   board.set_piece(E8, BLACK_ROOK);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Bishop pinned, cannot move
   for (const Move& move : moves) {
@@ -349,8 +417,12 @@ TEST(GenerateLegalMovesTest, DiscoveredCheckRestriction) {
 TEST(GenerateLegalMovesTest, ComplexPosition) {
   Board board("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Should have many legal moves
   EXPECT_GT(moves.size(), 20);
@@ -364,8 +436,12 @@ TEST(GenerateLegalMovesTest, ComplexPosition) {
 TEST(GenerateLegalMovesTest, OnlyKingMovesInDoubleCheck) {
   Board board("4k3/8/8/8/8/2q5/2r5/4K3 w - - 0 1");
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // All moves should be from the king
   for (const Move& move : moves) {
@@ -383,8 +459,12 @@ TEST(GenerateLegalMovesTest, BlockingMovesIncluded) {
   board.set_piece(D2, WHITE_BISHOP);
   board.set_piece(E8, BLACK_ROOK);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Bishop can block on E file
   bool has_blocking_move = false;
@@ -407,8 +487,12 @@ TEST(GenerateLegalMovesTest, CapturingCheckerIncluded) {
   board.set_piece(D2, WHITE_KNIGHT);
   board.set_piece(E5, BLACK_QUEEN);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Should include capturing the queen (if knight can reach it)
   // Or king moving away
@@ -422,8 +506,12 @@ TEST(GenerateLegalMovesTest, CapturingCheckerIncluded) {
 TEST(GenerateLegalMovesTest, NoDuplicateMoves) {
   Board board = Board::StartingPosition();
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Check for duplicates
   for (size_t i = 0; i < moves.size(); i++) {
@@ -446,8 +534,12 @@ TEST(GenerateLegalMovesTest, KnightMovesIncluded) {
   board.set_piece(D4, WHITE_KNIGHT);
   board.set_piece(E8, BLACK_KING);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Knight should have moves
   bool has_knight_move = false;
@@ -470,8 +562,12 @@ TEST(GenerateLegalMovesTest, PinnedKnightNoMoves) {
   board.set_piece(E3, WHITE_KNIGHT);
   board.set_piece(E8, BLACK_ROOK);
 
+  BoardState state = board.get_state();
+  state.m_is_white_turn = true;
+  board.set_state(state);
+
   std::vector<Move> moves;
-  generate_legal_moves(moves, board, Color::WHITE);
+  generate_legal_moves(moves, board);
 
   // Pinned knight cannot move
   for (const Move& move : moves) {

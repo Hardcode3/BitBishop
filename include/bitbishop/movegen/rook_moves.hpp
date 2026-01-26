@@ -45,8 +45,8 @@
  *   computed for the current position.
  * - Promotions, en passant, and castling are not applicable to rook moves.
  */
-void generate_rook_legal_moves(std::vector<Move>& moves, const Board& board, Color us, const Bitboard& check_mask,
-                               const PinResult& pins) {
+inline void generate_rook_legal_moves(std::vector<Move>& moves, const Board& board, Color us,
+                                      const Bitboard& check_mask, const PinResult& pins) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();

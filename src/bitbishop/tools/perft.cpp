@@ -1,0 +1,43 @@
+#include <bitbishop/movegen/legal_moves.hpp>
+#include <bitbishop/moves/position.hpp>
+#include <bitbishop/tools/perft.hpp>
+#include <iomanip>
+#include <iostream>
+
+uint64_t Tools::perft(Board& board, std::size_t depth) {
+  uint64_t nodes = 0;
+
+  if (depth == 0) {
+    return 1;
+  }
+
+  std::vector<Move> moves;
+  generate_legal_moves(moves, board);
+
+  Position position(board);
+  for (const Move& move : moves) {
+    position.apply_move(move);
+    nodes += perft(board, depth - 1);
+    position.revert_move();
+  }
+  return nodes;
+}
+
+void Tools::perft_divide(Board& board, std::size_t depth) {
+  uint64_t total_nodes = 0;
+
+  std::vector<Move> moves;
+  generate_legal_moves(moves, board);
+
+  Position position(board);
+  for (const Move& move : moves) {
+    position.apply_move(move);
+    uint64_t nodes = (depth == 1) ? 1 : perft(board, depth - 1);
+    position.revert_move();
+
+    std::cout << move.to_uci() << ": " << nodes << "\n";
+    total_nodes += nodes;
+  }
+
+  std::cout << "\nNodes searched: " << total_nodes << "\n";
+}

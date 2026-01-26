@@ -11,6 +11,14 @@ permissions:
 jobs:
   clang-tidy-linting:
     runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+
+    strategy:
+      matrix:
+        include:
+          - name: linting-clang-release
+            configure_preset: clang_release
+            build_preset: clang_release
 
     steps:
       - uses: actions/checkout@v4
@@ -46,24 +54,24 @@ jobs:
             /tmp/vcpkg/downloads
             /tmp/vcpkg/installed
             ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-clang_debug-${{ hashFiles('vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-cmake-clang_debug-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
-      - name: Configure (clang_debug)
-        run: cmake --preset clang_debug
+      - name: Configure (${{ matrix.configure_preset }})
+        run: cmake --preset ${{ matrix.configure_preset }}
 
       - name: Run clang-tidy
         shell: bash
         run: |
           set +e
-          cmake --build --preset clang_debug --target clang-tidy 2>&1 | tee clang_tidy_output.txt
+          cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy 2>&1 | tee clang_tidy_output.txt
           CLANG_TIDY_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 

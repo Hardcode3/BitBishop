@@ -7,10 +7,15 @@ on:
 jobs:
   windows-build:
     runs-on: windows-2022
+    name: ${{ matrix.test_preset }}
 
     strategy:
       matrix:
-        preset: [ msvc_debug, msvc_release ]
+        include:
+          - name: msvc_release
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc-release
 
     steps:
       - uses: actions/checkout@v4
@@ -23,25 +28,24 @@ jobs:
             C:\vcpkg\packages
             C:\vcpkg\buildtrees
             ~\AppData\Local\vcpkg\archives
-          key: ${{ runner.os }}-vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
-          path: |
-            build/${{ matrix.preset }}
-          key: ${{ runner.os }}-cmake-${{ matrix.preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          path: build
+          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
-      - name: Configure (${{ matrix.preset }})
+      - name: Configure (${{ matrix.configure_preset }})
         env:
           VCPKG_ROOT: C:\vcpkg
         shell: pwsh
         run: |
           $outputFile = "configure_output.txt"
 
-          cmake --preset ${{ matrix.preset }} 2>&1 | Tee-Object -FilePath $outputFile
+          cmake --preset ${{ matrix.configure_preset }} 2>&1 | Tee-Object -FilePath $outputFile
           $exitCode = $LASTEXITCODE
 
           if ($exitCode -eq 0) {
@@ -61,12 +65,12 @@ jobs:
 
           exit $exitCode
 
-      - name: Build (${{ matrix.preset }})
+      - name: Build (${{ matrix.build_preset }})
         shell: pwsh
         run: |
           $outputFile = "build_output.txt"
 
-          cmake --build --preset ${{ matrix.preset }} 2>&1 | Tee-Object -FilePath $outputFile
+          cmake --build --preset ${{ matrix.build_preset }} 2>&1 | Tee-Object -FilePath $outputFile
           $exitCode = $LASTEXITCODE
 
           if ($exitCode -eq 0) {
@@ -86,12 +90,12 @@ jobs:
 
           exit $exitCode
 
-      - name: Test (${{ matrix.preset }})
+      - name: Test (${{ matrix.test_preset }})
         shell: pwsh
         run: |
           $outputFile = "test_output.txt"
 
-          ctest --preset ${{ matrix.preset }} --output-on-failure 2>&1 | Tee-Object -FilePath $outputFile
+          ctest --preset ${{ matrix.test_preset }} --output-on-failure 2>&1 | Tee-Object -FilePath $outputFile
           $exitCode = $LASTEXITCODE
 
           if ($exitCode -eq 0) {

@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
-                               const Bitboard& enemy_attacks) {
+inline void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
+                                      const Bitboard& enemy_attacks) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
 

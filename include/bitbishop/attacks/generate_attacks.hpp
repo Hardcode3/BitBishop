@@ -25,7 +25,7 @@
  * @param enemy The side whose attacks are to be generated.
  * @return A bitboard of all squares attacked by the given side.
  */
-Bitboard generate_attacks(const Board& board, Color enemy) {
+inline Bitboard generate_attacks(const Board& board, Color enemy) {
   Bitboard attacks = Bitboard::Zeros();
 
   Bitboard occupied_no_king = board.occupied() ^ board.king(ColorUtil::opposite(enemy));

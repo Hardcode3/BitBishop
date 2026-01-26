@@ -36,14 +36,15 @@
  *
  * @param moves Vector to append generated legal moves to
  * @param board Current board position
- * @param us Color of the side to generate moves for
  *
  * @note The move list is appended to; it is not cleared by this function.
  * @note Assumes the board position is internally consistent and legal.
  */
-void generate_legal_moves(std::vector<Move>& moves, const Board& board, Color us) {
-  Square king_sq = board.king_square(us).value();
+inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
+  Color us = board.get_state().m_is_white_turn ? Color::WHITE : Color::BLACK;
   Color them = ColorUtil::opposite(us);
+
+  Square king_sq = board.king_square(us).value();
 
   Bitboard checkers = compute_checkers(board, king_sq, them);
   Bitboard check_mask = compute_check_mask(king_sq, checkers, board);
