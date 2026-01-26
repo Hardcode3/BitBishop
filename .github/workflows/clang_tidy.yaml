@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: clang_release
+          - name: linting-clang-release
             configure_preset: clang_release
             build_preset: clang_release
 
