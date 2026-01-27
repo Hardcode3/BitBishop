@@ -11,10 +11,6 @@ if(NUM_FILES EQUAL 0)
 endif()
 
 message(STATUS "Merging ${NUM_FILES} coverage profile(s)...")
-foreach(FILE IN LISTS PROFRAW_FILES)
-    get_filename_component(FILENAME "${FILE}" NAME)
-    message(STATUS "  + ${FILENAME}")
-endforeach()
 
 execute_process(
     COMMAND ${LLVM_PROFDATA} merge --sparse ${PROFRAW_FILES} -o ${PROFDATA_FILE}
