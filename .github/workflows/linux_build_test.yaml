@@ -143,15 +143,19 @@ jobs:
           COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
+          COVERAGE_FILE=$(grep -Po "GitHub Markdown summary written to: \K.*" test.txt)
+          # -P: Uses Perl-style regex.
+          # -o: Only outputs the matched part (not the whole line).
+          # \K: Tells the engine to match the string but ignore it in the final output.
+          # .*: Matches the rest of the line (the path)
+
           if [ $COV_EXIT_CODE -eq 0 ]; then
             echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
           else
             echo "## 🔴 Coverage Results" >> $GITHUB_STEP_SUMMARY
           fi
           echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat coverage_gh_summary.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat $COVERAGE_FILE >> $GITHUB_STEP_SUMMARY
           if [ $COV_EXIT_CODE -eq 0 ]; then
             echo "</details>" >> $GITHUB_STEP_SUMMARY
           fi
