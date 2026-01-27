@@ -18,10 +18,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     if(APPLE)
         # macOS specific: force_load
-        add_link_options("$<$<CONFIG:Debug>:-Wl,-force_load,$<TARGET_FILE:Bitbishop>>")
+        add_link_options(
+            "$<$<CONFIG:Debug>:-Wl,-force_load,$<TARGET_FILE:Bitbishop>>"
+        )
     elseif(UNIX AND NOT APPLE)
         # Linux specific: --whole-archive
         # Note: Linux uses --whole-archive / --no-whole-archive pairs
-        add_link_options("$<$<CONFIG:Debug>:-Wl,--whole-archive>$<$<CONFIG:Debug>:$<TARGET_FILE:Bitbishop>>$<$<CONFIG:Debug>:-Wl,--no-whole-archive>")
+        add_link_options(
+            "$<$<CONFIG:Debug>:-Wl,--whole-archive>"
+            "$<$<CONFIG:Debug>:-Wl,$<TARGET_FILE:Bitbishop>>"
+            "$<$<CONFIG:Debug>:-Wl,--no-whole-archive>"
+        )
     endif()
 endif()
