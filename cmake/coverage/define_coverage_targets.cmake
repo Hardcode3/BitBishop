@@ -57,7 +57,7 @@ if (ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         COMMENT "Generating LLVM HTML coverage report (${CTEST_PRESET})"
         VERBATIM
     )
-    add_dependencies(coverage-report coverage-merge)
+    add_dependencies(coverage-html coverage-merge)
 
     add_custom_target(coverage-summary
         COMMAND ${CMAKE_COMMAND}
