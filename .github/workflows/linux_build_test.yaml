@@ -16,10 +16,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
+          - name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
+            test_preset: quick-validation-clang-debug
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,7 @@ jobs:
             build-essential \
             clang \
             clang-tidy \
+            llvm \
             gcc \
             g++ \
             git \
@@ -133,3 +134,30 @@ jobs:
           fi
 
           exit $TEST_EXIT_CODE
+
+      - name: Coverage (${{ matrix.test_preset }})
+        shell: bash
+        run: |
+          set +e
+          cmake --build --preset ${{ matrix.build_preset }} --target coverage-markdown 2>&1 | tee coverage_gh_summary.txt
+          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          set -e
+
+          COVERAGE_FILE=$(grep -Po "GitHub Markdown summary written to: \K.*" coverage_gh_summary.txt)
+          # -P: Uses Perl-style regex.
+          # -o: Only outputs the matched part (not the whole line).
+          # \K: Tells the engine to match the string but ignore it in the final output.
+          # .*: Matches the rest of the line (the path)
+
+          if [ $COV_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔴 Coverage Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          cat $COVERAGE_FILE >> $GITHUB_STEP_SUMMARY
+          if [ $COV_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $COV_EXIT_CODE
