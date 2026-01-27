@@ -16,10 +16,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
+          - name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
+            test_preset: quick-validation-clang-debug
 
     steps:
       - uses: actions/checkout@v4
@@ -133,3 +133,26 @@ jobs:
           fi
 
           exit $TEST_EXIT_CODE
+
+      - name: Coverage (${{ matrix.test_preset }})
+        shell: bash
+        run: |
+          set +e
+          cmake --build --preset ${{ matrix.build_preset }} --target coverage-github-summary 2>&1 | tee coverage_gh_summary.txt
+          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          set -e
+
+          if [ $COV_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔴 Coverage Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage_gh_summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $COV_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $COV_EXIT_CODE
