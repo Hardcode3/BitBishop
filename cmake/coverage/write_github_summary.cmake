@@ -1,3 +1,16 @@
+# Brief:
+# - Defines the public function `write_github_summary` to write code coverage to a markdown file
+# - Uses many macros as private functions to separate concerns
+#
+# Usage:
+#
+# include("${CMAKE_CURRENT_LIST_DIR}/write_github_summary.cmake")
+# write_github_summary(
+#     COVERAGE_DIR       "${COVERAGE_DIR}"
+#     PRESET             "${CTEST_PRESET}"
+#     PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
+#     COMMAND            ${COV_COMMAND}
+# )
 
 macro(_cov_execute_command)
     if(NOT ARG_COMMAND)
