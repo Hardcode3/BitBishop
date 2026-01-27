@@ -45,7 +45,7 @@ if (ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_dependencies(coverage-merge coverage-run-tests)
 
     # Generate coverage reports
-    add_custom_target(coverage-report
+    add_custom_target(coverage-html
         COMMAND ${CMAKE_COMMAND}
             "-DCOVERAGE_DIR=${COVERAGE_DIR}"
             "-DPROFDATA_FILE=${PROFDATA_FILE}"
