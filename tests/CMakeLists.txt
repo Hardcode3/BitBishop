@@ -33,17 +33,18 @@ function(register_ctest_entries TEST_NAME)
         if(TEST_NAME STREQUAL ENTRY_TEST)
             set(HAS_CUSTOM_ENTRIES TRUE)
 
-            set(CTEST_NAME "${TEST_NAME}::${ENTRY_FILTER}")
+            set(CTEST_NAME "${TEST_NAME}_${ENTRY_FILTER}")
+            string(REPLACE "/" "_" SAFE_CTEST_NAME "${CTEST_NAME}")
+            string(REPLACE "." "_" SAFE_CTEST_NAME ${SAFE_CTEST_NAME})
+            string(REPLACE "*" "star" SAFE_CTEST_NAME ${SAFE_CTEST_NAME})
 
             add_test(
-                NAME ${CTEST_NAME}
+                NAME ${SAFE_CTEST_NAME}
                 COMMAND ${TEST_NAME} --gtest_filter=${ENTRY_FILTER}
             )
 
             string(REPLACE "," ";" ENTRY_LABELS_LIST "${ENTRY_LABELS}")
-            set_tests_properties(${CTEST_NAME}
-                PROPERTIES LABELS "${ENTRY_LABELS_LIST}"
-            )
+            set_tests_properties(${SAFE_CTEST_NAME} PROPERTIES LABELS "${ENTRY_LABELS_LIST}")
         endif()
     endforeach()
 

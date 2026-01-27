@@ -6,3 +6,22 @@ if (MSVC)
     #       'Unicode support requires compiling with /utf-8'
     add_compile_options(/utf-8)
 endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(
+        "$<$<CONFIG:Debug>:-O0>"
+        "$<$<CONFIG:Debug>:-g>"
+        "$<$<CONFIG:Debug>:-fno-inline>"
+        "$<$<CONFIG:Debug>:-fno-inline-functions>"
+        "$<$<CONFIG:Debug>:-fno-omit-frame-pointer>"
+    )
+
+    if(APPLE)
+        # macOS specific: force_load
+        add_link_options("$<$<CONFIG:Debug>:-Wl,-force_load,$<TARGET_FILE:Bitbishop>>")
+    elseif(UNIX AND NOT APPLE)
+        # Linux specific: --whole-archive
+        # Note: Linux uses --whole-archive / --no-whole-archive pairs
+        add_link_options("$<$<CONFIG:Debug>:-Wl,--whole-archive$<TARGET_FILE:Bitbishop>--no-whole-archive>")
+    endif()
+endif()
