@@ -139,7 +139,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target coverage-github-summary 2>&1 | tee coverage_gh_summary.txt
+          cmake --build --preset ${{ matrix.build_preset }} --target coverage-markdown 2>&1 | tee coverage_gh_summary.txt
           COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
