@@ -14,7 +14,7 @@
 #     "-DLLVM_PROFDATA=${LLVM_PROFDATA}"
 #     -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_merge.cmake"
 
-function(coverage_validate_inputs)
+macro(coverage_validate_inputs)
     if(NOT DEFINED REPORT_MODE)
         message(FATAL_ERROR
             "REPORT_MODE must be defined and one of: html, console, json, markdown"
@@ -39,20 +39,19 @@ function(coverage_validate_inputs)
             message(FATAL_ERROR "${req} must be defined")
         endif()
     endforeach()
-endfunction()
+endmacro()
 
-function(coverage_resolve_project_source_dir)
+macro(coverage_resolve_project_source_dir)
     if(NOT DEFINED PROJECT_SOURCE_DIR)
         get_filename_component(
             PROJECT_SOURCE_DIR
             "${CMAKE_CURRENT_LIST_DIR}/.."
             ABSOLUTE
         )
-        set(PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}" PARENT_SCOPE)
     endif()
-endfunction()
+endmacro()
 
-function(coverage_collect_test_binaries out_var)
+macro(coverage_collect_test_binaries)
     execute_process(
         COMMAND ${CMAKE_CTEST_COMMAND} -N --show-only=json-v1 --preset ${CTEST_PRESET}
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
@@ -60,6 +59,7 @@ function(coverage_collect_test_binaries out_var)
         OUTPUT_STRIP_TRAILING_WHITESPACE
         RESULT_VARIABLE RES
     )
+
     if(NOT RES EQUAL 0)
         message(FATAL_ERROR "Failed to query CTest for preset ${CTEST_PRESET}")
     endif()
@@ -69,7 +69,7 @@ function(coverage_collect_test_binaries out_var)
         message(FATAL_ERROR "Failed to parse CTest JSON: ${JSON_ERROR}")
     endif()
 
-    set(BINS "")
+    set(COVERAGE_BINS "")
     math(EXPR LAST "${TESTS_COUNT} - 1")
 
     foreach(IDX RANGE ${LAST})
@@ -77,52 +77,48 @@ function(coverage_collect_test_binaries out_var)
         if(NOT JSON_ERROR)
             string(JSON EXE ERROR_VARIABLE JSON_ERROR GET "${CMD}" 0)
             if(NOT JSON_ERROR AND EXISTS "${EXE}")
-                list(APPEND BINS "${EXE}")
+                list(APPEND COVERAGE_BINS "${EXE}")
             endif()
         endif()
     endforeach()
 
-    list(REMOVE_DUPLICATES BINS)
+    list(REMOVE_DUPLICATES COVERAGE_BINS)
 
-    if(NOT BINS)
+    if(NOT COVERAGE_BINS)
         message(FATAL_ERROR "No test executables found for preset ${CTEST_PRESET}")
     endif()
+endmacro()
 
-    set(${out_var} "${BINS}" PARENT_SCOPE)
-endfunction()
-
-function(build_llvm_cov_command out_var bins)
-    set(CMD "${LLVM_COV}")
+macro(build_llvm_cov_command)
+    set(COV_COMMAND "${LLVM_COV}")
 
     if(REPORT_MODE STREQUAL "html")
-        list(APPEND CMD show)
+        list(APPEND COV_COMMAND show)
     elseif(REPORT_MODE STREQUAL "console" OR REPORT_MODE STREQUAL "markdown")
-        list(APPEND CMD report)
+        list(APPEND COV_COMMAND report)
     elseif(REPORT_MODE STREQUAL "json")
-        list(APPEND CMD export)
+        list(APPEND COV_COMMAND export)
     endif()
 
-    list(GET bins 0 FIRST_BIN)
-    list(APPEND CMD "${FIRST_BIN}")
+    list(GET COVERAGE_BINS 0 FIRST_BIN)
+    list(APPEND COV_COMMAND "${FIRST_BIN}")
 
-    list(LENGTH bins NUM_BINS)
+    list(LENGTH COVERAGE_BINS NUM_BINS)
     if(NUM_BINS GREATER 1)
-        list(REMOVE_AT bins 0)
-        foreach(BIN IN LISTS bins)
-            list(APPEND CMD "-object=${BIN}")
+        list(REMOVE_AT COVERAGE_BINS 0)
+        foreach(BIN IN LISTS COVERAGE_BINS)
+            list(APPEND COV_COMMAND "-object=${BIN}")
         endforeach()
     endif()
 
-    list(APPEND CMD
+    list(APPEND COV_COMMAND
         "-instr-profile=${PROFDATA_FILE}"
         "-path-equivalence=${PROJECT_SOURCE_DIR},${PROJECT_SOURCE_DIR}"
         "-ignore-filename-regex=tests/.*"
     )
+endmacro()
 
-    set(${out_var} "${CMD}" PARENT_SCOPE)
-endfunction()
-
-function(run_llvm_cov)
+macro(run_llvm_cov)
     if(REPORT_MODE STREQUAL "html")
         list(APPEND COV_COMMAND
             "-format=html"
@@ -138,6 +134,7 @@ function(run_llvm_cov)
             RESULT_VARIABLE RES
             ERROR_VARIABLE ERR
         )
+
         if(RES EQUAL 0)
             message(STATUS "HTML coverage report: ${COVERAGE_DIR}/html/index.html")
         else()
@@ -150,6 +147,7 @@ function(run_llvm_cov)
             RESULT_VARIABLE RES
             ERROR_VARIABLE ERR
         )
+
         if(NOT RES EQUAL 0)
             message(FATAL_ERROR "llvm-cov report failed:\n${ERR}")
         endif()
@@ -171,20 +169,22 @@ function(run_llvm_cov)
             RESULT_VARIABLE RES
             ERROR_VARIABLE ERR
         )
+
         if(RES EQUAL 0)
             message(STATUS "JSON coverage export: ${COVERAGE_DIR}/coverage.json")
         else()
             message(FATAL_ERROR "llvm-cov export failed:\n${ERR}")
         endif()
     endif()
-endfunction()
+endmacro()
+
 
 coverage_validate_inputs()
 coverage_resolve_project_source_dir()
-coverage_collect_test_binaries(COVERAGE_BINS)
+coverage_collect_test_binaries()
 
 list(LENGTH COVERAGE_BINS COVERAGE_BINS_SIZE)
 message(STATUS "Collected ${COVERAGE_BINS_SIZE} binaries for coverage")
 
-build_llvm_cov_command(COV_COMMAND "${COVERAGE_BINS}")
+build_llvm_cov_command()
 run_llvm_cov()
