@@ -26,7 +26,6 @@ function(write_github_summary)
     file(WRITE "${SUMMARY_FILE}" "## 📊 Coverage Report - ${ARG_PRESET}\n\n")
     string(TIMESTAMP TIMESTAMP "%Y-%m-%d %H:%M:%S UTC" UTC)
     file(APPEND "${SUMMARY_FILE}" "*Generated: ${TIMESTAMP}*\n\n")
-    file(APPEND "${SUMMARY_FILE}" "### 📁 Reports\n- 📄 HTML Report: Available as build artifact\n- 📄 JSON Report: Available as build artifact\n\n")
 
     # Split output into lines
     string(REPLACE "\n" ";" COVERAGE_LINES "${COVERAGE_OUTPUT}")
