@@ -1,3 +1,5 @@
+[![Coverage](https://img.shields.io/endpoint?url=https://Hardcode3.github.io/BitBishop/shieldsio_coverage_badge.json)](https://Hardcode3.github.io/BitBishop/index.html)
+
 # BitBishop
 
 A modern chess engine written in C++23, designed for learning low-level programming techniques and chess engine development.
