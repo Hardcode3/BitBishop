@@ -1,4 +1,4 @@
-[![Coverage](https://img.shields.io/endpoint?url=https://Hardcode3.github.io/BitBishop/shieldsio_coverage_badge.json)](https://Hardcode3.github.io/BitBishop/index.html)
+[![Coverage](https://img.shields.io/endpoint?url=https://Hardcode3.github.io/BitBishop/shieldsio_coverage_badge.json)](https://Hardcode3.github.io/BitBishop/html/index.html)
 
 # BitBishop
 
