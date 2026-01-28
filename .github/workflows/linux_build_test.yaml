@@ -173,8 +173,8 @@ jobs:
           set -e
 
           HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
-          echo "HTML_COV_DIR=$HTML_COV_DIR" >> GITHUB_OUTPUT
-          echo "$HTML_COV_DIR"
+          echo "HTML_COV_DIR=$HTML_COV_DIR" >> "$GITHUB_OUTPUT"
+
           exit $COV_EXIT_CODE
 
       - name: Generate shields.io badge (${{ matrix.test_preset }})
@@ -188,8 +188,8 @@ jobs:
           set -e
 
           SHIELDSIO_BADGE_FILE=$(grep -Po "Shields.io badge written to: \K.*" coverage_shieldsio_summary.txt)
-          echo "SHIELDSIO_BADGE_FILE=$SHIELDSIO_BADGE_FILE" >> GITHUB_OUTPUT
-          echo "$SHIELDSIO_BADGE_FILE"
+          echo "SHIELDSIO_BADGE_FILE=$SHIELDSIO_BADGE_FILE" >> "$GITHUB_OUTPUT"
+
           exit $COV_EXIT_CODE
 
       - name: Prepare files
