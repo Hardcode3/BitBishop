@@ -137,6 +137,7 @@ macro(run_llvm_cov)
 
         if(RES EQUAL 0)
             message(STATUS "HTML coverage report: ${COVERAGE_DIR}/html/index.html")
+            message(STATUS "HTML coverage directory: ${COVERAGE_DIR}/html")
         else()
             message(FATAL_ERROR "llvm-cov show failed:\n${ERR}")
         endif()
