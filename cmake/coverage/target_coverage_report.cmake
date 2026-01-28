@@ -177,7 +177,7 @@ macro(run_llvm_cov)
         endif()
 
     elseif(REPORT_MODE STREQUAL "shieldsio")
-        include("${CMAKE_CURRENT_LIST_DIR}/write_markdown_summary.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/write_shieldsio_badge.cmake")
 
         write_shieldsio_coverage_badge(
             COVERAGE_DIR       "${COVERAGE_DIR}"
@@ -185,10 +185,8 @@ macro(run_llvm_cov)
             PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
             COMMAND            ${COV_COMMAND}
         )
-
     endif()
 endmacro()
-
 
 coverage_validate_inputs()
 coverage_resolve_project_source_dir()
