@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     name: ${{ matrix.test_preset }}
 
+    permissions:
+      # coverage artefacts export requires write priviledges
+      # (html report and shields.io badge)
+      contents: write
+
     strategy:
       matrix:
         include:
