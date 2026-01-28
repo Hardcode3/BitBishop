@@ -1,3 +1,29 @@
+<p align=center>
+    <a href="LICENSE">
+        <img src="https://img.shields.io/github/license/Hardcode3/BitBishop?labelColor=333333&color=00AAEE&logo=opensourceinitiative&logoColor=white" alt="License">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Hardcode3/BitBishop/actions">
+        <img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/linux_build_test.yaml?label=Ubuntu&logo=ubuntu&labelColor=E95420&logoColor=white" alt="Ubuntu Build">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/windows_build_test.yaml">
+        <img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/windows_build_test.yaml?label=Windows&logo=windows&labelColor=0078D4&logoColor=white" alt="Windows Build">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/linux_build_test.yaml">
+        <img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/linux_build_test.yaml?label=Tests&logo=githubactions&labelColor=222222&logoColor=white" alt="Tests">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/clang_tidy.yaml">
+        <img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/clang_tidy.yaml?label=Linting&logo=llvm&labelColor=593D9C&logoColor=white" alt="Linting">
+    </a>
+    &nbsp;
+    <a href="https://Hardcode3.github.io/BitBishop/html/index.html">
+        <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/shieldsio_coverage_badge.json&logo=codecov&logoColor=white" alt="Coverage">
+    </a>
+</p>
+
 # BitBishop
 
 A modern chess engine written in C++23, designed for learning low-level programming techniques and chess engine development.

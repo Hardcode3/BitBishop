@@ -128,4 +128,21 @@ if (ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     )
     add_dependencies(coverage-markdown _coverage-merge)
 
+    # Public target allowing to generate a shields.io coverage badge
+    # Triggers automatically the tests and coverage merge before running
+    add_custom_target(coverage-shieldsio
+        COMMAND ${CMAKE_COMMAND}
+            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+            "-DPROFDATA_FILE=${PROFDATA_FILE}"
+            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+            "-DCTEST_PRESET=${CTEST_PRESET}"
+            "-DLLVM_COV=${LLVM_COV}"
+            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+            "-DREPORT_MODE=shieldsio"
+            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+        COMMENT "Generating Shields.io coverage badge (${CTEST_PRESET})"
+        VERBATIM
+    )
+    add_dependencies(coverage-shieldsio _coverage-merge)
+
 endif()
