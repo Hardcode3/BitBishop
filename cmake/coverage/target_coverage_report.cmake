@@ -3,7 +3,7 @@
 #   PROFDATA_FILE           Path to the `.profdata` file generated from the merge of `*.profraw` files
 #   LLVM_COV                Path to the `llvm-cov` executable
 #   CTEST_PRESET:           Name of the CTest preset used
-#   REPORT_MODE (optional): show|report|json|markdown
+#   REPORT_MODE (optional): show|report|json|markdown|shieldsio
 #
 # Usage:
 #
@@ -17,16 +17,16 @@
 macro(coverage_validate_inputs)
     if(NOT DEFINED REPORT_MODE)
         message(FATAL_ERROR
-            "REPORT_MODE must be defined and one of: html, console, json, markdown"
+            "REPORT_MODE must be defined and one of: html, console, json, markdown, shieldsio"
         )
     endif()
 
-    set(_valid_modes html console json markdown)
+    set(_valid_modes html console json markdown shieldsio)
     list(FIND _valid_modes "${REPORT_MODE}" _idx)
     if(_idx EQUAL -1)
         message(FATAL_ERROR
             "Invalid REPORT_MODE: ${REPORT_MODE}\n"
-            "Valid values are: html, console, json, markdown"
+            "Valid values are: html, console, json, markdown, shieldsio"
         )
     endif()
 
@@ -94,7 +94,7 @@ macro(build_llvm_cov_command)
 
     if(REPORT_MODE STREQUAL "html")
         list(APPEND COV_COMMAND show)
-    elseif(REPORT_MODE STREQUAL "console" OR REPORT_MODE STREQUAL "markdown")
+    elseif(REPORT_MODE STREQUAL "console" OR REPORT_MODE STREQUAL "markdown" OR REPORT_MODE STREQUAL "shieldsio")
         list(APPEND COV_COMMAND report)
     elseif(REPORT_MODE STREQUAL "json")
         list(APPEND COV_COMMAND export)
@@ -153,9 +153,9 @@ macro(run_llvm_cov)
         endif()
 
     elseif(REPORT_MODE STREQUAL "markdown")
-        include("${CMAKE_CURRENT_LIST_DIR}/write_github_summary.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/write_markdown_summary.cmake")
 
-        write_github_summary(
+        write_markdown_summary(
             COVERAGE_DIR       "${COVERAGE_DIR}"
             PRESET             "${CTEST_PRESET}"
             PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
@@ -175,6 +175,17 @@ macro(run_llvm_cov)
         else()
             message(FATAL_ERROR "llvm-cov export failed:\n${ERR}")
         endif()
+
+    elseif(REPORT_MODE STREQUAL "shieldsio")
+        include("${CMAKE_CURRENT_LIST_DIR}/write_markdown_summary.cmake")
+
+        write_shieldsio_coverage_badge(
+            COVERAGE_DIR       "${COVERAGE_DIR}"
+            PRESET             "${CTEST_PRESET}"
+            PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
+            COMMAND            ${COV_COMMAND}
+        )
+
     endif()
 endmacro()
 

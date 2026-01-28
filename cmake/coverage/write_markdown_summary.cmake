@@ -1,11 +1,11 @@
 # Brief:
-# - Defines the public function `write_github_summary` to write code coverage to a markdown file
+# - Defines the public function `write_markdown_summary` to write code coverage to a markdown file
 # - Uses many macros as private functions to separate concerns
 #
 # Usage:
 #
-# include("${CMAKE_CURRENT_LIST_DIR}/write_github_summary.cmake")
-# write_github_summary(
+# include("${CMAKE_CURRENT_LIST_DIR}/write_markdown_summary.cmake")
+# write_markdown_summary(
 #     COVERAGE_DIR       "${COVERAGE_DIR}"
 #     PRESET             "${CTEST_PRESET}"
 #     PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
@@ -14,7 +14,7 @@
 
 macro(_cov_execute_command)
     if(NOT ARG_COMMAND)
-        message(FATAL_ERROR "No command passed to write_github_summary")
+        message(FATAL_ERROR "No command passed to write_markdown_summary")
     endif()
 
     execute_process(
@@ -142,7 +142,7 @@ macro(_cov_write_detailed_table)
     endforeach()
 endmacro()
 
-function(write_github_summary)
+function(write_markdown_summary)
     set(options "")
     set(oneValueArgs COVERAGE_DIR PRESET PROJECT_SOURCE_DIR)
     set(multiValueArgs COMMAND)
@@ -177,3 +177,56 @@ function(write_github_summary)
 
     message(STATUS "GitHub Markdown summary written to: ${SUMMARY_FILE}")
 endfunction()
+
+macro(_shieldsio_get_badge_color)
+    string(REGEX MATCH "[0-9]+" COV_NUM "${REGION_COV}")
+    if(COV_NUM GREATER 90)
+        set(BADGE_COLOR "brightgreen")
+    elseif(COV_NUM GREATER 70)
+        set(BADGE_COLOR "yellow")
+    else()
+        set(BADGE_COLOR "red")
+    endif()
+endmacro()
+
+macro(_shieldsio_generate_json)
+    configure_file(
+        ${CMAKE_CURRENT_LIST_DIR}/shieldsio_coverage_badge.json.in
+        ${SHIELDSIO_BADGE_FILE}
+        @ONLY
+    )
+endmacro()
+
+macro(write_shieldsio_coverage_badge)
+    set(options "")
+    set(oneValueArgs COVERAGE_DIR PRESET PROJECT_SOURCE_DIR)
+    set(multiValueArgs COMMAND)
+
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(SHIELDSIO_BADGE_FILE "${ARG_COVERAGE_DIR}/shieldsio_coverage_badge.json")
+
+    set(RE_SEP "[ \t]+")
+    set(RE_NUM "[0-9]+")
+    set(RE_PCT "([0-9.]+%|-)")
+    set(LINE_REGEX
+        "^(.+)${RE_SEP}${RE_NUM}${RE_SEP}${RE_NUM}${RE_SEP}${RE_PCT}"
+        "${RE_SEP}${RE_NUM}${RE_SEP}${RE_NUM}${RE_SEP}${RE_PCT}"
+        "${RE_SEP}${RE_NUM}${RE_SEP}${RE_NUM}${RE_SEP}${RE_PCT}"
+        "${RE_SEP}${RE_NUM}${RE_SEP}${RE_NUM}${RE_SEP}${RE_PCT}$"
+    )
+    string(JOIN "" LINE_REGEX ${LINE_REGEX})
+
+    _cov_execute_command()
+    _cov_find_total_line()
+    _cov_parse_totals()
+
+    if(NOT PARSED)
+        message(WARNING "Could not parse TOTAL line from coverage output.")
+    endif()
+
+    _shieldsio_get_badge_color()
+    _shieldsio_generate_json()
+
+    message(STATUS "Shields.io badge has been written to: ${SHIELDSIO_BADGE_FILE}")
+endmacro()
