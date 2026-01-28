@@ -168,7 +168,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate html coverage report (${{ matrix.test_preset }})
-        #if: github.ref_name == 'main'
+        if: github.ref_name == 'main'
         id: htmlcov
         shell: bash
         run: |
@@ -183,7 +183,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate shields.io badge (${{ matrix.test_preset }})
-        #if: github.ref_name == 'main'
+        if: github.ref_name == 'main'
         id: shieldsio
         shell: bash
         run: |
@@ -205,7 +205,7 @@ jobs:
           cp "${{ steps.shieldsio.outputs.SHIELDSIO_BADGE_FILE }}" out/
 
       - name: Publish coverage badge and report to gh-pages
-        #if: github.ref_name == 'main'
+        if: github.ref_name == 'main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
