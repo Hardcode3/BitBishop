@@ -3,7 +3,14 @@
 #   use with shields.io, markdown and gh-pages
 #
 # Usage:
-# 
+#
+# include("${CMAKE_CURRENT_LIST_DIR}/write_shieldsio_badge.cmake")
+# write_shieldsio_coverage_badge(
+#     COVERAGE_DIR       "${COVERAGE_DIR}"
+#     PRESET             "${CTEST_PRESET}"
+#     PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"
+#     COMMAND            ${COV_COMMAND}
+# )
 
 include(${CMAKE_CURRENT_LIST_DIR}/coverage_common.cmake)
 
