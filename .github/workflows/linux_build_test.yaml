@@ -135,7 +135,7 @@ jobs:
 
           exit $TEST_EXIT_CODE
 
-      - name: Coverage (${{ matrix.test_preset }})
+      - name: Generate markdown coverage report (${{ matrix.test_preset }})
         shell: bash
         run: |
           set +e
@@ -161,3 +161,47 @@ jobs:
           fi
 
           exit $COV_EXIT_CODE
+
+      - name: Generate html coverage report (${{ matrix.test_preset }})
+        #if: github.ref_name == 'main'
+        id: htmlcov
+        shell: bash
+        run: |
+          set +e
+          cmake --build --preset ${{ matrix.build_preset }} --target coverage-html 2>&1 | tee coverage_html_summary.txt
+          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          set -e
+          exit $COV_EXIT_CODE
+
+          HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
+          echo "HTML_COV_DIR=$HTML_COV_DIR" >> GITHUB_OUTPUT
+
+      - name: Generate shields.io badge (${{ matrix.test_preset }})
+        #if: github.ref_name == 'main'
+        id: shieldsio
+        shell: bash
+        run: |
+          set +e
+          cmake --build --preset ${{ matrix.build_preset }} --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
+          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          set -e
+          exit $COV_EXIT_CODE
+
+          SHIELDSIO_BADGE_FILE=$(grep -Po "Shields.io badge written to: \K.*" coverage_shieldsio_summary.txt)
+          echo "SHIELDSIO_BADGE_FILE=$SHIELDSIO_BADGE_FILE" >> GITHUB_OUTPUT
+
+      - name: Prepare files
+        shell: bash
+        run: |
+          mkdir -p out/
+          cp -r "${{ steps.htmlcov.outputs.HTML_COV_DIR }}" out/
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_BADGE_FILE }}" out/
+
+      - name: Publish coverage badge and report to gh-pages
+        #if: github.ref_name == 'main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: out
+          keep_files: true
