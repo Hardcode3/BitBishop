@@ -198,6 +198,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Prepare files
+        if: github.ref_name == 'main'
         shell: bash
         run: |
           mkdir -p out/
