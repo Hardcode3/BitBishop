@@ -29,3 +29,12 @@ TEST(PieceTest, AllPieceTypesAreDistinct) {
   EXPECT_NE(Piece::KNIGHT, Piece::QUEEN);
   EXPECT_NE(Piece::KNIGHT, Piece::KING);
 }
+
+TEST(PieceTest, GetAllPieceTypes) {
+  std::array<Piece::Type, Piece::TYPE_COUNT> types = Piece::all_types();
+
+  std::array<Piece::Type, Piece::TYPE_COUNT> expected = {Piece::PAWN, Piece::KNIGHT, Piece::BISHOP,
+                                                         Piece::ROOK, Piece::QUEEN,  Piece::KING};
+
+  EXPECT_EQ(types, expected);
+}

@@ -1,9 +1,12 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/move.hpp>
+#include <regex>
 
 using namespace Squares;
 using namespace Pieces;
+
+static const std::regex uci_move_regex("^[a-z1-8]{4,5}$");
 
 TEST(MoveTest, NormalMove_NoCapture) {
   Square from = E2;
@@ -89,4 +92,59 @@ TEST(MoveTest, CastlingMove) {
   EXPECT_FALSE(m.is_capture);
   EXPECT_FALSE(m.is_en_passant);
   EXPECT_TRUE(m.is_castling);
+}
+
+TEST(MoveTest, ToUciStringRegularMove) {
+  Move m = Move::make(D4, E5);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "d4e5");
+}
+
+TEST(MoveTest, ToUciStringQueenPromotion) {
+  Move m = Move::make_promotion(E7, E8, WHITE_QUEEN, false);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "e7e8q");
+}
+
+TEST(MoveTest, ToUciStringRookPromotion) {
+  Move m = Move::make_promotion(E7, E8, WHITE_ROOK, false);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "e7e8r");
+}
+
+TEST(MoveTest, ToUciStringBishopPromotion) {
+  Move m = Move::make_promotion(E7, E8, WHITE_BISHOP, false);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "e7e8b");
+}
+
+TEST(MoveTest, ToUciStringKnightPromotion) {
+  Move m = Move::make_promotion(E7, E8, WHITE_KNIGHT, false);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "e7e8n");
+}
+
+TEST(MoveTest, ToUciStringInvalidPromotionPieceDiscardsPromotionChar) {
+  // Invalid promotion, cannot promote to a pawn
+  Move m = Move::make_promotion(E7, E8, WHITE_PAWN, false);
+
+  const std::string res = m.to_uci();
+
+  EXPECT_TRUE(std::regex_match(res, uci_move_regex));
+  EXPECT_EQ(res, "e7e8");
 }

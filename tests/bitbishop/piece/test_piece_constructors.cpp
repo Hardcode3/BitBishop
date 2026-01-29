@@ -23,6 +23,8 @@ TEST(PieceTest, ConstructWhitePawnFromChar) {
   Piece p('P');
 
   EXPECT_EQ(p.type(), Piece::PAWN);
+  EXPECT_TRUE(p.is_pawn());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_FALSE(p.is_black());
   EXPECT_EQ(p.to_char(), 'P');
@@ -35,6 +37,8 @@ TEST(PieceTest, ConstructWhiteKnightFromChar) {
   Piece p('N');
 
   EXPECT_EQ(p.type(), Piece::KNIGHT);
+  EXPECT_TRUE(p.is_knight());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_EQ(p.to_char(), 'N');
 }
@@ -46,6 +50,8 @@ TEST(PieceTest, ConstructWhiteBishopFromChar) {
   Piece p('B');
 
   EXPECT_EQ(p.type(), Piece::BISHOP);
+  EXPECT_TRUE(p.is_bishop());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_EQ(p.to_char(), 'B');
 }
@@ -57,6 +63,8 @@ TEST(PieceTest, ConstructWhiteRookFromChar) {
   Piece p('R');
 
   EXPECT_EQ(p.type(), Piece::ROOK);
+  EXPECT_TRUE(p.is_rook());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_EQ(p.to_char(), 'R');
 }
@@ -68,6 +76,8 @@ TEST(PieceTest, ConstructWhiteQueenFromChar) {
   Piece p('Q');
 
   EXPECT_EQ(p.type(), Piece::QUEEN);
+  EXPECT_TRUE(p.is_queen());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_EQ(p.to_char(), 'Q');
 }
@@ -79,6 +89,8 @@ TEST(PieceTest, ConstructWhiteKingFromChar) {
   Piece p('K');
 
   EXPECT_EQ(p.type(), Piece::KING);
+  EXPECT_TRUE(p.is_king());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_white());
   EXPECT_EQ(p.to_char(), 'K');
 }
@@ -90,6 +102,8 @@ TEST(PieceTest, ConstructBlackPawnFromChar) {
   Piece p('p');
 
   EXPECT_EQ(p.type(), Piece::PAWN);
+  EXPECT_TRUE(p.is_pawn());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_FALSE(p.is_white());
   EXPECT_EQ(p.to_char(), 'p');
@@ -102,6 +116,8 @@ TEST(PieceTest, ConstructBlackKnightFromChar) {
   Piece p('n');
 
   EXPECT_EQ(p.type(), Piece::KNIGHT);
+  EXPECT_TRUE(p.is_knight());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_EQ(p.to_char(), 'n');
 }
@@ -113,6 +129,8 @@ TEST(PieceTest, ConstructBlackBishopFromChar) {
   Piece p('b');
 
   EXPECT_EQ(p.type(), Piece::BISHOP);
+  EXPECT_TRUE(p.is_bishop());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_EQ(p.to_char(), 'b');
 }
@@ -124,6 +142,8 @@ TEST(PieceTest, ConstructBlackRookFromChar) {
   Piece p('r');
 
   EXPECT_EQ(p.type(), Piece::ROOK);
+  EXPECT_TRUE(p.is_rook());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_EQ(p.to_char(), 'r');
 }
@@ -135,6 +155,8 @@ TEST(PieceTest, ConstructBlackQueenFromChar) {
   Piece p('q');
 
   EXPECT_EQ(p.type(), Piece::QUEEN);
+  EXPECT_TRUE(p.is_queen());
+  EXPECT_TRUE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_EQ(p.to_char(), 'q');
 }
@@ -146,6 +168,8 @@ TEST(PieceTest, ConstructBlackKingFromChar) {
   Piece p('k');
 
   EXPECT_EQ(p.type(), Piece::KING);
+  EXPECT_TRUE(p.is_king());
+  EXPECT_FALSE(p.is_slider());
   EXPECT_TRUE(p.is_black());
   EXPECT_EQ(p.to_char(), 'k');
 }
