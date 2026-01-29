@@ -81,24 +81,65 @@
   "buildPresets": [
     {
       "name": "clang_debug",
-      "configurePreset": "clang_debug"
+      "configurePreset": "clang_debug",
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     },
     {
       "name": "clang_release",
-      "configurePreset": "clang_release"
+      "configurePreset": "clang_release",
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     },
     {
       "name": "msvc_debug",
       "configurePreset": "msvc_debug",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     },
     {
       "name": "msvc_release",
       "configurePreset": "msvc_release",
-      "configuration": "Release"
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     }
   ],
   "testPresets": [
+    {
+      "name": "non-windows",
+      "hidden": true,
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "environment": {
+        "LLVM_PROFILE_FILE": "${sourceDir}/build/clang_debug/coverage/${presetName}/%m.profraw"
+      }
+    },
+    {
+      "name": "windows",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
     {
       "name": "test-base",
       "hidden": true,
@@ -109,9 +150,6 @@
       "execution": {
         "noTestsAction": "error",
         "stopOnFailure": false
-      },
-      "environment": {
-        "LLVM_PROFILE_FILE": "${sourceDir}/build/clang_debug/coverage/${presetName}/%m.profraw"
       }
     },
     {
@@ -148,83 +186,83 @@
     },
     {
       "name": "quick-validation-clang-debug",
-      "inherits": "tier-quick",
+      "inherits": ["tier-quick", "non-windows"],
       "configurePreset": "clang_debug"
     },
     {
       "name": "intermediate-validation-clang-debug",
-      "inherits": "tier-intermediate",
+      "inherits": ["tier-intermediate", "non-windows"],
       "configurePreset": "clang_debug"
     },
     {
       "name": "deep-validation-clang-debug",
-      "inherits": "tier-deep",
+      "inherits": ["tier-deep", "non-windows"],
       "configurePreset": "clang_debug"
     },
     {
       "name": "full-suite-clang-debug",
-      "inherits": "tier-all",
+      "inherits": ["tier-all", "non-windows"],
       "configurePreset": "clang_debug"
     },
     {
       "name": "quick-validation-clang-release",
-      "inherits": "tier-quick",
+      "inherits": ["tier-quick", "non-windows"],
       "configurePreset": "clang_release"
     },
     {
       "name": "intermediate-validation-clang-release",
-      "inherits": "tier-intermediate",
+      "inherits": ["tier-intermediate", "non-windows"],
       "configurePreset": "clang_release"
     },
     {
       "name": "deep-validation-clang-release",
-      "inherits": "tier-deep",
+      "inherits": ["tier-deep", "non-windows"],
       "configurePreset": "clang_release"
     },
     {
       "name": "full-suite-clang-release",
-      "inherits": "tier-all",
+      "inherits": ["tier-all", "non-windows"],
       "configurePreset": "clang_release"
     },
     {
       "name": "quick-validation-msvc-debug",
-      "inherits": "tier-quick",
+      "inherits": ["tier-quick", "windows"],
       "configurePreset": "msvc_debug",
       "configuration": "Debug"
     },
     {
       "name": "intermediate-validation-msvc-debug",
-      "inherits": "tier-intermediate",
+      "inherits": ["tier-intermediate", "windows"],
       "configurePreset": "msvc_debug",
       "configuration": "Debug"
     },
     {
       "name": "full-suite-msvc-debug",
-      "inherits": "tier-all",
+      "inherits": ["tier-all", "windows"],
       "configurePreset": "msvc_debug",
       "configuration": "Debug"
     },
     {
       "name": "quick-validation-msvc-release",
-      "inherits": "tier-quick",
+      "inherits": ["tier-quick", "windows"],
       "configurePreset": "msvc_release",
       "configuration": "Release"
     },
     {
       "name": "intermediate-validation-msvc-release",
-      "inherits": "tier-intermediate",
+      "inherits": ["tier-intermediate", "windows"],
       "configurePreset": "msvc_release",
       "configuration": "Release"
     },
     {
       "name": "deep-validation-msvc-release",
-      "inherits": "tier-deep",
+      "inherits": ["tier-deep", "windows"],
       "configurePreset": "msvc_release",
       "configuration": "Release"
     },
     {
       "name": "full-suite-msvc-release",
-      "inherits": "tier-all",
+      "inherits": ["tier-all", "windows"],
       "configurePreset": "msvc_release",
       "configuration": "Release"
     }

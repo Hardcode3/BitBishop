@@ -64,12 +64,13 @@ This project is currently 🚧 **under active development** 🚧 and aims to imp
 The project includes comprehensive documentation to support learning.
 These docs are a summary of what i learned while going through the chess world during engine's implementation.
 
-Internal refs:
+### Internal refs
 
-- [UCI Protocol](./docs/uci_protocol.md) - Universal Chess Interface specification
-- [FEN Notation](./docs/fen_notation.md) - Forsyth–Edwards Notation for position representation
+- [UCI Protocol memo](./docs/uci_protocol.md) - Universal Chess Interface specification
+- [FEN Notation memo](./docs/fen_notation.md) - Forsyth–Edwards Notation for position representation
+- [Debugging with Perft](./docs/debug_perft.md) - Step by step example on how to debug with perft
 
-External refs:
+### External refs
 
 - [Andrew Healey - Building My Own Chess Engine](https://healeycodes.com/building-my-own-chess-engine)
 - [Chess Programming Wiki](https://www.chessprogramming.org/Getting_Started)

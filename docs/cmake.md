@@ -2,24 +2,18 @@
 
 This project uses **CMake Presets (v6)** to enforce consistent workflows (configure, build, test) across platforms. It abstracts platform differences (Clang/Ninja on Unix, MSVC on Windows) and enforces a tiered testing strategy.
 
-## ⚡️ Cheat Sheet: Basic Usage
+## 📋 Cheat Sheet
 
 If you are new to CMake Presets, these are the commands you will use 99% of the time.
 
 ### Listing Available Presets
 
-Before running anything, you can see what is available on your machine:
+Before running anything, you can see what is available on your operating system:
 
 ```bash
-# List EVERYTHING (Configure, Build, Test, Package)
-cmake --list-presets
-
-# List only Configure presets (Debug, Release, etc.)
 cmake --list-presets=configure
-
-# List only Test presets (Quick, Deep, etc.)
-ctest --list-presets
-
+cmake --list-presets=build
+ctest --list-presets=test
 ```
 
 ### The Standard Workflow
@@ -29,7 +23,6 @@ ctest --list-presets
 ```bash
 cmake --preset <configure-preset>
 # Example: cmake --preset clang_debug
-
 ```
 
 2. **Build** (Compile the code):
@@ -37,7 +30,6 @@ cmake --preset <configure-preset>
 ```bash
 cmake --build --preset <configure-preset>
 # Example: cmake --build --preset clang_debug
-
 ```
 
 3. **Test** (Run the test suite):
@@ -45,12 +37,11 @@ cmake --build --preset <configure-preset>
 ```bash
 ctest --preset <test-preset>
 # Example: ctest --preset quick-validation-clang-debug
-
 ```
 
-## 📂 Directory Layout
+## 🗂️ Directory Layout
 
-Presets enforce an **out-of-source** build structure.
+Each build preset have its dedicated build directory to enable easy switching between presets and prevent artifact contamination.
 
 ```text
 build/
@@ -59,30 +50,93 @@ build/
   ├── msvc_debug/     # Artifacts for MSVC Debug
   ├── msvc_release/   # Artifacts for MSVC Release
   └── install/        # Staged install artifacts
-
 ```
 
-## ⚙️ Available Configure Presets
+## Custom build targets overview
 
-These presets handle compiler selection, generator choice (Ninja vs VS), and toolchain injection.
+Several build targets are available to ease developer's life on many aspects.
 
-| Preset              | Platform | Generator | Description                                        |
-| ------------------- | -------- | --------- | -------------------------------------------------- |
-| **`clang_debug`**   | Unix     | Ninja     | **Dev Mode.** `-O0`, `-g`, static archive forcing. |
-| **`clang_release`** | Unix     | Ninja     | **Production.** Optimized build.                   |
-| **`msvc_debug`**    | Windows  | VS 2022   | **Dev Mode.** Uses `x64-windows` triplet.          |
-| **`msvc_release`**  | Windows  | VS 2022   | **Production.** Uses `x64-windows` triplet.        |
+Run a target using the command:
 
-## 🧪 Test Presets Reference
+```bash
+cmake --build --preset <build-preset> --target <target-name>
+# Example: cmake --build --preset clang_debug --target coverage-html
+```
+
+| Cmake Build Target    | Platform | Build Preset  | Description                                                                                                                            |
+| --------------------- | -------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `clang-format`        | Any      | Any           | Runs the formatter on **all** project's files.                                                                                         |
+| `clang-tidy`          | Any      | Any           | Runs the linter on **all** project's files.                                                                                            |
+| `coverage-html`       | Unix     | `clang_debug` | Runs coverage and exports an **html coverage report** to the build files.                                                              |
+| `coverage-json`       | Unix     | `clang_debug` | Runs coverage and exports an **json coverage report** to the build files.                                                              |
+| `coverage-markdown`   | Unix     | `clang_debug` | Runs coverage and exports an **markdown coverage report** to the build files.                                                          |
+| `coverage-shieldsio`  | Unix     | `clang_debug` | Runs coverage and **exports a shields.io coverage badge** (json format) with the correct color and values to the build files.          |
+| `coverage-summary`    | Unix     | `clang_debug` | Runs coverage and **prints coverage report to the console**.                                                                           |
+| `_coverage-merge`     | Unix     | `clang_debug` | Internal target to merge coverage files before reporting. Dependency of the `_coverage-*` targets.                                     |
+| `_coverage-run-tests` | Unix     | `clang_debug` | Internal target to run quick tiered tests automatically before running merge and report steps. Dependency of `_coverage-merge` target. |
+
+### Running code coverage non-quick tiered tests
+
+In some rare scenarios, you may want to use the coverage associated to other [tests tiers](#-test-presets-reference).
+
+Reconfigure cmake while passing the non-default `CTEST_PRESET`:
+
+```bash
+cmake --preset clang_debug -DCTEST_PRESET=<test-preset>
+# Example: cmake --preset clang_debug -DCTEST_PRESET=intermediate-validation-clang-debug
+```
+
+Run the specific target as usual:
+
+```bash
+cmake --build --preset clang_debug --target <target-name>
+# Example: cmake --build --preset clang_debug --target coverage-html
+```
+
+Note that coverage is only available in `clang_debug` configuration.
+
+Associated [test tiers](#-test-presets-reference) are:
+
+- `quick-validation-clang-debug`
+- `intermediate-validation-clang-debug`
+- `deep-validation-clang-debug`
+- `full-suite-clang-debug`
+
+## 🛠️ Cmake presets overview
+
+### ⚙️ Configure Presets
+
+These presets handle compiler selection, generator choice and toolchain injection.
+
+| Preset              | Platform | Generator | Description                                                        |
+| ------------------- | -------- | --------- | ------------------------------------------------------------------ |
+| **`clang_debug`**   | Unix     | Ninja     | **Dev Mode** - Disables all compiler optimizations for easy debug. |
+| **`clang_release`** | Unix     | Ninja     | **Production** Optimized build.                                    |
+| **`msvc_debug`**    | Windows  | VS 2022   | **Dev Mode** Uses `x64-windows` triplet.                           |
+| **`msvc_release`**  | Windows  | VS 2022   | **Production** Uses `x64-windows` triplet.                         |
+
+### 👷 Build Presets
+
+| Preset              | Platform | Generator | Description    |
+| ------------------- | -------- | --------- | -------------- |
+| **`clang_debug`**   | Unix     | Ninja     | **Dev Mode**   |
+| **`clang_release`** | Unix     | Ninja     | **Production** |
+| **`msvc_debug`**    | Windows  | VS 2022   | **Dev Mode**   |
+| **`msvc_release`**  | Windows  | VS 2022   | **Production** |
+
+### 🧪 Test Presets Reference
 
 The testing system is "Tiered". You select a preset based on **how much time you have** (Tier) and **which build you want to test** (Config).
 
-### Naming Convention
+> [!TIP]
+> Switching the active test preset in VSCode with the cmake extension will automatically update the tests discovery view and you'll only be able to run tests for the selected preset.
+
+#### Naming Convention
 
 Test presets follow this pattern:
 `[tier]-validation-[configure-preset]`
 
-### 1. The Tiers (How deep to test?)
+#### 1. The Tiers (How deep to test?)
 
 | Tier Prefix            | Target Audience | Time  | Description                                                   |
 | ---------------------- | --------------- | ----- | ------------------------------------------------------------- |
@@ -91,9 +145,9 @@ Test presets follow this pattern:
 | **`deep-...`**         | CI / Nightly    | ~Hrs  | Runs exhaustive tests.                                        |
 | **`full-suite-...`**   | Release         | Var   | Runs **all** tests (no filter).                               |
 
-### 2. Available Presets List
+#### 2. Available Presets List
 
-#### Linux / macOS (Clang)
+##### Linux / macOS (Clang)
 
 | Preset Name                             | Usage                                           |
 | --------------------------------------- | ----------------------------------------------- |
@@ -105,7 +159,7 @@ Test presets follow this pattern:
 | `intermediate-validation-clang-release` | **Pre-Push.** Standard checks on release build. |
 | `deep-validation-clang-release`         | **CI.** Exhaustive checks on release build.     |
 
-#### Windows (MSVC)
+##### Windows (MSVC)
 
 | Preset Name                            | Usage                                           |
 | -------------------------------------- | ----------------------------------------------- |
@@ -126,14 +180,16 @@ Any file named `test_*.cpp` in `tests/` is automatically:
 
 1. Compiled into an executable.
 2. Registered as a CTest.
-3. Assigned the label **`tier_quick`**.
+3. Assigned the labels **`unit` and`tier_quick`**.
 
-**How to add a simple unit test:**
-Just create `tests/bitbishop/test_new_feature.cpp`. It will automatically run in the `quick-validation` presets.
+**How to add a simple unit test?**
+
+Just create `tests/bitbishop/test_new_feature.cpp` and reload cmake.
+It will automatically run in the `quick-validation` presets.
 
 ### 2. Splitting Complex Tests (Overrides)
 
-For heavy tests (like `test_perft`) that contain both fast and slow cases, we split the executable into multiple test entries using Google Test filters.
+For heavy tests (like `test_perft`) that contain both fast and slow cases, executable are split into multiple test entries using Google Test filters.
 
 This is configured in `tests/CMakeLists.txt` via `CTEST_ENTRIES`:
 
@@ -145,7 +201,6 @@ set(CTEST_ENTRIES
     "test_perft|Validation/PerftValidationTest.*|perft,tier_intermediate"
     "test_perft|Exhaustive/PerftExhaustiveTest.*|perft,tier_deep"
 )
-
 ```
 
 **How this works:**
@@ -155,6 +210,9 @@ set(CTEST_ENTRIES
 - `Exhaustive/...` tests run only in **Deep** presets.
 
 ## 📦 Packaging
+
+> [!WARNING]
+> Packaging is not configured yet, it's a very naïve implementation as a placeholder for future presets.
 
 To create installable artifacts (creates `.zip`, `.tar.gz`, or installers depending on OS), use the release build preset with the `package` target.
 
