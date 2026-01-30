@@ -196,7 +196,7 @@ TEST(AttackersTest, ColorIndependenceNonPawns) {
  * @brief Confirms precomputed table entries match runtime computation.
  */
 TEST(AttackersTest, AttackersToTableMatchesFunction) {
-  for (Color col : ColorUtil::all()) {
+  for (Color col : ColorUtil::ALL) {
     const std::size_t coli = ColorUtil::to_index(col);
     for (int sq = 0; sq < 64; ++sq) {
       Square square(sq, std::in_place);
@@ -253,7 +253,7 @@ TEST(AttackersTest, AttackersToTableBlackSpecific) {
  * @brief Confirms every square has at least some potential attackers.
  */
 TEST(AttackersTest, AllSquaresHaveAttackers) {
-  for (Color col : ColorUtil::all()) {
+  for (Color col : ColorUtil::ALL) {
     const std::size_t coli = ColorUtil::to_index(col);
     for (int sq = 0; sq < 64; ++sq) {
       const Bitboard& attackers = ATTACKERS_TO[coli][sq];

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/bitboard.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/square.hpp>
 
 /**
@@ -66,9 +67,9 @@ TEST(BitboardTest, CopyConstructorFullBitboard) {
  * @brief Verifies that the copy constructor can be evaluated at compile time.
  */
 TEST(BitboardTest, CopyConstructorIsConstexpr) {
-  constexpr Bitboard bb(0x00000000000000FFULL);
-  constexpr Bitboard cp(bb);
-  static_assert(cp.value() == 0x00000000000000FFULL, "Copy constructor must be constexpr");
+  CX_CONST Bitboard bb(0x00000000000000FFULL);
+  CX_CONST Bitboard cp(bb);
+  VALIDATE_CX(cp.value() == 0x00000000000000FFULL);
   EXPECT_EQ(cp.value(), 0x00000000000000FFULL);
 }
 
@@ -77,9 +78,9 @@ TEST(BitboardTest, CopyConstructorIsConstexpr) {
  * @brief Verifies that the constructor can be evaluated at compile time.
  */
 TEST(BitboardTest, ZerosStaticConstructor) {
-  constexpr Bitboard bb = Bitboard::Zeros();
+  CX_CONST Bitboard bb = Bitboard::Zeros();
 
-  static_assert(bb.value() == 0ULL, "Bitboard::Zeros() static constructor must be constexpr");
+  VALIDATE_CX(bb.value() == 0ULL);
   EXPECT_EQ(bb.value(), 0ULL);
 }
 
@@ -88,9 +89,9 @@ TEST(BitboardTest, ZerosStaticConstructor) {
  * @brief Verifies that the constructor can be evaluated at compile time.
  */
 TEST(BitboardTest, OnesStaticConstructor) {
-  constexpr Bitboard bb = Bitboard::Ones();
+  CX_CONST Bitboard bb = Bitboard::Ones();
 
-  static_assert(bb.value() == (~0ULL), "Bitboard::Ones() static constructor must be constexpr");
+  VALIDATE_CX(bb.value() == (~0ULL));
   EXPECT_EQ(bb.value(), (~0ULL));
 }
 
@@ -99,9 +100,9 @@ TEST(BitboardTest, OnesStaticConstructor) {
  * @brief Verifies that the constructor can be evaluated at compile time.
  */
 TEST(BitboardConstructorsTest, SquareConstructorIsConstexpr) {
-  constexpr Bitboard bb = Bitboard(Squares::A4);
+  CX_CONST Bitboard bb = Bitboard(Squares::A4);
 
-  static_assert(bb.test(Squares::A4) == true, "Bitboard(Square) must be constexpr");
+  VALIDATE_CX(bb.test(Squares::A4) == true);
   EXPECT_TRUE(bb.test(Squares::A4));
   EXPECT_EQ(bb.count(), 1);
 }

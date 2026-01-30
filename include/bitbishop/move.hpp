@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitbishop/config.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 #include <optional>
@@ -26,7 +27,7 @@ struct Move {
    * @return String in UCI format (e.g., "e2e4", "e7e8q")
    */
   [[nodiscard]] std::string to_uci() const {
-    static constexpr std::size_t MAX_NB_CHARS_IN_UCI_MOVE_REPR = 5;
+    static CX_VALUE std::size_t MAX_NB_CHARS_IN_UCI_MOVE_REPR = 5;
 
     std::string uci;
     uci.reserve(MAX_NB_CHARS_IN_UCI_MOVE_REPR);

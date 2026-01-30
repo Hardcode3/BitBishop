@@ -5,10 +5,19 @@
 using namespace Pieces;
 
 TEST(PieceTest, NameFromTypeHasCorrectName) {
-  EXPECT_EQ(Piece::name(Piece::PAWN), "pawn");
-  EXPECT_EQ(Piece::name(Piece::KNIGHT), "knight");
-  EXPECT_EQ(Piece::name(Piece::BISHOP), "bishop");
-  EXPECT_EQ(Piece::name(Piece::ROOK), "rook");
-  EXPECT_EQ(Piece::name(Piece::QUEEN), "queen");
-  EXPECT_EQ(Piece::name(Piece::KING), "king");
+  struct TestCase {
+    Piece::Type type;
+    const char* expected;
+  };
+  TestCase cases[] = {{Piece::PAWN, "pawn"}, {Piece::KNIGHT, "knight"}, {Piece::BISHOP, "bishop"},
+                      {Piece::ROOK, "rook"}, {Piece::QUEEN, "queen"},   {Piece::KING, "king"}};
+
+  for (const auto& [type, expected] : cases) {
+    EXPECT_STREQ(Piece::name(type), expected);
+  }
+}
+
+TEST(PieceTest, NameFromTypeHasUnknownType) {
+  Piece::Type invalid_type = static_cast<Piece::Type>(155);
+  EXPECT_STREQ(Piece::name(invalid_type), "unknown");
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitbishop/config.hpp>
 #include <cstdint>
 
 /**
@@ -39,81 +40,81 @@ namespace Bitmasks {
 /**
  * uint64_t mask with ones on file A.
  */
-constexpr uint64_t FILE_A = 0x0101010101010101ULL;
+CX_INLINE uint64_t FILE_A = 0x0101010101010101ULL;
 
 /**
  * uint64_t mask with ones on file B.
  */
-constexpr uint64_t FILE_B = 0x0202020202020202ULL;
+CX_INLINE uint64_t FILE_B = 0x0202020202020202ULL;
 
 /**
  * uint64_t mask with ones on file C.
  */
-constexpr uint64_t FILE_C = 0x0404040404040404ULL;
+CX_INLINE uint64_t FILE_C = 0x0404040404040404ULL;
 
 /**
  * uint64_t mask with ones on file D.
  */
-constexpr uint64_t FILE_D = 0x0808080808080808ULL;
+CX_INLINE uint64_t FILE_D = 0x0808080808080808ULL;
 
 /**
  * uint64_t mask with ones on file E.
  */
-constexpr uint64_t FILE_E = 0x1010101010101010ULL;
+CX_INLINE uint64_t FILE_E = 0x1010101010101010ULL;
 
 /**
  * uint64_t mask with ones on file F.
  */
-constexpr uint64_t FILE_F = 0x2020202020202020ULL;
+CX_INLINE uint64_t FILE_F = 0x2020202020202020ULL;
 
 /**
  * uint64_t mask with ones on file G.
  */
-constexpr uint64_t FILE_G = 0x4040404040404040ULL;
+CX_INLINE uint64_t FILE_G = 0x4040404040404040ULL;
 
 /**
  * uint64_t mask with ones on file H.
  */
-constexpr uint64_t FILE_H = 0x8080808080808080ULL;
+CX_INLINE uint64_t FILE_H = 0x8080808080808080ULL;
 
 /**
  * uint64_t mask with ones on rank 1.
  */
-constexpr uint64_t RANK_1 = 0x00000000000000FFULL;
+CX_INLINE uint64_t RANK_1 = 0x00000000000000FFULL;
 
 /**
  * uint64_t mask with ones on rank 2.
  */
-constexpr uint64_t RANK_2 = 0x000000000000FF00ULL;
+CX_INLINE uint64_t RANK_2 = 0x000000000000FF00ULL;
 
 /**
  * uint64_t mask with ones on rank 3.
  */
-constexpr uint64_t RANK_3 = 0x0000000000FF0000ULL;
+CX_INLINE uint64_t RANK_3 = 0x0000000000FF0000ULL;
 
 /**
  * uint64_t mask with ones on rank 4.
  */
-constexpr uint64_t RANK_4 = 0x00000000FF000000ULL;
+CX_INLINE uint64_t RANK_4 = 0x00000000FF000000ULL;
 
 /**
  * uint64_t mask with ones on rank 5.
  */
-constexpr uint64_t RANK_5 = 0x000000FF00000000ULL;
+CX_INLINE uint64_t RANK_5 = 0x000000FF00000000ULL;
 
 /**
  * uint64_t mask with ones on rank 6.
  */
-constexpr uint64_t RANK_6 = 0x0000FF0000000000ULL;
+CX_INLINE uint64_t RANK_6 = 0x0000FF0000000000ULL;
 
 /**
  * uint64_t mask with ones on rank 7.
  */
-constexpr uint64_t RANK_7 = 0x00FF000000000000ULL;
+CX_INLINE uint64_t RANK_7 = 0x00FF000000000000ULL;
 
 /**
  * uint64_t mask with ones on rank 8.
  */
-constexpr uint64_t RANK_8 = 0xFF00000000000000ULL;
+CX_INLINE uint64_t RANK_8 = 0xFF00000000000000ULL;
 
 }  // namespace Bitmasks

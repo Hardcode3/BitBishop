@@ -165,7 +165,7 @@ void Board::set_piece(Square square, Piece piece) {
     case Piece::ROOK:   m_w_rooks.set(square);   return;
     case Piece::QUEEN:  m_w_queens.set(square);   return;
     case Piece::KING:   m_w_king.set(square);    return;
-    default: break;  // clang-format on
+      // clang-format on
     }
   } else {  // is_black()
     switch (piece.type()) {
@@ -176,13 +176,9 @@ void Board::set_piece(Square square, Piece piece) {
       case Piece::ROOK:   m_b_rooks.set(square);   return;
       case Piece::QUEEN:  m_b_queens.set(square);   return;
       case Piece::KING:   m_b_king.set(square);    return;
-      default: break;  // clang-format on
+        // clang-format on
     }
   }
-
-  // If we get here, something went wrong
-  throw std::invalid_argument(
-      std::format("Invalid piece type for piece {} on square {}", piece.to_char(), square.to_string()));
 }
 
 void Board::remove_piece(Square square) {

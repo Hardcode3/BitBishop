@@ -81,10 +81,10 @@ void RunPerftDivideTest(const PerftDivideTestCase& param) {
 
 TEST_P(PerftDivideSmokeTest, MatchesExpected) { RunPerftDivideTest<PerftDivideSmokeTest>(GetParam()); }
 
-static constexpr const char* STARTING_POS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-static constexpr const char* KIWIPETE_POS = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+static CX_VALUE const char* STARTING_POS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+static CX_VALUE const char* KIWIPETE_POS = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
 
-static constexpr std::string_view starting_pos_depth1 = R"(
+static CX_VALUE std::string_view starting_pos_depth1 = R"(
 a2a3: 1
 b2b3: 1
 c2c3: 1
@@ -109,7 +109,7 @@ g1h3: 1
 Nodes searched: 20
 )";
 
-static constexpr std::string_view starting_pos_depth2 = R"(
+static CX_VALUE std::string_view starting_pos_depth2 = R"(
 a2a3: 20
 b2b3: 20
 c2c3: 20
@@ -134,7 +134,7 @@ g1h3: 20
 Nodes searched: 400
 )";
 
-static constexpr std::string_view kiwipete_pos_depth2 = R"(
+static CX_VALUE std::string_view kiwipete_pos_depth2 = R"(
 a2a3: 44
 b2b3: 42
 g2g3: 42

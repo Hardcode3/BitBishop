@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <bitbishop/config.hpp>
 #include <format>
 
 /**
@@ -36,7 +37,7 @@ namespace ColorUtil {
  * @param color The color to convert
  * @return 0 for Color::BLACK, 1 for Color::WHITE
  */
-constexpr std::size_t to_index(Color color) { return static_cast<std::size_t>(color); }
+CX_FN std::size_t to_index(Color color) { return static_cast<std::size_t>(color); }
 
 /**
  * @brief Returns the opposite color.
@@ -44,24 +45,17 @@ constexpr std::size_t to_index(Color color) { return static_cast<std::size_t>(co
  * @param color The input color
  * @return Color::WHITE if color is Color::BLACK, otherwise Color::BLACK
  */
-constexpr Color opposite(Color color) { return color == Color::WHITE ? Color::BLACK : Color::WHITE; }
+CX_FN Color opposite(Color color) { return color == Color::WHITE ? Color::BLACK : Color::WHITE; }
 
 /**
- * @brief Returns all valid Color values.
- *
- * This function enables constexpr-friendly iteration over all colors
- * without relying on magic numbers or assumptions about enum layout.
- *
- * @return An array containing { Color::BLACK, Color::WHITE }
+ * @brief Valid Color values.
  */
-constexpr std::array<Color, 2> all() { return {Color::BLACK, Color::WHITE}; }
+CX_INLINE std::array<Color, 2> ALL = {Color::BLACK, Color::WHITE};
 
 /**
- * @brief Returns the number of colors.
- *
- * @return 2 (the number of Color enum entries)
+ * @brief Mumber of colors.
  */
-constexpr std::size_t size() { return 2; }
+CX_INLINE static std::size_t SIZE = 2;
 
 }  // namespace ColorUtil
 
@@ -87,7 +81,8 @@ struct std::formatter<Color> {
    * @param ctx The format parse context
    * @return Iterator to the end of the parsed format specification
    */
-  constexpr auto static parse(format_parse_context& ctx) { return ctx.begin(); }
+  // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+  CX_VALUE auto parse(format_parse_context& ctx) { return ctx.begin(); }
 
   /**
    * @brief Formats a Color value as a string.

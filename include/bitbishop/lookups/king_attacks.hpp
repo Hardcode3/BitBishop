@@ -3,6 +3,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/config.hpp>
 #include <cstdint>
 
 namespace Lookups {
@@ -16,7 +17,7 @@ namespace Lookups {
  * @param square The square index (0 = a1, 63 = h8).
  * @return Bitboard representing all possible king attacks from the given square.
  */
-constexpr uint64_t king_attacks_for_square(int square) {
+CX_FN uint64_t king_attacks_for_square(int square) {
   const uint64_t bitboard = 1ULL << square;
   uint64_t attacks = 0ULL;
 
@@ -49,7 +50,7 @@ constexpr uint64_t king_attacks_for_square(int square) {
  * For each square, contains a bitboard with all destination squares a king can attack from that square.
  * Uses king_attacks_for_square() to fill the table at compile time.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -74,6 +75,6 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = []() constexpr 
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKERS = KING_ATTACKS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKERS = KING_ATTACKS;
 
 }  // namespace Lookups

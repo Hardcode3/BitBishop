@@ -3,6 +3,7 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/lookups/bishop_rays.hpp>
 #include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/lookups/knight_attacks.hpp>
@@ -39,7 +40,7 @@
  * @note The returned bitboard may include squares that are blocked in the
  *       current position.
  */
-constexpr Bitboard attackers_to(Square target, Color color) {
+CX_FN Bitboard attackers_to(Square target, Color color) {
   using namespace Lookups;
   const int square_index = target.value();
 
@@ -83,12 +84,12 @@ constexpr Bitboard attackers_to(Square target, Color color) {
  * @note Sliding piece attacks in this table are unblocked rays and must be
  *       masked with board occupancy when determining actual attacks.
  */
-constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> ATTACKERS_TO = []() constexpr {
+CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> ATTACKERS_TO = []() CX_EXEC {
   using namespace Const;
 
-  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::SIZE> table{};
 
-  for (Color col : ColorUtil::all()) {
+  for (Color col : ColorUtil::ALL) {
     const std::size_t coli = ColorUtil::to_index(col);
     for (int sq = 0; sq < BOARD_SIZE; ++sq) {
       table[coli][sq] = Bitboard(attackers_to(Square(sq, std::in_place), col));

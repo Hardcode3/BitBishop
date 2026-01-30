@@ -3,6 +3,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <bitbishop/lookups/bishop_rays.hpp>
 #include <bitbishop/lookups/rook_rays.hpp>
@@ -19,7 +20,7 @@ namespace Lookups {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares reachable by queen rays.
  */
-constexpr uint64_t queen_rays_for_square(int square) {
+CX_FN uint64_t queen_rays_for_square(int square) {
   return rook_rays_for_square(square) | bishop_rays_for_square(square);
 }
 
@@ -31,7 +32,7 @@ constexpr uint64_t queen_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -57,6 +58,6 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() constexpr {
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
 
 }  // namespace Lookups

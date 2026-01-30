@@ -2,6 +2,7 @@
 
 #include <array>
 #include <bitbishop/bitboard.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 
 namespace Lookups {
@@ -29,7 +30,7 @@ namespace Lookups {
  * @param to   The target square.
  * @return The signed step value to advance one square toward @p to.
  */
-constexpr int direction(Square from, Square to) {
+CX_FN int direction(Square from, Square to) {
   if (from == to) {
     return 0;
   }
@@ -66,12 +67,8 @@ constexpr int direction(Square from, Square to) {
  * @param to   The target square.
  * @return A bitboard of squares strictly between @p from and @p to.
  */
-constexpr Bitboard ray_between(Square from, Square to) {
+CX_FN Bitboard ray_between(Square from, Square to) {
   if (from == to) {
-    return Bitboard::Zeros();
-  }
-
-  if (!(from.same_file(to) || from.same_rank(to) || from.same_diag(to))) {
     return Bitboard::Zeros();
   }
 
@@ -105,7 +102,7 @@ constexpr Bitboard ray_between(Square from, Square to) {
  *
  * The table is indexed as BETWEEN[from][to].
  */
-constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE> BETWEEN = []() constexpr {
+CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE> BETWEEN = []() CX_EXEC {
   using namespace Const;
 
   std::array<std::array<Bitboard, BOARD_SIZE>, BOARD_SIZE> table{};

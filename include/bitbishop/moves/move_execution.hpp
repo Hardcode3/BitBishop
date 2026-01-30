@@ -12,7 +12,7 @@
  * to be applied and fully reverted.
  */
 struct MoveExecution {
-  static constexpr int MAX_EFFECTS = 6;  ///< Maximum number of effects per move
+  static CX_INLINE int MAX_EFFECTS = 6;  ///< Maximum number of effects per move
 
   std::array<MoveEffect, MAX_EFFECTS> effects;  ///< Ordered list of effects
   int count = 0;                                ///< Number of effects currently stored

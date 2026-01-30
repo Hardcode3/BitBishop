@@ -141,3 +141,8 @@ TEST(RayBetweenTest, RayBetweenFullBoard) {
   EXPECT_EQ(ray_between(A1, H8).count(), 6);
   EXPECT_EQ(ray_between(A8, H1).count(), 6);
 }
+
+TEST(RayBetweenTest, RayBetweenNonAlignedSquareReturnsZeroBitboard) {
+  EXPECT_EQ(ray_between(A1, B6).count(), 0);
+  EXPECT_EQ(ray_between(A7, H3).count(), 0);
+}

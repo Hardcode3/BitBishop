@@ -64,7 +64,7 @@ TEST(BitboardIteratorTest, SingleBitIteration) {
  *        and that the iteration order is ascending by bit index.
  */
 TEST(BitboardIteratorTest, IteratorDereferenceIsConstexprCompatible) {
-  constexpr Bitboard bb_constexpr = [] {
+  CX_CONST Bitboard bb_constexpr = [] {
     Bitboard bb;
     bb.set(Square::A1);
     bb.set(Square::B1);

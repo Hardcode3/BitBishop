@@ -14,6 +14,11 @@
 if (ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "Enabling LLVM coverage tools")
 
+    # Disables constexpr into const where needed during the build
+    # see include/bitbishop/config.hpp
+    message(STATUS "Coverage Build: Downgrading CX macros to runtime for tests instrumentation.")
+    add_compile_definitions(COVERAGE_BUILD)
+
     find_program(LLVM_PROFDATA llvm-profdata REQUIRED)
     find_program(LLVM_COV llvm-cov REQUIRED)
 

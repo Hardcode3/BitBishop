@@ -3,6 +3,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
@@ -17,7 +18,7 @@ namespace Lookups {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares on the north ray.
  */
-constexpr uint64_t rook_north_ray(int square) {
+CX_FN uint64_t rook_north_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -39,7 +40,7 @@ constexpr uint64_t rook_north_ray(int square) {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares on the south ray.
  */
-constexpr uint64_t rook_south_ray(int square) {
+CX_FN uint64_t rook_south_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -61,7 +62,7 @@ constexpr uint64_t rook_south_ray(int square) {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares on the east ray.
  */
-constexpr uint64_t rook_east_ray(int square) {
+CX_FN uint64_t rook_east_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -83,7 +84,7 @@ constexpr uint64_t rook_east_ray(int square) {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares on the west ray.
  */
-constexpr uint64_t rook_west_ray(int square) {
+CX_FN uint64_t rook_west_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -104,7 +105,7 @@ constexpr uint64_t rook_west_ray(int square) {
  * @param square The starting square index (0–63).
  * @return Bitboard containing all squares reachable by rook rays.
  */
-constexpr uint64_t rook_rays_for_square(int square) {
+CX_FN uint64_t rook_rays_for_square(int square) {
   return rook_north_ray(square) | rook_south_ray(square) | rook_east_ray(square) | rook_west_ray(square);
 }
 
@@ -116,7 +117,7 @@ constexpr uint64_t rook_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -132,7 +133,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() constexpr {
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -148,7 +149,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() constex
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -164,7 +165,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() constex
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -180,7 +181,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() constexp
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -206,6 +207,6 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() constexp
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
 
 }  // namespace Lookups

@@ -4,6 +4,7 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
@@ -15,7 +16,7 @@ namespace Lookups {
  * For each square, contains a bitboard with the destination square if a white pawn moves one square forward.
  * Only valid for squares on ranks 1 to 7 (0-based), as pawns on rank 8 cannot move forward.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_SINGLE_PUSH = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_SINGLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -34,7 +35,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_SINGLE_PUSH = []() 
  * For each square, contains a bitboard with the destination square if a black pawn moves one square forward.
  * Only valid for squares on ranks 2 to 8 (0-based), as pawns on rank 1 cannot move forward.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_SINGLE_PUSH = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_SINGLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -53,7 +54,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_SINGLE_PUSH = []() 
  * For each square, contains a bitboard with the destination square if a white pawn moves two squares forward.
  * Only valid for squares on rank 2 (0-based), as only pawns on their starting rank can double push.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_DOUBLE_PUSH = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_DOUBLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -72,7 +73,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_DOUBLE_PUSH = []() 
  * For each square, contains a bitboard with the destination square if a black pawn moves two squares forward.
  * Only valid for squares on rank 7 (0-based), as only pawns on their starting rank can double push.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_DOUBLE_PUSH = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_DOUBLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -91,7 +92,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_DOUBLE_PUSH = []() 
  * For each square, contains a bitboard with the destination squares if a white pawn captures diagonally (NW and NE).
  * Only valid for squares on ranks 1 to 7 (0-based), as pawns on rank 8 cannot attack forward.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKS = []() CX_EXEC {
   using namespace Const;
   using namespace Bitmasks;
 
@@ -124,7 +125,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKS = []() cons
  * For each square, contains a bitboard with the destination squares if a black pawn captures diagonally (SW and SE).
  * Only valid for squares on ranks 2 to 8 (0-based), as pawns on rank 1 cannot attack forward.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -168,7 +169,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKS = []() cons
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKERS = BLACK_PAWN_ATTACKS;
 
 /**
  * @brief Precomputed bitboards of BLACK pawn attackers (reverse pawn attacks).
@@ -187,7 +188,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> WHITE_PAWN_ATTACKERS = BLACK_P
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKERS = WHITE_PAWN_ATTACKS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKERS = WHITE_PAWN_ATTACKS;
 
 /**
  * @brief Precomputed single-push destinations for pawns of both colors.
@@ -204,12 +205,12 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BLACK_PAWN_ATTACKERS = WHITE_P
  *
  * Indexed as [color][source_square].
  */
-constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_SINGLE_PUSH = []() constexpr {
+CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> PAWN_SINGLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
-  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::SIZE> table{};
 
-  for (Color color : ColorUtil::all()) {
+  for (Color color : ColorUtil::ALL) {
     const auto idx = ColorUtil::to_index(color);
     switch (color) {
       case Color::WHITE:
@@ -240,12 +241,12 @@ constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()>
  *
  * Indexed as [color][source_square].
  */
-constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_DOUBLE_PUSH = []() constexpr {
+CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> PAWN_DOUBLE_PUSH = []() CX_EXEC {
   using namespace Const;
 
-  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::SIZE> table{};
 
-  for (Color color : ColorUtil::all()) {
+  for (Color color : ColorUtil::ALL) {
     const auto idx = ColorUtil::to_index(color);
     switch (color) {
       case Color::WHITE:
@@ -275,12 +276,12 @@ constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()>
  *
  * Indexed as [color][source_square].
  */
-constexpr std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::size()> PAWN_ATTACKS = []() constexpr {
+CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> PAWN_ATTACKS = []() CX_EXEC {
   using namespace Const;
 
-  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::size()> table{};
+  std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::SIZE> table{};
 
-  for (Color color : ColorUtil::all()) {
+  for (Color color : ColorUtil::ALL) {
     const auto idx = ColorUtil::to_index(color);
     switch (color) {
       case Color::WHITE:

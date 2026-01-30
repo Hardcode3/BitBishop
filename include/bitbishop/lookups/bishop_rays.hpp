@@ -3,6 +3,7 @@
 #include <array>
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/bitmasks.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
@@ -20,7 +21,7 @@ namespace Lookups {
  * @param square The starting square index (0–63)
  * @return Bitboard of all squares on the northeast diagonal from the square
  */
-constexpr uint64_t bishop_northeast_ray(int square) {
+CX_FN uint64_t bishop_northeast_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -45,7 +46,7 @@ constexpr uint64_t bishop_northeast_ray(int square) {
  * @param square The starting square index (0–63)
  * @return Bitboard of all squares on the northwest diagonal from the square
  */
-constexpr uint64_t bishop_northwest_ray(int square) {
+CX_FN uint64_t bishop_northwest_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -70,7 +71,7 @@ constexpr uint64_t bishop_northwest_ray(int square) {
  * @param square The starting square index (0–63)
  * @return Bitboard of all squares on the southeast diagonal from the square
  */
-constexpr uint64_t bishop_southeast_ray(int square) {
+CX_FN uint64_t bishop_southeast_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -95,7 +96,7 @@ constexpr uint64_t bishop_southeast_ray(int square) {
  * @param square The starting square index (0–63)
  * @return Bitboard of all squares on the southwest diagonal from the square
  */
-constexpr uint64_t bishop_southwest_ray(int square) {
+CX_FN uint64_t bishop_southwest_ray(int square) {
   using namespace Const;
 
   uint64_t ray = 0ULL;
@@ -120,7 +121,7 @@ constexpr uint64_t bishop_southwest_ray(int square) {
  * @param square The starting square index (0–63)
  * @return Bitboard of all diagonal ray squares from the square
  */
-constexpr uint64_t bishop_rays_for_square(int square) {
+CX_FN uint64_t bishop_rays_for_square(int square) {
   return bishop_northeast_ray(square) | bishop_northwest_ray(square) | bishop_southeast_ray(square) |
          bishop_southwest_ray(square);
 }
@@ -133,7 +134,7 @@ constexpr uint64_t bishop_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -148,7 +149,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() constexpr {
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -163,7 +164,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() c
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -178,7 +179,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() c
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -193,7 +194,7 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() c
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() constexpr {
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -219,6 +220,6 @@ constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() c
  *
  * Indexed by target square (0–63).
  */
-constexpr std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
+CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
 
 }  // namespace Lookups

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/piece.hpp>
+#include <tuple>
 
 /**
  * @test Verifies all White pieces return correct color.
@@ -62,4 +63,36 @@ TEST(PieceTest, IsBlackReturnsTrueForBlackPieces) {
   EXPECT_FALSE(Pieces::WHITE_ROOK.is_black());
   EXPECT_FALSE(Pieces::WHITE_QUEEN.is_black());
   EXPECT_FALSE(Pieces::WHITE_KING.is_black());
+}
+
+TEST(PieceTest, ColorFromWhitePawnsChars) {
+  EXPECT_EQ(Piece::color_from_char('P'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('N'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('B'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('R'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('Q'), Color::WHITE);
+
+  // Should also work with other uppercase letters by construction
+  EXPECT_EQ(Piece::color_from_char('Z'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('A'), Color::WHITE);
+  EXPECT_EQ(Piece::color_from_char('K'), Color::WHITE);
+}
+
+TEST(PieceTest, ColorFromBlackPawnsChars) {
+  EXPECT_EQ(Piece::color_from_char('p'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('n'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('b'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('r'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('q'), Color::BLACK);
+
+  // Should also work with other lowecase letters by construction
+  EXPECT_EQ(Piece::color_from_char('z'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('a'), Color::BLACK);
+  EXPECT_EQ(Piece::color_from_char('k'), Color::BLACK);
+}
+
+TEST(PieceTest, ColorFromImvalidCharsThrows) {
+  EXPECT_THROW(std::ignore = Piece::color_from_char('?'), std::invalid_argument);
+  EXPECT_THROW(std::ignore = Piece::color_from_char('@'), std::invalid_argument);
+  EXPECT_THROW(std::ignore = Piece::color_from_char('.'), std::invalid_argument);
 }

@@ -92,7 +92,7 @@ TEST(GenerateLegalMovesTest, KingInSingleCheck) {
  *        in double check.
  */
 TEST(GenerateLegalMovesTest, KingInDoubleCheck) {
-  Board board("4k3/8/8/8/8/3r4/3r4/4K3 w - - 0 1");
+  Board board("4k3/8/r7/8/8/1n6/1Q6/K7 b - - 0 1");
   BoardState state = board.get_state();
   state.m_is_white_turn = true;
   board.set_state(state);
@@ -100,10 +100,8 @@ TEST(GenerateLegalMovesTest, KingInDoubleCheck) {
   std::vector<Move> moves;
   generate_legal_moves(moves, board);
 
-  // Only king moves allowed in double check
-  for (const Move& move : moves) {
-    EXPECT_EQ(move.from, E1);
-  }
+  EXPECT_EQ(moves.size(), 1);
+  EXPECT_TRUE(contains_move(moves, {A1, B1, std::nullopt, false, false, false}));
 }
 
 /**

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
 #include <format>
@@ -81,7 +82,7 @@ class Square {
    * @brief Construct a Square directly from an enum value.
    * @param square_value A valid Value from the Square::Value enum.
    */
-  constexpr explicit Square(Value square_value) : m_value(square_value) {}
+  CX_FN explicit Square(Value square_value) : m_value(square_value) {}
 
   /**
    * @brief Construct a Square from file and rank coordinates.
@@ -132,19 +133,19 @@ class Square {
    * @brief Get the underlying enum value.
    * @return Square::Value corresponding to this square.
    */
-  [[nodiscard]] constexpr Value value() const { return m_value; }
+  [[nodiscard]] CX_FN Value value() const { return m_value; }
 
   /**
    * @brief Get the underlying flqttened square index.
    * @return std::uint8_t Flattened index corresponding to this square.
    */
-  [[nodiscard]] constexpr std::uint8_t flat_index() const { return static_cast<std::uint8_t>(m_value); }
+  [[nodiscard]] CX_FN std::uint8_t flat_index() const { return static_cast<std::uint8_t>(m_value); }
 
   /**
    * @brief Get the file index (column).
    * @return Integer 0–7, where 0 = 'a' and 7 = 'h'.
    */
-  [[nodiscard]] constexpr int file() const {
+  [[nodiscard]] CX_FN int file() const {
     using namespace Const;
     return static_cast<int>(m_value) % BOARD_WIDTH;
   }
@@ -153,7 +154,7 @@ class Square {
    * @brief Get the rank index (row).
    * @return Integer 0–7, where 0 = '1' and 7 = '8'.
    */
-  [[nodiscard]] constexpr int rank() const {
+  [[nodiscard]] CX_FN int rank() const {
     using namespace Const;
     return static_cast<int>(m_value) / BOARD_WIDTH;
   }
@@ -162,13 +163,13 @@ class Square {
    * @brief Tells if two squares lays on the same file.
    * @return True if two squares lays on the same file, false otherwise.
    */
-  [[nodiscard]] constexpr bool same_file(const Square& other) const { return this->file() == other.file(); }
+  [[nodiscard]] CX_FN bool same_file(const Square& other) const { return this->file() == other.file(); }
 
   /**
    * @brief Tells if two squares lays on the same rank.
    * @return True if two squares lays on the same rank, false otherwise.
    */
-  [[nodiscard]] constexpr bool same_rank(const Square& other) const { return this->rank() == other.rank(); }
+  [[nodiscard]] CX_FN bool same_rank(const Square& other) const { return this->rank() == other.rank(); }
 
   /**
    * @brief Checks whether this square lies on the same NE–SW diagonal as another square.
@@ -184,7 +185,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares share the same NE–SW diagonal, false otherwise.
    */
-  [[nodiscard]] constexpr bool same_ne_sw_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_ne_sw_diag(const Square& other) const {
     return (this->file() - this->rank()) == (other.file() - other.rank());
   }
 
@@ -201,7 +202,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares share the same NW–SE diagonal, false otherwise.
    */
-  [[nodiscard]] constexpr bool same_nw_se_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_nw_se_diag(const Square& other) const {
     return (this->file() + this->rank()) == (other.file() + other.rank());
   }
 
@@ -218,7 +219,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares are aligned on a common diagonal, false otherwise.
    */
-  [[nodiscard]] constexpr bool same_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_diag(const Square& other) const {
     return same_ne_sw_diag(other) || same_nw_se_diag(other);
   }
 
@@ -233,18 +234,18 @@ class Square {
    * @param other Another Square.
    * @return true if both refer to the same square.
    */
-  constexpr bool operator==(const Square& other) const { return m_value == other.m_value; }
+  CX_FN bool operator==(const Square& other) const { return m_value == other.m_value; }
 
   /**
    * @brief Inequality operator.
    * @param other Another Square.
    * @return true if the squares differ.
    */
-  constexpr bool operator!=(const Square& other) const { return m_value != other.m_value; }
+  CX_FN bool operator!=(const Square& other) const { return m_value != other.m_value; }
 };
 
 namespace Squares {
-#define DEFINE_SQUARE(name) constexpr inline Square name(Square::name)
+#define DEFINE_SQUARE(name) CX_CONST inline Square name(Square::name)
 
 // clang-format off
 // Rank 1

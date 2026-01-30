@@ -31,7 +31,7 @@ TEST(PieceTest, AllPieceTypesAreDistinct) {
 }
 
 TEST(PieceTest, GetAllPieceTypes) {
-  std::array<Piece::Type, Piece::TYPE_COUNT> types = Piece::all_types();
+  std::array<Piece::Type, Piece::TYPE_COUNT> types = Piece::ALL_TYPES;
 
   std::array<Piece::Type, Piece::TYPE_COUNT> expected = {Piece::PAWN, Piece::KNIGHT, Piece::BISHOP,
                                                          Piece::ROOK, Piece::QUEEN,  Piece::KING};
