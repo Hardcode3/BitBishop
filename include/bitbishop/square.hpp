@@ -74,7 +74,7 @@ class Square {
    * Square sq(42);  // Calls a different constructor
    * ```
    */
-  constexpr Square(int square_index, std::in_place_t tag) noexcept : m_value(static_cast<Value>(square_index)) {
+  CX_FN Square(int square_index, std::in_place_t tag) noexcept : m_value(static_cast<Value>(square_index)) {
     (void)tag;
   }
 
