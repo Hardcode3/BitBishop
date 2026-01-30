@@ -50,12 +50,12 @@ CX_FN Color opposite(Color color) { return color == Color::WHITE ? Color::BLACK 
 /**
  * @brief Valid Color values.
  */
-CX_INLINE std::array<Color, 2> ALL = {Color::BLACK, Color::WHITE};
+CX_VALUE std::array<Color, 2> ALL = {Color::BLACK, Color::WHITE};
 
 /**
  * @brief Mumber of colors.
  */
-CX_INLINE static std::size_t SIZE = 2;
+CX_VALUE static std::size_t SIZE = 2;
 
 }  // namespace ColorUtil
 

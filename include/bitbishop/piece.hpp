@@ -30,12 +30,12 @@ class Piece {
    *
    * Useful for array sizing and iteration without magic numbers.
    */
-  static CX_INLINE std::size_t TYPE_COUNT = 6;
+  static CX_VALUE std::size_t TYPE_COUNT = 6;
 
   /**
    * @brief Distinct piece types.
    */
-  static CX_INLINE std::array<Type, TYPE_COUNT> ALL_TYPES = {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
+  static CX_VALUE std::array<Type, TYPE_COUNT> ALL_TYPES = {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
 
  private:
   /**
