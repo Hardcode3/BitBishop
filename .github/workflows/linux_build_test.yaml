@@ -25,6 +25,10 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
+          - name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
@@ -168,7 +172,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate html coverage report (${{ matrix.test_preset }})
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
         id: htmlcov
         shell: bash
         run: |
@@ -183,7 +187,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate shields.io badge (${{ matrix.test_preset }})
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
         id: shieldsio
         shell: bash
         run: |
@@ -198,7 +202,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Prepare files
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
         shell: bash
         run: |
           mkdir -p out/
@@ -206,7 +210,7 @@ jobs:
           cp "${{ steps.shieldsio.outputs.SHIELDSIO_BADGE_FILE }}" out/
 
       - name: Publish coverage badge and report to gh-pages
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
