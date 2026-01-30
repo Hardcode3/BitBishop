@@ -102,7 +102,7 @@ CX_FN Bitboard ray_between(Square from, Square to) {
  *
  * The table is indexed as BETWEEN[from][to].
  */
-CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE> BETWEEN = []() CX_EXEC {
+CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE> BETWEEN = []() CX_EXEC {
   using namespace Const;
 
   std::array<std::array<Bitboard, BOARD_SIZE>, BOARD_SIZE> table{};

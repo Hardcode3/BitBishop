@@ -32,7 +32,7 @@ CX_FN uint64_t queen_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -58,6 +58,6 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = []() CX_EXEC {
  *
  * Indexed by target square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
 
 }  // namespace Lookups

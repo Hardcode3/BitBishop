@@ -84,7 +84,7 @@ CX_FN Bitboard attackers_to(Square target, Color color) {
  * @note Sliding piece attacks in this table are unblocked rays and must be
  *       masked with board occupancy when determining actual attacks.
  */
-CX_FN std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> ATTACKERS_TO = []() CX_EXEC {
+CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> ATTACKERS_TO = []() CX_EXEC {
   using namespace Const;
 
   std::array<std::array<Bitboard, BOARD_SIZE>, ColorUtil::SIZE> table{};

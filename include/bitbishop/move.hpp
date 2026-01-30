@@ -27,7 +27,7 @@ struct Move {
    * @return String in UCI format (e.g., "e2e4", "e7e8q")
    */
   [[nodiscard]] std::string to_uci() const {
-    static CX_VALUE std::size_t MAX_NB_CHARS_IN_UCI_MOVE_REPR = 5;
+    static CX_CONST std::size_t MAX_NB_CHARS_IN_UCI_MOVE_REPR = 5;
 
     std::string uci;
     uci.reserve(MAX_NB_CHARS_IN_UCI_MOVE_REPR);

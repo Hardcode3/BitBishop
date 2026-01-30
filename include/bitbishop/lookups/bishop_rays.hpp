@@ -134,7 +134,7 @@ CX_FN uint64_t bishop_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -149,7 +149,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -164,7 +164,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() CX_EX
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -179,7 +179,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() CX_EX
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -194,7 +194,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() CX_EX
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -220,6 +220,6 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() CX_EX
  *
  * Indexed by target square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
 
 }  // namespace Lookups

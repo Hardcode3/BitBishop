@@ -245,7 +245,7 @@ class Square {
 };
 
 namespace Squares {
-#define DEFINE_SQUARE(name) CX_CONST inline Square name(Square::name)
+#define DEFINE_SQUARE(name) CX_INLINE Square name(Square::name)
 
 // clang-format off
 // Rank 1

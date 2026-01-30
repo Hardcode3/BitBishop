@@ -34,25 +34,77 @@
  * - Engine correctness must never depend on coverage mode.
  * - The added complexity is intentionally isolated behind these macros to avoid
  *   leaking build-mode concerns into core engine logic.
+ *
+ * ## Quick Guide for Selection:
+ *
+ * 1. Is it a function? -> `CX_FN`
+ * 2. Is it a lambda? -> `CX_EXEC`
+ * 3. Is it in a header? -> `CX_INLINE`
+ * 4. Is it in a function/test? -> `CX_CONST`
+ * 5. Does it define an array size? -> `CX_VALUE`
  */
 #ifdef COVERAGE_BUILD
 
-/// Marks formerly constexpr functions as inline and "used" to force runtime emission.
+/**
+ * @brief Logic: Methods and Functions.
+ * * USE CASE: Use for any function or class method containing bitwise logic,
+ * search algorithms, or constructors.
+ * GOAL:     Forces the compiler to generate a real function call with its own
+ * entry point so coverage tools can track hits/misses.
+ * COVERAGE: Becomes 'inline __attribute__((used))'.
+ * LINKAGE:  External (ODR-compliant inline).
+ */
 #define CX_FN inline __attribute__((used))
 
-/// Downgrades constexpr declarations to inline const for runtime instrumentation.
+/**
+ * @brief Shared Data: Global or Namespace-level constants.
+ * * USE CASE: Use for variables in headers or namespaces that are shared across
+ * multiple .cpp files (e.g., Piece constants, shared lookup tables).
+ * GOAL:     Downgrades to a runtime-initialized 'inline const' to track the
+ * initialization logic while preventing "multiple definition" errors.
+ * COVERAGE: Becomes 'inline const'.
+ * LINKAGE:  External (Inline linkage).
+ */
 #define CX_INLINE inline const
 
-/// Downgrades constexpr objects to const to force runtime initialization.
+/**
+ * @brief Local Data: Variables inside functions or tests.
+ * * USE CASE: Use for temporary constants inside a function body or a TEST() block.
+ * GOAL:     Allows the variable to be treated as a standard 'const' at runtime.
+ * Crucial because the 'inline' keyword is illegal inside block scopes.
+ * COVERAGE: Becomes 'const'.
+ * LINKAGE:  None (Block scope / Local).
+ */
 #define CX_CONST const
 
-/// Removes constexpr in execution-only contexts (e.g. lambdas).
+/**
+ * @brief Execution: Lambda specifiers.
+ * * USE CASE: Use in lambda declarations: []() CX_EXEC { ... }.
+ * GOAL:     Marks the lambda as constexpr-compatible in Release, but allows
+ * it to be instrumented as a standard function in Coverage.
+ * COVERAGE: Becomes empty (standard runtime lambda).
+ * LINKAGE:  Internal to the lambda object.
+ */
 #define CX_EXEC
 
-/// Always preserves constexpr for values that must remain constant expressions.
+/**
+ * @brief Structural: Core compiler constants.
+ * * USE CASE: Use for array sizes, template parameters, or 'formatter::parse'
+ * where the compiler REQUIRES a constant expression to build.
+ * GOAL:     Remains 'constexpr' even in Coverage builds to ensure the
+ * project still compiles. No coverage is tracked for these.
+ * COVERAGE: Stays 'constexpr'.
+ * LINKAGE:  Internal/External (Standard constexpr rules).
+ */
 #define CX_VALUE constexpr
 
-/// Replaces static_assert with a runtime test in coverage builds.
+/**
+ * @brief Validation: Compile-time vs Runtime assertions.
+ * * USE CASE: Use to verify that logic is constexpr-compatible.
+ * GOAL:     Uses 'static_assert' in Release to ensure zero-cost logic, but
+ * shifts to 'EXPECT_TRUE' in Coverage so non-constexpr code can pass.
+ * COVERAGE: Becomes 'EXPECT_TRUE(expr)'.
+ */
 #define VALIDATE_CX(expr) EXPECT_TRUE(expr)
 
 #else

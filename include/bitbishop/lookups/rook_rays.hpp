@@ -117,7 +117,7 @@ CX_FN uint64_t rook_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -133,7 +133,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -149,7 +149,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -165,7 +165,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -181,7 +181,7 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -207,6 +207,6 @@ CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() CX_EXEC {
  *
  * Indexed by target square (0–63).
  */
-CX_FN std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
 
 }  // namespace Lookups

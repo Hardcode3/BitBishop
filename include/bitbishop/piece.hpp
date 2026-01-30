@@ -30,12 +30,12 @@ class Piece {
    *
    * Useful for array sizing and iteration without magic numbers.
    */
-  static CX_VALUE std::size_t TYPE_COUNT = 6;
+  static CX_INLINE std::size_t TYPE_COUNT = 6;
 
   /**
    * @brief Distinct piece types.
    */
-  static CX_VALUE std::array<Type, TYPE_COUNT> ALL_TYPES = {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
+  static CX_INLINE std::array<Type, TYPE_COUNT> ALL_TYPES = {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
 
  private:
   /**
@@ -194,8 +194,8 @@ class Piece {
    * @return Uppercase for white, lowercase for black (e.g., 'Q' or 'q')
    */
   [[nodiscard]] static CX_FN char to_char(Type type, Color color) {
-    CX_VALUE std::array<char, TYPE_COUNT> whiteSymbols = {'P', 'N', 'B', 'R', 'Q', 'K'};
-    CX_VALUE std::array<char, TYPE_COUNT> blackSymbols = {'p', 'n', 'b', 'r', 'q', 'k'};
+    static CX_CONST std::array<char, TYPE_COUNT> whiteSymbols = {'P', 'N', 'B', 'R', 'Q', 'K'};
+    static CX_CONST std::array<char, TYPE_COUNT> blackSymbols = {'p', 'n', 'b', 'r', 'q', 'k'};
     return (color == Color::WHITE) ? whiteSymbols[type] : blackSymbols[type];
   }
 
@@ -223,7 +223,7 @@ class Piece {
 namespace Pieces {
 #define DEFINE_PIECE(name, ch)                             \
   /** @brief Predefined piece constant for convenience. */ \
-  CX_CONST inline Piece name { ch }
+  CX_INLINE Piece name { ch }
 
 // White pieces
 DEFINE_PIECE(WHITE_PAWN, 'P');

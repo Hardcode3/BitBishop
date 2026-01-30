@@ -82,7 +82,7 @@ struct std::formatter<Color> {
    * @return Iterator to the end of the parsed format specification
    */
   // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-  CX_VALUE auto parse(format_parse_context& ctx) { return ctx.begin(); }
+  CX_INLINE auto parse(format_parse_context& ctx) { return ctx.begin(); }
 
   /**
    * @brief Formats a Color value as a string.
