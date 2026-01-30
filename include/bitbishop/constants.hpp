@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bitbishop/config.hpp>
+
 /**
  * @namespace Const
  * @brief Core chess board constants for indexing and dimensions.
@@ -22,27 +24,27 @@
 namespace Const {
 
 // Board dimensions
-constexpr int BOARD_WIDTH = 8;                         // Chess board is 8x8
-constexpr int BOARD_SIZE = BOARD_WIDTH * BOARD_WIDTH;  // Total 64 squares
+CX_INLINE int BOARD_WIDTH = 8;                         // Chess board is 8x8
+CX_INLINE int BOARD_SIZE = BOARD_WIDTH * BOARD_WIDTH;  // Total 64 squares
 
 // Rank indices (rows, numbered 1-8 from white's perspective)
-constexpr int RANK_1_IND = 0;
-constexpr int RANK_2_IND = 1;
-constexpr int RANK_3_IND = 2;
-constexpr int RANK_4_IND = 3;
-constexpr int RANK_5_IND = 4;
-constexpr int RANK_6_IND = 5;
-constexpr int RANK_7_IND = 6;
-constexpr int RANK_8_IND = 7;
+CX_INLINE int RANK_1_IND = 0;
+CX_INLINE int RANK_2_IND = 1;
+CX_INLINE int RANK_3_IND = 2;
+CX_INLINE int RANK_4_IND = 3;
+CX_INLINE int RANK_5_IND = 4;
+CX_INLINE int RANK_6_IND = 5;
+CX_INLINE int RANK_7_IND = 6;
+CX_INLINE int RANK_8_IND = 7;
 
 // File indices (columns, labeled A-H from left to right)
-constexpr int FILE_A_IND = 0;
-constexpr int FILE_B_IND = 1;
-constexpr int FILE_C_IND = 2;
-constexpr int FILE_D_IND = 3;
-constexpr int FILE_E_IND = 4;
-constexpr int FILE_F_IND = 5;
-constexpr int FILE_G_IND = 6;
-constexpr int FILE_H_IND = 7;
+CX_INLINE int FILE_A_IND = 0;
+CX_INLINE int FILE_B_IND = 1;
+CX_INLINE int FILE_C_IND = 2;
+CX_INLINE int FILE_D_IND = 3;
+CX_INLINE int FILE_E_IND = 4;
+CX_INLINE int FILE_F_IND = 5;
+CX_INLINE int FILE_G_IND = 6;
+CX_INLINE int FILE_H_IND = 7;
 
 }  // namespace Const

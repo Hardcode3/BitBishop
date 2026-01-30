@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bit>
+#include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
 #include <cstdint>
@@ -42,28 +43,28 @@ class Bitboard {
   /** @brief Constructs an empty bitboard (all bits = 0).
    * Zero initialization of uint64_t m_bb granted by C++ standard
    */
-  constexpr Bitboard() : m_bb() {}
+  CX_FN Bitboard() : m_bb() {}
 
   /** @brief Constructs a bitboard from a raw 64-bit value. */
-  constexpr Bitboard(uint64_t value) : m_bb(value) {}
+  CX_FN Bitboard(uint64_t value) : m_bb(value) {}
 
   /** @brief Constructs a bitboard from another bitboard by copy. */
-  constexpr Bitboard(const Bitboard& bitboard) noexcept = default;
+  CX_FN Bitboard(const Bitboard& bitboard) noexcept = default;
 
   /** @brief Move-constructs a bitboard. */
-  constexpr explicit Bitboard(Bitboard&& other) noexcept = default;
+  CX_FN explicit Bitboard(Bitboard&& other) noexcept = default;
 
   /** @brief Constructs a bitboard with the given square being the only bit set to one. */
-  constexpr Bitboard(Square square) : m_bb(0ULL) { set(square); }
+  CX_FN Bitboard(Square square) : m_bb(0ULL) { set(square); }
 
   /** @brief Returns the raw 64-bit value of the bitboard. */
-  [[nodiscard]] constexpr uint64_t value() const { return m_bb; }
+  [[nodiscard]] CX_FN uint64_t value() const { return m_bb; }
 
   /** @brief Returns a Bitboard instance with all bits set to zero. */
-  static constexpr Bitboard Zeros() noexcept { return {0ULL}; }
+  static CX_FN Bitboard Zeros() noexcept { return {0ULL}; }
 
   /** @brief Returns a Bitbaord instance with all bits set to one. */
-  static constexpr Bitboard Ones() noexcept { return {~0ULL}; }
+  static CX_FN Bitboard Ones() noexcept { return {~0ULL}; }
 
   /**
    * @brief Sets a bit (places a piece) on a given square.
@@ -81,9 +82,9 @@ class Bitboard {
    * 1ULL << E2 = 00000000 00000000 ... 00010000 00000000
    * m_bb |= (1ULL << sq) = 00000000 00000000 ... 00010000 00000000
    */
-  constexpr void set(Square square) { m_bb |= (1ULL << square.value()); }
-  constexpr void set(Square::Value square) { m_bb |= (1ULL << square); }
-  constexpr void set(std::uint8_t square) { m_bb |= (1ULL << square); }
+  CX_FN void set(Square square) { m_bb |= (1ULL << square.value()); }
+  CX_FN void set(Square::Value square) { m_bb |= (1ULL << square); }
+  CX_FN void set(std::uint8_t square) { m_bb |= (1ULL << square); }
 
   /**
    * @brief Clears a bit (removes a piece) on a given square.
@@ -101,9 +102,9 @@ class Bitboard {
    * ~(1ULL << E2) = 11111111 11111111 ... 11101111 11111111
    * m_bb &= ~(1ULL << sq) = 00000000 00000000 ... 00000000 00000000
    */
-  constexpr void clear(Square square) { m_bb &= ~(1ULL << square.value()); }
-  constexpr void clear(Square::Value square) { m_bb &= ~(1ULL << square); }
-  constexpr void clear(std::uint8_t square) { m_bb &= ~(1ULL << square); }
+  CX_FN void clear(Square square) { m_bb &= ~(1ULL << square.value()); }
+  CX_FN void clear(Square::Value square) { m_bb &= ~(1ULL << square); }
+  CX_FN void clear(std::uint8_t square) { m_bb &= ~(1ULL << square); }
 
   /**
    * @brief Checks if a square is occupied.
@@ -121,12 +122,12 @@ class Bitboard {
    * (m_bb >> E2) & 1ULL = true
    *
    */
-  [[nodiscard]] constexpr bool test(Square square) const { return ((m_bb >> square.value()) & 1ULL) != 0ULL; }
-  [[nodiscard]] constexpr bool test(Square::Value square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
-  [[nodiscard]] constexpr bool test(std::uint8_t square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
+  [[nodiscard]] CX_FN bool test(Square square) const { return ((m_bb >> square.value()) & 1ULL) != 0ULL; }
+  [[nodiscard]] CX_FN bool test(Square::Value square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
+  [[nodiscard]] CX_FN bool test(std::uint8_t square) const { return ((m_bb >> square) & 1ULL) != 0ULL; }
 
   /** @brief Clears the whole bitboard (all bits = 0). */
-  constexpr void reset() { m_bb = 0ULL; }
+  CX_FN void reset() { m_bb = 0ULL; }
 
   /**
    * @brief Prints the bitboard as an 8×8 grid.
@@ -138,29 +139,29 @@ class Bitboard {
    */
   void print() const;
 
-  constexpr bool operator==(const Bitboard& other) const { return m_bb == other.m_bb; }
-  constexpr bool operator!=(const Bitboard& other) const { return m_bb != other.m_bb; }
-  constexpr Bitboard operator^(const Bitboard& other) const { return m_bb ^ other.m_bb; }
-  constexpr Bitboard operator|(const Bitboard& other) const { return m_bb | other.m_bb; }
-  constexpr Bitboard operator&(const Bitboard& other) const { return m_bb & other.m_bb; }
-  constexpr Bitboard operator~() const { return ~m_bb; }
-  constexpr Bitboard operator<<(int shift) const { return m_bb << shift; }
-  constexpr Bitboard operator>>(int shift) const { return m_bb >> shift; }
-  constexpr Bitboard& operator|=(const Bitboard& other) {
+  CX_FN bool operator==(const Bitboard& other) const { return m_bb == other.m_bb; }
+  CX_FN bool operator!=(const Bitboard& other) const { return m_bb != other.m_bb; }
+  CX_FN Bitboard operator^(const Bitboard& other) const { return m_bb ^ other.m_bb; }
+  CX_FN Bitboard operator|(const Bitboard& other) const { return m_bb | other.m_bb; }
+  CX_FN Bitboard operator&(const Bitboard& other) const { return m_bb & other.m_bb; }
+  CX_FN Bitboard operator~() const { return ~m_bb; }
+  CX_FN Bitboard operator<<(int shift) const { return m_bb << shift; }
+  CX_FN Bitboard operator>>(int shift) const { return m_bb >> shift; }
+  CX_FN Bitboard& operator|=(const Bitboard& other) {
     m_bb |= other.m_bb;
     return *this;
   }
-  constexpr Bitboard& operator&=(const Bitboard& other) {
+  CX_FN Bitboard& operator&=(const Bitboard& other) {
     m_bb &= other.m_bb;
     return *this;
   }
-  constexpr Bitboard& operator^=(const Bitboard& other) {
+  CX_FN Bitboard& operator^=(const Bitboard& other) {
     m_bb ^= other.m_bb;
     return *this;
   }
-  constexpr operator bool() const noexcept { return m_bb != 0ULL; }
-  constexpr Bitboard& operator=(const Bitboard& other) noexcept = default;
-  constexpr Bitboard& operator=(Bitboard&& other) noexcept = default;
+  CX_FN operator bool() const noexcept { return m_bb != 0ULL; }
+  CX_FN Bitboard& operator=(const Bitboard& other) noexcept = default;
+  CX_FN Bitboard& operator=(Bitboard&& other) noexcept = default;
 
   /**
    * @brief Counts the number of set bits in the bitboard.
@@ -169,7 +170,7 @@ class Bitboard {
    *
    * @note Uses std::popcount (C++20 and later).
    */
-  [[nodiscard]] constexpr int count() const noexcept { return std::popcount(m_bb); }
+  [[nodiscard]] CX_FN int count() const noexcept { return std::popcount(m_bb); }
 
   /**
    * @brief Tells if any bit in the bitboard is set to one.
@@ -178,7 +179,7 @@ class Bitboard {
    *
    * @note Equivalent to `cout() > 0` and `bool()`
    */
-  [[nodiscard]] constexpr bool any() const noexcept { return m_bb != 0ULL; }
+  [[nodiscard]] CX_FN bool any() const noexcept { return m_bb != 0ULL; }
 
   /**
    * @brief Tells if the bitboard is empty / has no bit set.
@@ -187,7 +188,7 @@ class Bitboard {
    *
    * @note Equivalent to '!any()' or 'count() == 0'
    */
-  [[nodiscard]] constexpr bool empty() const noexcept { return m_bb == 0ULL; }
+  [[nodiscard]] CX_FN bool empty() const noexcept { return m_bb == 0ULL; }
 
   /**
    * @brief Removes and returns the least significant set bit (LSB) from the bitboard.
@@ -226,7 +227,7 @@ class Bitboard {
    * @note This method **modifies** the bitboard by clearing the bit that it returns.
    *       Use `lsb()` if you want to inspect the least significant bit *without* modification.
    */
-  constexpr std::optional<Square> pop_lsb() noexcept {
+  CX_FN std::optional<Square> pop_lsb() noexcept {
     if (!*this) {
       return std::nullopt;
     }
@@ -272,7 +273,7 @@ class Bitboard {
    * @note This method **modifies** the bitboard by clearing the bit that it returns.
    *       Use `msb()` if you want to inspect the most significant bit *without* modification.
    */
-  constexpr std::optional<Square> pop_msb() noexcept {
+  CX_FN std::optional<Square> pop_msb() noexcept {
     using namespace Const;
 
     if (!*this) {
@@ -316,7 +317,7 @@ class Bitboard {
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
-  [[nodiscard]] constexpr std::optional<Square> lsb() const noexcept {
+  [[nodiscard]] CX_FN std::optional<Square> lsb() const noexcept {
     if (!*this) {
       return std::nullopt;
     }
@@ -357,7 +358,7 @@ class Bitboard {
    *
    * @note This method is const and does not modify the underlying bitboard.
    */
-  [[nodiscard]] constexpr std::optional<Square> msb() const noexcept {
+  [[nodiscard]] CX_FN std::optional<Square> msb() const noexcept {
     using namespace Const;
 
     if (!*this) {
@@ -399,27 +400,27 @@ class Bitboard {
      * @brief Constructs an iterator for a given bit pattern.
      * @param bitboard The 64-bit bitboard value to iterate over.
      */
-    constexpr Iterator(uint64_t bitboard) noexcept : bits(bitboard) {}
+    CX_FN Iterator(uint64_t bitboard) noexcept : bits(bitboard) {}
 
     /**
      * @brief Inequality comparison for iterators.
      * @param other Another iterator to compare to.
      * @return true if this iterator does not equal `other`.
      */
-    constexpr bool operator!=(const Iterator& other) const noexcept { return bits != other.bits; }
+    CX_FN bool operator!=(const Iterator& other) const noexcept { return bits != other.bits; }
 
     /**
      * @brief Equality comparison for iterators.
      * @param other Another iterator to compare to.
      * @return true if this iterator equals `other`.
      */
-    constexpr bool operator==(const Iterator& other) const noexcept { return bits == other.bits; }
+    CX_FN bool operator==(const Iterator& other) const noexcept { return bits == other.bits; }
 
     /**
      * @brief Dereferences the iterator to return the current square.
      * @return A `Square` corresponding to the current least significant set bit.
      */
-    constexpr Square operator*() const noexcept { return {std::countr_zero(bits), std::in_place}; }
+    CX_FN Square operator*() const noexcept { return {std::countr_zero(bits), std::in_place}; }
 
     /**
      * @brief Advances the iterator to the next set bit.
@@ -429,7 +430,7 @@ class Bitboard {
      *
      * @return Reference to the incremented iterator.
      */
-    constexpr Iterator& operator++() noexcept {
+    CX_FN Iterator& operator++() noexcept {
       bits &= (bits - 1);
       return *this;
     }
@@ -439,11 +440,11 @@ class Bitboard {
    * @brief Returns an iterator pointing to the first set bit (if any).
    * @return Iterator positioned at the first set bit.
    */
-  [[nodiscard]] constexpr Iterator begin() const noexcept { return {m_bb}; }
+  [[nodiscard]] CX_FN Iterator begin() const noexcept { return {m_bb}; }
 
   /**
    * @brief Returns an iterator representing the end (no bits set).
    * @return Iterator with no bits remaining.
    */
-  [[nodiscard]] static constexpr Iterator end() noexcept { return {0ULL}; }
+  [[nodiscard]] static CX_FN Iterator end() noexcept { return {0ULL}; }
 };

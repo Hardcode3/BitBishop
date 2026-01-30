@@ -6,6 +6,7 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/lookups/knight_attacks.hpp>
 #include <bitbishop/lookups/pawn_attacks.hpp>

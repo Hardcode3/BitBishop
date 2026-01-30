@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <cctype>
 #include <format>
 #include <stdexcept>
@@ -29,7 +30,12 @@ class Piece {
    *
    * Useful for array sizing and iteration without magic numbers.
    */
-  static constexpr std::size_t TYPE_COUNT = 6;
+  static CX_VALUE std::size_t TYPE_COUNT = 6;
+
+  /**
+   * @brief Distinct piece types.
+   */
+  static CX_VALUE std::array<Type, TYPE_COUNT> ALL_TYPES = {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
 
  private:
   /**
@@ -48,7 +54,7 @@ class Piece {
    * @param type Piece type
    * @param color Piece color
    */
-  constexpr Piece(Type type, Color color) : m_type(type), m_color(color) {}
+  CX_FN Piece(Type type, Color color) : m_type(type), m_color(color) {}
 
   /**
    * @brief Constructs a piece from a character representation.
@@ -58,7 +64,7 @@ class Piece {
    * @param character Character representing the piece ('P', 'n', etc.)
    * @throw std::invalid_argument If the character does not represent a valid piece
    */
-  constexpr Piece(char character) {
+  CX_FN Piece(char character) {
     m_type = Piece::type_from_char(character);
     m_color = Piece::color_from_char(character);
   }
@@ -67,44 +73,44 @@ class Piece {
    * @brief Returns the piece type.
    * @return Type enum
    */
-  [[nodiscard]] constexpr Type type() const { return m_type; }
+  [[nodiscard]] CX_FN Type type() const { return m_type; }
 
   /**
    * @brief Returns the piece color.
    * @return Color enum
    */
-  [[nodiscard]] constexpr Color color() const { return m_color; }
+  [[nodiscard]] CX_FN Color color() const { return m_color; }
 
   /**
    * @brief Checks if the piece is white.
    * @return true if white, false otherwise
    */
-  [[nodiscard]] constexpr bool is_white() const { return m_color == Color::WHITE; }
+  [[nodiscard]] CX_FN bool is_white() const { return m_color == Color::WHITE; }
 
   /**
    * @brief Checks if the piece is black.
    * @return true if black, false otherwise
    */
-  [[nodiscard]] constexpr bool is_black() const { return m_color == Color::BLACK; }
+  [[nodiscard]] CX_FN bool is_black() const { return m_color == Color::BLACK; }
 
   /** @brief Checks if the piece is a pawn. */
-  [[nodiscard]] constexpr bool is_pawn() const { return m_type == Type::PAWN; }
+  [[nodiscard]] CX_FN bool is_pawn() const { return m_type == Type::PAWN; }
   /** @brief Checks if the piece is a knight. */
-  [[nodiscard]] constexpr bool is_knight() const { return m_type == Type::KNIGHT; }
+  [[nodiscard]] CX_FN bool is_knight() const { return m_type == Type::KNIGHT; }
   /** @brief Checks if the piece is a bishop. */
-  [[nodiscard]] constexpr bool is_bishop() const { return m_type == Type::BISHOP; }
+  [[nodiscard]] CX_FN bool is_bishop() const { return m_type == Type::BISHOP; }
   /** @brief Checks if the piece is a rook. */
-  [[nodiscard]] constexpr bool is_rook() const { return m_type == Type::ROOK; }
+  [[nodiscard]] CX_FN bool is_rook() const { return m_type == Type::ROOK; }
   /** @brief Checks if the piece is a queen. */
-  [[nodiscard]] constexpr bool is_queen() const { return m_type == Type::QUEEN; }
+  [[nodiscard]] CX_FN bool is_queen() const { return m_type == Type::QUEEN; }
   /** @brief Checks if the piece is a king. */
-  [[nodiscard]] constexpr bool is_king() const { return m_type == Type::KING; }
+  [[nodiscard]] CX_FN bool is_king() const { return m_type == Type::KING; }
 
   /**
    * @brief Checks if the piece is a sliding piece (bishop, rook, queen).
    * @return true if sliding, false otherwise
    */
-  [[nodiscard]] constexpr bool is_slider() {
+  [[nodiscard]] CX_FN bool is_slider() {
     return m_type == Piece::BISHOP || m_type == Piece::ROOK || m_type == Piece::QUEEN;
   }
 
@@ -115,7 +121,7 @@ class Piece {
    * @return Corresponding piece type
    * @throw std::invalid_argument If the character is invalid
    */
-  [[nodiscard]] static constexpr Type type_from_char(char character) {
+  [[nodiscard]] static CX_FN Type type_from_char(char character) {
     switch (character) {
       case 'P':
       case 'p':
@@ -136,8 +142,7 @@ class Piece {
       case 'k':
         return KING;
     }
-    const std::string msg = std::format("Invalid piece character {}", character);
-    throw std::invalid_argument(msg);
+    throw std::invalid_argument("Invalid piece character at compile time");
   }
 
   /**
@@ -147,26 +152,14 @@ class Piece {
    * @return Detected color
    * @throw std::invalid_argument If the character is not alphabetic
    */
-  [[nodiscard]] static constexpr Color color_from_char(char character) {
+  [[nodiscard]] static CX_FN Color color_from_char(char character) {
     if (character >= 'A' && character <= 'Z') {
       return Color::WHITE;
     }
     if (character >= 'a' && character <= 'z') {
       return Color::BLACK;
     }
-    const std::string msg = std::format("Invalid piece character {}", character);
-    throw std::invalid_argument(msg);
-  }
-
-  /**
-   * @brief Returns an array containing all valid piece types.
-   *
-   * Useful for iteration over all piece types in compile-time contexts.
-   *
-   * @return Array of piece types
-   */
-  [[nodiscard]] static constexpr std::array<Type, TYPE_COUNT> all_types() {
-    return {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
+    throw std::invalid_argument("Invalid character at compile time");
   }
 
   /**
@@ -175,7 +168,7 @@ class Piece {
    * @param type Piece type enum
    * @return C-string name ("pawn", "knight", etc.)
    */
-  [[nodiscard]] static constexpr const char* name(Type type) {
+  [[nodiscard]] static CX_FN const char* name(Type type) {
     switch (type) {
       case PAWN:
         return "pawn";
@@ -200,9 +193,9 @@ class Piece {
    * @param color Piece color
    * @return Uppercase for white, lowercase for black (e.g., 'Q' or 'q')
    */
-  [[nodiscard]] static constexpr char to_char(Type type, Color color) {
-    constexpr std::array<char, TYPE_COUNT> whiteSymbols = {'P', 'N', 'B', 'R', 'Q', 'K'};
-    constexpr std::array<char, TYPE_COUNT> blackSymbols = {'p', 'n', 'b', 'r', 'q', 'k'};
+  [[nodiscard]] static CX_FN char to_char(Type type, Color color) {
+    static CX_CONST std::array<char, TYPE_COUNT> whiteSymbols = {'P', 'N', 'B', 'R', 'Q', 'K'};
+    static CX_CONST std::array<char, TYPE_COUNT> blackSymbols = {'p', 'n', 'b', 'r', 'q', 'k'};
     return (color == Color::WHITE) ? whiteSymbols[type] : blackSymbols[type];
   }
 
@@ -210,27 +203,27 @@ class Piece {
    * @brief Converts the stored piece to its character representation.
    * @return Character ('P', 'k', etc.)
    */
-  [[nodiscard]] constexpr char to_char() const { return Piece::to_char(m_type, m_color); }
+  [[nodiscard]] CX_FN char to_char() const { return Piece::to_char(m_type, m_color); }
 
   /**
    * @brief Equality operator.
    * @param other Piece to compare against
    * @return true if both type and color match
    */
-  constexpr bool operator==(const Piece& other) const { return m_type == other.m_type && m_color == other.m_color; }
+  CX_FN bool operator==(const Piece& other) const { return m_type == other.m_type && m_color == other.m_color; }
 
   /**
    * @brief Inequality operator.
    * @param other Piece to compare against
    * @return true if type or color differ
    */
-  constexpr bool operator!=(const Piece& other) const { return !(*this == other); }
+  CX_FN bool operator!=(const Piece& other) const { return !(*this == other); }
 };
 
 namespace Pieces {
 #define DEFINE_PIECE(name, ch)                             \
   /** @brief Predefined piece constant for convenience. */ \
-  constexpr inline Piece name { ch }
+  CX_INLINE Piece name { ch }
 
 // White pieces
 DEFINE_PIECE(WHITE_PAWN, 'P');

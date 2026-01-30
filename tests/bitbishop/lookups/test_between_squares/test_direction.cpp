@@ -59,3 +59,8 @@ TEST(LookupsTest, DirectionNWSEDiagonal) {
   EXPECT_EQ(direction(B6, E3), -7);
   EXPECT_EQ(direction(F4, C7), +7);
 }
+
+TEST(LookupsTest, DirectionWithInvalidFromAndToSquares) {
+  EXPECT_EQ(direction(A1, B6), 0);
+  EXPECT_EQ(direction(F4, H8), 0);
+}

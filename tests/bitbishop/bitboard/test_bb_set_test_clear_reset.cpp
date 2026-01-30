@@ -56,6 +56,18 @@ TEST(BitboardTest, ClearSquareFromSquare) {
   EXPECT_FALSE(bb.test(e2));
 }
 
+TEST(BitboardTest, ClearSquareFromSquareUint8t) {
+  Bitboard bb;
+
+  Square e2(Square::E2);
+  const std::uint8_t e2_uint8_t = static_cast<std::uint8_t>(e2.value());
+
+  bb.set(e2_uint8_t);
+  EXPECT_TRUE(bb.test(e2_uint8_t));
+  bb.clear(e2_uint8_t);
+  EXPECT_FALSE(bb.test(e2_uint8_t));
+}
+
 /**
  * @test Reset the bitboard.
  * @brief Ensures all bits are cleared and value() = 0.

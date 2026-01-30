@@ -28,8 +28,6 @@ void MoveEffect::apply(Board& board) const {
     case Type::BoardState:
       board.set_state(next_state);
       break;
-    default:
-      std::unreachable();
   }
 }
 
@@ -44,7 +42,5 @@ void MoveEffect::revert(Board& board) const {
     case Type::BoardState:
       board.set_state(prev_state);
       break;
-    default:
-      std::unreachable();
   }
 }

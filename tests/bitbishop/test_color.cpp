@@ -55,3 +55,9 @@ TEST_F(ColorFormatterTest, FormatToOutputIterator) {
   std::format_to(std::back_inserter(result), "Color is: {}", c);
   EXPECT_EQ(result, "Color is: black");
 }
+
+TEST(ColorUtilsTest, HasCorrectNumberOfColors) {
+  const std::size_t nb_colors = ColorUtil::SIZE;
+
+  EXPECT_EQ(nb_colors, 2);
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/square.hpp>
 
 /**

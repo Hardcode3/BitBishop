@@ -3,16 +3,17 @@
 #include <bitbishop/attacks/generate_attacks.hpp>
 #include <bitbishop/board.hpp>
 #include <bitbishop/color.hpp>
+#include <bitbishop/config.hpp>
 #include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/move.hpp>
 #include <bitbishop/movegen/pins.hpp>
 #include <utility>
 #include <vector>
 
-constexpr std::array<Piece, 4> WHITE_PROMOTIONS = {Pieces::WHITE_QUEEN, Pieces::WHITE_ROOK, Pieces::WHITE_BISHOP,
-                                                   Pieces::WHITE_KNIGHT};
-constexpr std::array<Piece, 4> BLACK_PROMOTIONS = {Pieces::BLACK_QUEEN, Pieces::BLACK_ROOK, Pieces::BLACK_BISHOP,
-                                                   Pieces::BLACK_KNIGHT};
+CX_INLINE std::array<Piece, 4> WHITE_PROMOTIONS = {Pieces::WHITE_QUEEN, Pieces::WHITE_ROOK, Pieces::WHITE_BISHOP,
+                                                  Pieces::WHITE_KNIGHT};
+CX_INLINE std::array<Piece, 4> BLACK_PROMOTIONS = {Pieces::BLACK_QUEEN, Pieces::BLACK_ROOK, Pieces::BLACK_BISHOP,
+                                                  Pieces::BLACK_KNIGHT};
 
 /**
  * @brief Checks if a square is on the pawn's starting rank.
@@ -24,7 +25,7 @@ constexpr std::array<Piece, 4> BLACK_PROMOTIONS = {Pieces::BLACK_QUEEN, Pieces::
  * @param color Color of the pawn
  * @return true if the square is on the starting rank for the given color, false otherwise
  */
-constexpr bool is_starting_rank(Square square, Color color) {
+CX_FN bool is_starting_rank(Square square, Color color) {
   using namespace Const;
   return color == Color::WHITE ? (square.rank() == RANK_2_IND) : (square.rank() == RANK_7_IND);
 }
@@ -38,7 +39,7 @@ constexpr bool is_starting_rank(Square square, Color color) {
  * @param color Color of the pawn
  * @return true if the square is on the promotion rank for the given color, false otherwise
  */
-constexpr bool is_promotion_rank(Square square, Color color) {
+CX_FN bool is_promotion_rank(Square square, Color color) {
   using namespace Const;
   return color == Color::WHITE ? (square.rank() == RANK_8_IND) : (square.rank() == RANK_1_IND);
 }
@@ -60,7 +61,7 @@ constexpr bool is_promotion_rank(Square square, Color color) {
  * @param side Color of the capturing pawn
  * @return true if the capture geometry is valid for en passant, false otherwise
  */
-constexpr bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
+CX_FN bool can_capture_en_passant(Square from, Square epsq, Color side) noexcept {
   using namespace Const;
 
   // MSVC have not yet made std::abs() constexpr for C++ 23, forcing us to define a generic constexpr one...
@@ -190,7 +191,7 @@ inline void generate_captures(std::vector<Move>& moves, Square from, Color us, c
   bb &= check_mask;
   bb &= pin_mask;
 
-  constexpr bool is_capture = true;
+  bool is_capture = true;
   for (Square to : bb) {
     if (is_promotion_rank(to, us)) {
       add_pawn_promotions(moves, from, to, us, is_capture);
