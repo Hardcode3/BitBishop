@@ -145,6 +145,7 @@ jobs:
           exit $TEST_EXIT_CODE
 
       - name: Generate markdown coverage report (${{ matrix.test_preset }})
+        if: matrix.name == 'clang_debug'
         shell: bash
         run: |
           set +e
