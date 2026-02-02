@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
+
+#include <bitbishop/interface/uci.hpp>
 #include <sstream>
-#include "../main/uci_loop.cpp"
 
 /**
  * @brief Test fixture for UCI loop tests
@@ -42,8 +43,8 @@ TEST_F(UciLoopTest, UciCommand) {
     uci_loop(input, output);
 
     std::string response = output.str();
-    EXPECT_TRUE(response.find("id name ChessEngine") != std::string::npos);
-    EXPECT_TRUE(response.find("id author Hardcode") != std::string::npos);
+    EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+    EXPECT_TRUE(response.find("id author Hardcode3") != std::string::npos);
     EXPECT_TRUE(response.find("uciok") != std::string::npos);
 }
 
@@ -104,9 +105,43 @@ TEST_F(UciLoopTest, MultipleCommands) {
     uci_loop(input, output);
 
     std::string response = output.str();
-    EXPECT_TRUE(response.find("id name ChessEngine") != std::string::npos);
+    EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
     EXPECT_TRUE(response.find("readyok") != std::string::npos);
     EXPECT_TRUE(response.find("bestmove e2e4") != std::string::npos);
+    // TO BE IMPLEMENTED
+}
+
+TEST_F(UciLoopTest, UciNewGameCommand) {
+  input << "uci\nisready\nucinewgame\nquit\n";
+  uci_loop(input, output);
+
+  std::string response = output.str();
+  EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+  EXPECT_TRUE(response.find("readyok") != std::string::npos);
+  // TO BE IMPLEMENTED
+  // ucinewgame does not reply to the user
+}
+
+TEST_F(UciLoopTest, PositionCommand) {
+  input << "uci\nisready\nposition\nquit\n";
+  uci_loop(input, output);
+
+  std::string response = output.str();
+  EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+  EXPECT_TRUE(response.find("readyok") != std::string::npos);
+  // TO BE IMPLEMENTED
+  // position has extra args e.g. postions fen <fen>, postion startpos...
+}
+
+TEST_F(UciLoopTest, StopCommand) {
+  input << "uci\nisready\nstop\nquit\n";
+  uci_loop(input, output);
+
+  std::string response = output.str();
+  EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+  EXPECT_TRUE(response.find("readyok") != std::string::npos);
+  // TO BE IMPLEMENTED
+  // stop actually kills the search currently in progress
 }
 
 /**

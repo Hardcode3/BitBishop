@@ -127,6 +127,7 @@ macro(run_llvm_cov)
             "-show-instantiations=false"
             "${PROJECT_SOURCE_DIR}/src"
             "${PROJECT_SOURCE_DIR}/include"
+            "${PROJECT_SOURCE_DIR}/main"
         )
 
         execute_process(
@@ -180,7 +181,7 @@ macro(run_llvm_cov)
     elseif(REPORT_MODE STREQUAL "shieldsio")
         include("${CMAKE_CURRENT_LIST_DIR}/write_shieldsio_badge.cmake")
 
-        write_shieldsio_coverage_badge(
+        write_shieldsio_coverage_badges(
             COVERAGE_DIR       "${COVERAGE_DIR}"
             PRESET             "${CTEST_PRESET}"
             PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"

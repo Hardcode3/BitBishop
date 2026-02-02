@@ -4,7 +4,7 @@
 # Usage:
 #
 # include("${CMAKE_CURRENT_LIST_DIR}/write_shieldsio_badge.cmake")
-# write_shieldsio_coverage_badge(
+# write_shieldsio_coverage_badges(
 #     COVERAGE_DIR       "${COVERAGE_DIR}"
 #     PRESET             "${CTEST_PRESET}"
 #     PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}"

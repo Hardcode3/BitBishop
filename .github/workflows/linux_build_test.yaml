@@ -197,8 +197,15 @@ jobs:
           COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
           set -e
 
-          SHIELDSIO_BADGE_FILE=$(grep -Po "Shields.io badge written to: \K.*" coverage_shieldsio_summary.txt)
-          echo "SHIELDSIO_BADGE_FILE=$SHIELDSIO_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          SHIELDSIO_REGION_COV_BADGE_FILE=$(grep -Po "Shields.io Region Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_FUNCTION_COV_BADGE_FILE=$(grep -Po "Shields.io Function Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_LINE_COV_BADGE_FILE=$(grep -Po "Shields.io Line Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_BRANCH_COV_BADGE_FILE=$(grep -Po "Shields.io Branch Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+
+          echo "SHIELDSIO_REGION_COV_BADGE_FILE=$SHIELDSIO_REGION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_FUNCTION_COV_BADGE_FILE=$SHIELDSIO_FUNCTION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_LINE_COV_BADGE_FILE=$SHIELDSIO_LINE_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_BRANCH_COV_BADGE_FILE=$SHIELDSIO_BRANCH_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
 
           exit $COV_EXIT_CODE
 
@@ -206,9 +213,12 @@ jobs:
         if: github.ref_name == 'main' && matrix.name == 'clang_debug'
         shell: bash
         run: |
-          mkdir -p out/
-          cp -r "${{ steps.htmlcov.outputs.HTML_COV_DIR }}" out/
-          cp "${{ steps.shieldsio.outputs.SHIELDSIO_BADGE_FILE }}" out/
+          mkdir -p out/coverage/badges
+          cp -r "${{ steps.htmlcov.outputs.HTML_COV_DIR }}" out/coverage/
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_REGION_COV_BADGE_FILE }}" out/coverage/badges
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_FUNCTION_COV_BADGE_FILE }}" out/coverage/badges
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_LINE_COV_BADGE_FILE }}" out/coverage/badges
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_BRANCH_COV_BADGE_FILE }}" out/coverage/badges
 
       - name: Publish coverage badge and report to gh-pages
         if: github.ref_name == 'main' && matrix.name == 'clang_debug'
