@@ -171,16 +171,40 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_WHITE = {
 
 CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT_WHITE);
 
+/**
+ * @brief Evaluates the material score.
+ * @param board Board to evaluate material on
+ * @param side Color to evaluate material for
+ * @return Absolute (positive, same for black and white) score
+ * @note No coefficient *(-1) applied to blacks
+ */
 [[nodiscard]] int evaluate_material(const Board& board, Color side) noexcept;
-[[nodiscard]] int compute_psqt_from_table(const PieceSquareTable& psqt, const Bitboard& bitboard, Color side) noexcept;
+
+/**
+ * @brief Evaluates the score from piece square tables
+ * @param psqt Piece square table to use for evaluation
+ * @param bitboard Bitboard representing occupied squares for the same piece's type than psqt
+ * @return Absolute (positive or negative, same for black and white) score
+ * @note No coefficient *(-1) applied to blacks
+ */
+[[nodiscard]] int compute_score_from_psqt(const PieceSquareTable& psqt, const Bitboard& bitboard) noexcept;
+
+/**
+ * @brief Evaluates the score from a board state
+ * @param board Board to evaluate material on
+ * @param side Color to evaluate material for
+ * @return Absolute (positive or negative) score
+ * @note No coefficient *(-1) applied to blacks
+ */
 [[nodiscard]] int evaluate_psqt(const Board& board, Color side) noexcept;
 
 /**
  * @brief Provides a score for the current board state.
- * @param board Board to use for score calculation.
- * @param side Color of the side to move to evaluate.
+ * @param board Board to evaluate material on
+ * @param side Color to evaluate material for
  * @return integer with negative scores being in favour of blacks, positive in favour of whites and zeo being
  * neutral.
+ * @note Coefficient *(-1) applied to blacks and *(1) applied to whites
  */
 [[nodiscard]] int evaluate(const Board& board, Color side) noexcept;
 
