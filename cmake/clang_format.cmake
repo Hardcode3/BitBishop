@@ -1,9 +1,14 @@
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
 # Defines a custom CMake target `clang-format` to format source files using
 # clang-format if it is available on the system. Automatically finds and formats
 # all .cpp and .hpp files under src/ and include/ using the `.clang-format`
 # configuration file.
-# ------------------------------------------------------------------------------
+#
+# This implementation:
+# - Spawns one process
+# - Do not use parallelism (is sequential on each file)
+# - Can hit the command line character limit if there are too much files to reformat
+# -----------------------------------------------------------------------------------
 
 find_program(CLANG_FORMAT_BIN NAMES clang-format)
 
