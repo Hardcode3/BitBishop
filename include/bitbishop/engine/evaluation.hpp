@@ -17,7 +17,7 @@ using PieceSquareTable = std::array<int, Const::BOARD_SIZE>;
 CX_FN std::size_t flip_index_horizontally(std::size_t index) {
   constexpr std::size_t WIDTH = Const::BOARD_WIDTH;
   constexpr std::size_t SIZE = Const::BOARD_SIZE;
-  return (SIZE - 1) - (index / WIDTH) * WIDTH - (SIZE - 1 - index) % WIDTH;
+  return (SIZE - 1) - (index / WIDTH * WIDTH) - ((SIZE - 1 - index) % WIDTH);
 }
 
 /**
