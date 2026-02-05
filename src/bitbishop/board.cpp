@@ -165,7 +165,7 @@ void Board::set_piece(Square square, Piece piece) {
     case Piece::ROOK:   m_w_rooks.set(square);   return;
     case Piece::QUEEN:  m_w_queens.set(square);   return;
     case Piece::KING:   m_w_king.set(square);    return;
-      // clang-format on
+        // clang-format on
     }
   } else {  // is_black()
     switch (piece.type()) {

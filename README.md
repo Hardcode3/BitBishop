@@ -80,14 +80,14 @@ These docs are a summary of what i learned while going through the chess world d
 
 ## Project Structure
 
-```
+```text
 ChessEngine/
 ├── build/                       # Build artifacts
 ├── cmake/                       # Cmake scripts
 ├── docs/                        # Documentation and guides
-├── src/bitbishop/            # Sources (cpp)
-├── include/bitbishop/        # Headers (hpp)
-├── tests/bitbishop           # Unit tests
+├── src/bitbishop/               # Sources (cpp)
+├── include/bitbishop/           # Headers (hpp)
+├── tests/bitbishop              # Unit tests
 ├── CMakeLists.txt               # Build configuration
 └── ...
 ```

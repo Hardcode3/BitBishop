@@ -5,6 +5,8 @@ Checks: >
   performance-*,
   readability-*
 
+SystemHeaders: false
+
 WarningsAsErrors: "*"
 
 CheckOptions:
