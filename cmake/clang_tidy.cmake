@@ -18,10 +18,11 @@ if(CLANG_TIDY_BIN)
 
     file(GLOB_RECURSE CLANG_TIDY_SOURCES
         "${CMAKE_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_SOURCE_DIR}/include/*.hpp"
         "${CMAKE_SOURCE_DIR}/main/*.cpp"
-        # Note: headers are analyzed by inclusion
     )
 
+    set(CLANG_TIDY_EXTRA_ARGS "")
     if(APPLE)
         # Clang-Tidy requires extra arguments on macOS:
         # - It "reconstructs" the compilation process
@@ -35,10 +36,10 @@ if(CLANG_TIDY_BIN)
             OUTPUT_VARIABLE MACOS_SDK
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        list(APPEND CLANG_TIDY_EXTRA_ARGS "--extra-arg=-isysroot" "--extra-arg=${MACOS_SDK}")
     endif()
 
     set(TIDY_OUTPUT_FILES)
-
     foreach(SRC ${CLANG_TIDY_SOURCES})
         # Calculate a unique dummy output path for every source file
         file(RELATIVE_PATH REL_SRC ${CMAKE_SOURCE_DIR} ${SRC})
@@ -54,8 +55,7 @@ if(CLANG_TIDY_BIN)
             COMMAND ${CLANG_TIDY_BIN}
                     ${SRC}
                     -p=${CMAKE_BINARY_DIR}     # Use CMake's compile_commands.json
-                    $<$<PLATFORM_ID:Darwin>:--extra-arg=-isysroot>
-                    $<$<PLATFORM_ID:Darwin>:--extra-arg=${MACOS_SDK}>
+                    ${CLANG_TIDY_EXTRA_ARGS}
             # Touch the timestamp file on success to mark this file as "done"
             COMMAND ${CMAKE_COMMAND} -E touch ${TIDY_OUT}
             DEPENDS ${SRC}
