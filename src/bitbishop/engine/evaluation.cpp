@@ -7,7 +7,8 @@ int Eval::evaluate_material(const Board& board, Color side) noexcept {
   score += board.bishops(side).count() * MaterialValue::BISHOP;
   score += board.rooks(side).count() * MaterialValue::ROOK;
   score += board.queens(side).count() * MaterialValue::QUEEN;
-  score += MaterialValue::KING;
+  // no assumption about the number of kings, should aways be one
+  score += board.king(side).count() * MaterialValue::KING;
   return score;
 }
 
