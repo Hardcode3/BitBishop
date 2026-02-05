@@ -10,21 +10,21 @@
  * in isolation. It handles setup and cleanup of these streams for each test.
  */
 class UciLoopTest : public ::testing::Test {
-protected:
-    std::stringstream input;
-    std::stringstream output;
+ protected:
+  std::stringstream input;
+  std::stringstream output;
 
-    void SetUp() override {
-        // Clear streams before each test
-        input.clear();
-        output.clear();
-    }
+  void SetUp() override {
+    // Clear streams before each test
+    input.clear();
+    output.clear();
+  }
 
-    void TearDown() override {
-        // Clean up after each test
-        input.str("");
-        output.str("");
-    }
+  void TearDown() override {
+    // Clean up after each test
+    input.str("");
+    output.str("");
+  }
 };
 
 /**
@@ -39,13 +39,13 @@ protected:
  * - UCI protocol confirmation
  */
 TEST_F(UciLoopTest, UciCommand) {
-    input << "uci\n";
-    uci_loop(input, output);
+  input << "uci\n";
+  uci_loop(input, output);
 
-    std::string response = output.str();
-    EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
-    EXPECT_TRUE(response.find("id author Hardcode3") != std::string::npos);
-    EXPECT_TRUE(response.find("uciok") != std::string::npos);
+  std::string response = output.str();
+  EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+  EXPECT_TRUE(response.find("id author Hardcode3") != std::string::npos);
+  EXPECT_TRUE(response.find("uciok") != std::string::npos);
 }
 
 /**
@@ -56,11 +56,11 @@ TEST_F(UciLoopTest, UciCommand) {
  * and ready to process further commands.
  */
 TEST_F(UciLoopTest, IsReadyCommand) {
-    input << "isready\n";
-    uci_loop(input, output);
+  input << "isready\n";
+  uci_loop(input, output);
 
-    std::string response = output.str();
-    EXPECT_EQ(response, "readyok\n");
+  std::string response = output.str();
+  EXPECT_EQ(response, "readyok\n");
 }
 
 /**
@@ -71,11 +71,11 @@ TEST_F(UciLoopTest, IsReadyCommand) {
  * main functionality of finding the best move.
  */
 TEST_F(UciLoopTest, GoCommand) {
-    input << "go\n";
-    uci_loop(input, output);
+  input << "go\n";
+  uci_loop(input, output);
 
-    std::string response = output.str();
-    EXPECT_EQ(response, "bestmove e2e4\n");
+  std::string response = output.str();
+  EXPECT_EQ(response, "bestmove e2e4\n");
 }
 
 /**
@@ -86,11 +86,11 @@ TEST_F(UciLoopTest, GoCommand) {
  * any output, ensuring clean termination.
  */
 TEST_F(UciLoopTest, QuitCommand) {
-    input << "quit\n";
-    uci_loop(input, output);
+  input << "quit\n";
+  uci_loop(input, output);
 
-    // Quit command should not produce any output
-    EXPECT_TRUE(output.str().empty());
+  // Quit command should not produce any output
+  EXPECT_TRUE(output.str().empty());
 }
 
 /**
@@ -101,14 +101,14 @@ TEST_F(UciLoopTest, QuitCommand) {
  * commands in sequence during normal operation.
  */
 TEST_F(UciLoopTest, MultipleCommands) {
-    input << "uci\nisready\ngo\nquit\n";
-    uci_loop(input, output);
+  input << "uci\nisready\ngo\nquit\n";
+  uci_loop(input, output);
 
-    std::string response = output.str();
-    EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
-    EXPECT_TRUE(response.find("readyok") != std::string::npos);
-    EXPECT_TRUE(response.find("bestmove e2e4") != std::string::npos);
-    // TO BE IMPLEMENTED
+  std::string response = output.str();
+  EXPECT_TRUE(response.find("id name Bitbishop") != std::string::npos);
+  EXPECT_TRUE(response.find("readyok") != std::string::npos);
+  EXPECT_TRUE(response.find("bestmove e2e4") != std::string::npos);
+  // TO BE IMPLEMENTED
 }
 
 TEST_F(UciLoopTest, UciNewGameCommand) {
@@ -152,11 +152,11 @@ TEST_F(UciLoopTest, StopCommand) {
  * or whitespace-only input.
  */
 TEST_F(UciLoopTest, EmptyInput) {
-    input << "\n";
-    uci_loop(input, output);
+  input << "\n";
+  uci_loop(input, output);
 
-    // Empty input should not produce any output
-    EXPECT_TRUE(output.str().empty());
+  // Empty input should not produce any output
+  EXPECT_TRUE(output.str().empty());
 }
 
 /**
@@ -167,9 +167,9 @@ TEST_F(UciLoopTest, EmptyInput) {
  * for maintaining stability when receiving unexpected input.
  */
 TEST_F(UciLoopTest, UnknownCommand) {
-    input << "unknown_command\n";
-    uci_loop(input, output);
+  input << "unknown_command\n";
+  uci_loop(input, output);
 
-    // Unknown commands should not produce any output
-    EXPECT_TRUE(output.str().empty());
+  // Unknown commands should not produce any output
+  EXPECT_TRUE(output.str().empty());
 }
