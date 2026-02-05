@@ -1,6 +1,5 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/constants.hpp>
-#include <bitbishop/engine/evaluation.hpp>
 #include <format>
 #include <sstream>
 
