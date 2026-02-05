@@ -15,6 +15,8 @@ if(CLANG_FORMAT_BIN)
             "${CMAKE_SOURCE_DIR}/src/*.cpp"
             "${CMAKE_SOURCE_DIR}/include/*.hpp"
             "${CMAKE_SOURCE_DIR}/main/*.cpp"
+            "${CMAKE_SOURCE_DIR}/tests/*.cpp"
+            "${CMAKE_SOURCE_DIR}/tests/*.hpp"
         )
     endif()
 
