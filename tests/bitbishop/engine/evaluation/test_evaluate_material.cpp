@@ -7,6 +7,26 @@ using namespace Eval;
 using namespace Squares;
 using namespace Pieces;
 
+TEST(MaterialEvaluationTest, WhitesHavePositiveMaterialScore) {
+  Board board = Board::Empty();
+  board.set_piece(E4, WHITE_KING);
+  board.set_piece(E5, WHITE_PAWN);
+
+  int score = evaluate_material(board, Color::WHITE);
+
+  EXPECT_GT(score, 0);
+}
+
+TEST(MaterialEvaluationTest, BlacksHavePositiveMaterialScore) {
+  Board board = Board::Empty();
+  board.set_piece(E4, BLACK_KING);
+  board.set_piece(E5, BLACK_PAWN);
+
+  int score = evaluate_material(board, Color::BLACK);
+
+  EXPECT_GT(score, 0);
+}
+
 TEST(MaterialEvaluationTest, NoPieceButKingEvaluatesToKingMaterial) {
   Board board = Board::Empty();
   board.set_piece(E4, WHITE_KING);
