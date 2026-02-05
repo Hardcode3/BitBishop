@@ -25,10 +25,6 @@ if(CLANG_TIDY_BIN)
     set(CLANG_TIDY_EXTRA_ARGS
         "-p=${CMAKE_BINARY_DIR}"
         # Provide CMake's compile_commands.json to clang-tidy so that it can just work
-
-        "--quiet"
-        # Suppresses the printing of statistics about ignored warnings and warnings treated as errors, e.g.
-        # "Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well."
     )
     if(APPLE)
         # Clang-Tidy requires extra arguments on macOS:
