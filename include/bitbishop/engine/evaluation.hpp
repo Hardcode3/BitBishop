@@ -11,13 +11,13 @@ using PieceSquareTable = std::array<int, Const::BOARD_SIZE>;
 /**
  * @brief Flips a chess board index with respect to the ranks.
  * @note Chess board indexes belongs to [0,63].
- * @param i Chess board index to flip.
+ * @param index Chess board index to flip.
  * @return Horizontally symmetric index.
  */
-CX_FN std::size_t flip_index_horizontally(std::size_t i) {
-  constexpr std::size_t W = Const::BOARD_WIDTH;
-  constexpr std::size_t S = Const::BOARD_SIZE;
-  return (S - 1) - (i / W) * W - (S - 1 - i) % W;
+CX_FN std::size_t flip_index_horizontally(std::size_t index) {
+  constexpr std::size_t WIDTH = Const::BOARD_WIDTH;
+  constexpr std::size_t SIZE = Const::BOARD_SIZE;
+  return (SIZE - 1) - (index / WIDTH) * WIDTH - (SIZE - 1 - index) % WIDTH;
 }
 
 /**
@@ -37,7 +37,7 @@ CX_FN PieceSquareTable flip_psqt(const PieceSquareTable& psqt) {
 /**
  * @brief Material values in centipawns.
  */
-enum MaterialValue : int { PAWN = 100, KNIGHT = 320, BISHOP = 330, ROOK = 500, QUEEN = 900, KING = 20'000 };
+enum MaterialValue : std::uint16_t { PAWN = 100, KNIGHT = 320, BISHOP = 330, ROOK = 500, QUEEN = 900, KING = 20'000 };
 
 /**
  * @brief Piece-Square Tables for pawns.
@@ -171,10 +171,9 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_WHITE = {
 
 CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT_WHITE);
 
-int evaluate_material(const Board& board, Color side) noexcept;
-
-int compute_psqt_from_table(const PieceSquareTable& psqt, const Bitboard& bitboard, Color side) noexcept;
-int evaluate_psqt(const Board& board, Color side) noexcept;
+[[nodiscard]] int evaluate_material(const Board& board, Color side) noexcept;
+[[nodiscard]] int compute_psqt_from_table(const PieceSquareTable& psqt, const Bitboard& bitboard, Color side) noexcept;
+[[nodiscard]] int evaluate_psqt(const Board& board, Color side) noexcept;
 
 /**
  * @brief Provides a score for the current board state.
