@@ -45,4 +45,11 @@ class Position {
    * @return true if move history is non-empty
    */
   [[nodiscard]] bool can_unmake() const { return !move_execution_history.empty(); }
+
+  /**
+   * @brief Tells if a position is in a check situation.
+   * @return true if the king is in check, false otherwise
+   * @note if there is no king on the board, returns false
+   */
+  [[nodiscard]] bool is_in_check() const;
 };

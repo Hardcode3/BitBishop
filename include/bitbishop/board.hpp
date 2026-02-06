@@ -245,6 +245,13 @@ class Board {
   [[nodiscard]] BoardState get_state() const { return m_state; }
   void set_state(BoardState state) { m_state = state; }
 
+  [[nodiscard]] Color get_side_to_move() const noexcept {
+    return (m_state.m_is_white_turn) ? Color::WHITE : Color::BLACK;
+  }
+  void set_side_to_move(Color us) noexcept {
+    (us == Color::WHITE) ? m_state.m_is_white_turn = true : m_state.m_is_white_turn = false;
+  }
+
   /**
    * @brief Returns the current en passant target square, if any.
    *

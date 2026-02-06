@@ -26,6 +26,6 @@ TEST_F(TestFlipPSqT, FlipIsInvolution) { EXPECT_EQ(psqt, flip_psqt(psqt_flipped)
 
 TEST_F(TestFlipPSqT, UsesFlipIndexMapping) {
   for (std::size_t i = 0; i < Const::BOARD_SIZE; ++i) {
-    EXPECT_EQ(psqt[i], psqt_flipped[flip_index_horizontally(i)]) << "at index " << i;
+    EXPECT_EQ(psqt[i], psqt_flipped[flip_index_vertically(i)]) << "at index " << i;
   }
 }

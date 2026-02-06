@@ -27,13 +27,13 @@ TEST(MaterialEvaluationTest, BlacksHavePositiveMaterialScore) {
   EXPECT_GT(score, 0);
 }
 
-TEST(MaterialEvaluationTest, NoPieceButKingEvaluatesToKingMaterial) {
+TEST(MaterialEvaluationTest, NoPieceButKingEvaluatesToZero) {
   Board board = Board::Empty();
   board.set_piece(E4, WHITE_KING);
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING);
+  EXPECT_EQ(score, 0);
 }
 
 TEST(MaterialEvaluationTest, NoPieceEvaluatesToZeroMaterial) {
@@ -44,16 +44,6 @@ TEST(MaterialEvaluationTest, NoPieceEvaluatesToZeroMaterial) {
   EXPECT_EQ(score, 0);
 }
 
-TEST(MaterialEvaluationTest, MultipleKingsEvaluateToCorrectMaterial) {
-  Board board = Board::Empty();
-  board.set_piece(E4, WHITE_KING);
-  board.set_piece(E5, WHITE_KING);
-
-  int score = evaluate_material(board, Color::WHITE);
-
-  EXPECT_EQ(score, 2 * MaterialValue::KING);
-}
-
 TEST(MaterialEvaluationTest, NoPieceButKingAndPawn) {
   Board board = Board::Empty();
   board.set_piece(E4, WHITE_KING);
@@ -61,7 +51,7 @@ TEST(MaterialEvaluationTest, NoPieceButKingAndPawn) {
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING + MaterialValue::PAWN);
+  EXPECT_EQ(score, MaterialValue::PAWN);
 }
 
 TEST(MaterialEvaluationTest, NoPieceButKingAndKnight) {
@@ -71,7 +61,7 @@ TEST(MaterialEvaluationTest, NoPieceButKingAndKnight) {
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING + MaterialValue::KNIGHT);
+  EXPECT_EQ(score, MaterialValue::KNIGHT);
 }
 
 TEST(MaterialEvaluationTest, NoPieceButKingAndBishop) {
@@ -81,7 +71,7 @@ TEST(MaterialEvaluationTest, NoPieceButKingAndBishop) {
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING + MaterialValue::BISHOP);
+  EXPECT_EQ(score, MaterialValue::BISHOP);
 }
 TEST(MaterialEvaluationTest, NoPieceButKingAndRook) {
   Board board = Board::Empty();
@@ -90,7 +80,7 @@ TEST(MaterialEvaluationTest, NoPieceButKingAndRook) {
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING + MaterialValue::ROOK);
+  EXPECT_EQ(score, MaterialValue::ROOK);
 }
 
 TEST(MaterialEvaluationTest, NoPieceButKingAndQueen) {
@@ -100,7 +90,7 @@ TEST(MaterialEvaluationTest, NoPieceButKingAndQueen) {
 
   int score = evaluate_material(board, Color::WHITE);
 
-  EXPECT_EQ(score, MaterialValue::KING + MaterialValue::QUEEN);
+  EXPECT_EQ(score, MaterialValue::QUEEN);
 }
 
 TEST(MaterialEvaluationTest, MixedMaterialCorrectlyAccumulates) {
@@ -117,7 +107,7 @@ TEST(MaterialEvaluationTest, MixedMaterialCorrectlyAccumulates) {
 
   int expected_score = nb_queens * MaterialValue::QUEEN + nb_rooks * MaterialValue::ROOK +
                        nb_bishops * MaterialValue::BISHOP + nb_knights * MaterialValue::KNIGHT +
-                       nb_pawns * MaterialValue::PAWN + nb_king * MaterialValue::KING;
+                       nb_pawns * MaterialValue::PAWN;
 
   EXPECT_EQ(score, expected_score);
 }

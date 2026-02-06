@@ -7,8 +7,6 @@ int Eval::evaluate_material(const Board& board, Color side) noexcept {
   score += board.bishops(side).count() * MaterialValue::BISHOP;
   score += board.rooks(side).count() * MaterialValue::ROOK;
   score += board.queens(side).count() * MaterialValue::QUEEN;
-  // no assumption about the number of kings
-  score += board.king(side).count() * MaterialValue::KING;
   return score;
 }
 
@@ -16,7 +14,7 @@ int Eval::compute_score_from_psqt(const PieceSquareTable& psqt, const Bitboard& 
   int score = 0;
   for (Square sq : bitboard) {
     // flip the index so that vector ordering is compatible with bitboard msb ordering
-    score += psqt[flip_index_horizontally(sq.flat_index())];
+    score += psqt[flip_index_vertically(sq.flat_index())];
   }
   return score;
 }
@@ -41,9 +39,11 @@ int Eval::evaluate_psqt(const Board& board, Color side) noexcept {
   return score;
 }
 
-int Eval::evaluate(const Board& board, Color side) noexcept {
-  int score = 0;
-  score += evaluate_material(board, side);
-  score += evaluate_psqt(board, side);
-  return (side == Color::WHITE) ? score : -score;
+int Eval::evaluate(const Board& board) noexcept {
+  using namespace Eval;
+
+  const int white_score = evaluate_material(board, Color::WHITE) + evaluate_psqt(board, Color::WHITE);
+  const int black_score = evaluate_material(board, Color::BLACK) + evaluate_psqt(board, Color::BLACK);
+
+  return white_score - black_score;
 }

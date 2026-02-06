@@ -7,27 +7,33 @@ using namespace Eval;
 using namespace Squares;
 using namespace Pieces;
 
-TEST(TestScoreEvaluation, StartingPosWhiteHasPositiveScore) {
+TEST(TestScoreEvaluation, StartingPosWhiteHasZeroScore) {
   Board board = Board::StartingPosition();
+  board.set_side_to_move(Color::WHITE);
 
-  int score = evaluate(board, Color::WHITE);
+  int score = evaluate(board);
 
-  EXPECT_GT(score, 0);
+  EXPECT_EQ(score, 0);
 }
 
-TEST(TestScoreEvaluation, StartingPosBlackHasNegativeScore) {
+TEST(TestScoreEvaluation, StartingPosBlackHasZeroScore) {
   Board board = Board::StartingPosition();
+  board.set_side_to_move(Color::BLACK);
 
-  int score = evaluate(board, Color::BLACK);
+  int score = evaluate(board);
 
-  EXPECT_LT(score, 0);
+  EXPECT_EQ(score, 0);
 }
 
 TEST(TestScoreEvaluation, EmptyBoardEvaluatesToZero) {
   Board board = Board::Empty();
+  board.set_side_to_move(Color::WHITE);
 
-  int white_score = evaluate(board, Color::WHITE);
-  int black_score = evaluate(board, Color::BLACK);
+  int white_score = evaluate(board);
+
+  board.set_side_to_move(Color::BLACK);
+
+  int black_score = evaluate(board);
 
   EXPECT_EQ(white_score, 0);
   EXPECT_EQ(black_score, 0);
