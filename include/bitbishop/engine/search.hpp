@@ -6,8 +6,8 @@
 
 namespace Search {
 
-CX_INLINE int ALPHA_INIT = -std::numeric_limits<int>::infinity();
-CX_INLINE int BETA_INIT = -ALPHA_INIT;
+CX_INLINE int ALPHA_INIT = std::numeric_limits<int>::min();
+CX_INLINE int BETA_INIT = std::numeric_limits<int>::max();
 
 struct BestMove {
   /**
