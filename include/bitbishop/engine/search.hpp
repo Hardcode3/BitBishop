@@ -18,7 +18,7 @@ struct BestMove {
   /**
    * @brief Evaluation for the current side to move
    */
-  int score = -std::numeric_limits<int>::infinity();
+  int score = std::numeric_limits<int>::min();
 };
 
 /**

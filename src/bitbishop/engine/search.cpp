@@ -6,6 +6,11 @@
 // https://www.chessprogramming.org/Quiescence_Search
 int Search::quiesce(Board& board, int alpha, int beta) {
   Position position(board);
+
+  if (board.has_insufficient_material()) {
+    return 0;
+  }
+
   if (!position.is_in_check()) {
     int stand_pat = Eval::evaluate(board);
     if (stand_pat >= beta) {
@@ -48,6 +53,11 @@ Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int
 
   generate_legal_moves(moves, board);
 
+  if (board.has_insufficient_material()) {
+    best.score = 0;
+    return best;
+  }
+
   if (moves.empty()) {
     if (position.is_in_check()) {
       best.score = -Eval::MATE_SCORE + ply;
@@ -57,20 +67,27 @@ Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int
     return best;
   }
 
+  int bestScore = std::numeric_limits<int>::min();
   for (const Move& move : moves) {
     position.apply_move(move);
     int score = -negamax(board, depth - 1, -beta, -alpha, ply + 1).score;
     position.revert_move();
 
-    if (score > best.score) {
-      best.score = score;
+    if (score > bestScore) {
+      bestScore = score;
       best.move = move;
     }
 
-    alpha = std::max(alpha, score);
+    if (score > alpha) {
+      alpha = score;
+    }
+
     if (alpha >= beta) {
-      break;
+      best.score = beta;
+      return best;
     }
   }
+
+  best.score = bestScore;
   return best;
 }

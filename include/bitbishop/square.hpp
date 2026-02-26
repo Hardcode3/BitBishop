@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitbishop/color.hpp>
 #include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <bitbishop/square.hpp>
@@ -228,6 +229,23 @@ class Square {
    * @return Lowercase string like "a1", "e4", "h8".
    */
   [[nodiscard]] std::string to_string() const { return {char('a' + file()), char('1' + rank())}; }
+
+  /**
+   * @brief Returns the color of this square.
+   *
+   * A square is white if (file + rank) is even, black otherwise.
+   * Example: A1 (0+0=0) → White, B1 (1+0=1) → Black.
+   *
+   * @return Color::White or Color::Black.
+   */
+  [[nodiscard]] CX_FN Color color() const { return ((file() + rank()) % 2 == 0) ? Color::WHITE : Color::BLACK; }
+
+  /**
+   * @brief Checks whether this square is the same color as another.
+   * @param other Another Square.
+   * @return true if both squares share the same color.
+   */
+  [[nodiscard]] CX_FN bool same_color(const Square& other) const { return color() == other.color(); }
 
   /**
    * @brief Equality operator.

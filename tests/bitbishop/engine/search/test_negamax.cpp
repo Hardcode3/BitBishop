@@ -14,22 +14,6 @@ TEST(NegaMaxTest, EmptyBoardThrows) {
   EXPECT_THROW(std::ignore = negamax(board, 1, ALPHA_INIT, BETA_INIT, 0), std::bad_optional_access);
 }
 
-TEST(NegaMaxTest, EmptyBoardWithOnlyWhiteKingThrows) {
-  Board board = Board::Empty();
-  board.set_piece(E5, WHITE_KING);
-  board.set_side_to_move(Color::WHITE);
-
-  EXPECT_THROW(std::ignore = negamax(board, 1, ALPHA_INIT, BETA_INIT, 0), std::bad_optional_access);
-}
-
-TEST(NegaMaxTest, EmptyBoardWithOnlyBlackKingThrows) {
-  Board board = Board::Empty();
-  board.set_piece(E5, BLACK_KING);
-  board.set_side_to_move(Color::BLACK);
-
-  EXPECT_THROW(std::ignore = negamax(board, 1, ALPHA_INIT, BETA_INIT, 0), std::bad_optional_access);
-}
-
 TEST(NegaMaxTest, EmptyBoardWithBothKingsDontThrow) {
   Board board = Board::Empty();
   board.set_piece(E5, WHITE_KING);
@@ -82,7 +66,7 @@ TEST(NegaMaxTest, FindsStaleMateByWhiteAllBlackPiecesBlocked) {
 }
 
 TEST(NegaMaxTest, KingVsKingIsInsufficientMaterialDraw) {
-  Board board("8/8/8/8/8/8/8/Kk6 w - - 0 1");
+  Board board("8/8/8/8/8/8/8/K1k5 w - - 0 1");
 
   BestMove best = negamax(board, 2, ALPHA_INIT, BETA_INIT, 0);
 

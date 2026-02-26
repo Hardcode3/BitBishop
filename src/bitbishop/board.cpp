@@ -1,5 +1,6 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/constants.hpp>
+#include <cassert>
 #include <format>
 #include <sstream>
 
@@ -263,6 +264,44 @@ bool Board::can_castle_queenside(Color side) const noexcept {
   // Check if the squares between king and rook are empty
   const Bitboard occupied = this->occupied();
   return !occupied.test(b_sq) && !occupied.test(c_sq) && !occupied.test(d_sq);
+}
+
+bool Board::has_insufficient_material() const noexcept {
+  // A valid board must always have exactly one king per side.
+  // If this assertion fails, there is a bug upstream.
+  assert(m_w_king.count() == 1 && m_b_king.count() == 1);
+
+  const std::size_t n = pieces_count();
+
+  // K vs K
+  if (n == 2) {
+    return true;
+  }
+
+  if (n == 3) {
+    // K + B vs K  or  K + N vs K
+    const bool white_has_sole_minor = (m_w_bishops.count() + m_w_knights.count()) == 1;
+    const bool black_has_sole_minor = (m_b_bishops.count() + m_b_knights.count()) == 1;
+    return white_has_sole_minor || black_has_sole_minor;
+  }
+
+  if (n == 4) {
+    const bool have_one_bishop_each = m_w_bishops.count() == 1 && m_b_bishops.count() == 1;
+    const bool have_one_knight_each = m_w_knights.count() == 1 && m_b_knights.count() == 1;
+
+    // K + B vs K + B: insufficient only if bishops share the same square color
+    if (have_one_bishop_each) {
+      return m_w_bishops.lsb()->same_color(*m_b_bishops.lsb());
+    }
+
+    // K + N vs K + N: not theoretically impossible to force mate but
+    // not recognized as sufficient material by FIDE - treated as a draw in practice.
+    if (have_one_knight_each) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool Board::operator==(const Board& other) const {
