@@ -78,9 +78,7 @@ Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int
       best.move = move;
     }
 
-    if (score > alpha) {
-      alpha = score;
-    }
+    alpha = std::max(score, alpha);
 
     if (alpha >= beta) {
       best.score = beta;
