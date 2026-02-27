@@ -297,3 +297,34 @@ TEST(SquareTest, SameFileRankEdgeCases) {
   EXPECT_TRUE(H8.same_file(H1));
   EXPECT_TRUE(H8.same_rank(A8));
 }
+
+TEST(SquareTest, SquareColorMatchesBoardLogic) {
+  for (int i = 0; i < Const::BOARD_SIZE; ++i) {
+    Square sq(i);
+    Color expected = ((sq.file() + sq.rank()) % 2 == 0) ? Color::WHITE : Color::BLACK;
+
+    EXPECT_EQ(sq.color(), expected) << "Square " << sq.to_string() << " has wrong color";
+  }
+}
+
+TEST(SquareTest, VerticalSquaresHaveDifferentColors) {
+  for (int i = 0; i < Const::BOARD_SIZE - 8; ++i) {
+    Square bottom(i);
+    Square top(i + 8);
+
+    EXPECT_FALSE(bottom.same_color(top));
+  }
+}
+
+TEST(SquareTest, DiagonalSquaresHaveSameColors) {
+  for (int i = 0; i < Const::BOARD_SIZE - 9; ++i) {
+    if ((i + 1) % 8 == 0) {
+      continue;
+    }
+
+    Square a(i);
+    Square b(i + 9);
+
+    EXPECT_TRUE(a.same_color(b));
+  }
+}
