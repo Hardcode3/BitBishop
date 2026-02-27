@@ -271,21 +271,21 @@ bool Board::has_insufficient_material() const noexcept {
   // If this assertion fails, there is a bug upstream.
   assert(m_w_king.count() == 1 && m_b_king.count() == 1);
 
-  const std::size_t n = pieces_count();
+  const std::size_t nb_pieces = pieces_count();
 
   // K vs K
-  if (n == 2) {
+  if (nb_pieces == 2) {
     return true;
   }
 
-  if (n == 3) {
+  if (nb_pieces == 3) {
     // K + B vs K  or  K + N vs K
     const bool white_has_sole_minor = (m_w_bishops.count() + m_w_knights.count()) == 1;
     const bool black_has_sole_minor = (m_b_bishops.count() + m_b_knights.count()) == 1;
     return white_has_sole_minor || black_has_sole_minor;
   }
 
-  if (n == 4) {
+  if (nb_pieces == 4) {
     const bool have_one_bishop_each = m_w_bishops.count() == 1 && m_b_bishops.count() == 1;
     const bool have_one_knight_each = m_w_knights.count() == 1 && m_b_knights.count() == 1;
 
