@@ -23,7 +23,7 @@ TEST(PSqTEvaluationTest, StartingPosBlacksHaveNonZeroEvaluation) {
   EXPECT_NE(score, 0);
 }
 
-TEST(PSqTEvaluationTest, EmptyBoardEvaluatesToZeroEvaluation) {
+TEST(PSqTEvaluationTest, EmptyBoardEvaluatesToZero) {
   Board board = Board::Empty();
 
   int white_score = evaluate_psqt(board, Color::WHITE);
