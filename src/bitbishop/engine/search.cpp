@@ -67,7 +67,7 @@ Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int
     return best;
   }
 
-  int bestScore = std::numeric_limits<int>::min();
+  int bestScore = ALPHA_INIT;
   for (const Move& move : moves) {
     position.apply_move(move);
     int score = -negamax(board, depth - 1, -beta, -alpha, ply + 1).score;
