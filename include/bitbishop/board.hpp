@@ -242,8 +242,22 @@ class Board {
    */
   [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
 
+  /**
+   * @brief Returns the number of pieces on the board.
+   *
+   * @return Number of squares occupied by pieces on the board.
+   */
+  [[nodiscard]] std::size_t pieces_count() const noexcept { return occupied().count(); }
+
   [[nodiscard]] BoardState get_state() const { return m_state; }
   void set_state(BoardState state) { m_state = state; }
+
+  [[nodiscard]] Color get_side_to_move() const noexcept {
+    return (m_state.m_is_white_turn) ? Color::WHITE : Color::BLACK;
+  }
+  void set_side_to_move(Color us) noexcept {
+    (us == Color::WHITE) ? m_state.m_is_white_turn = true : m_state.m_is_white_turn = false;
+  }
 
   /**
    * @brief Returns the current en passant target square, if any.
@@ -305,6 +319,8 @@ class Board {
    * @return true if queenside castling is legal, false otherwise
    */
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
+
+  [[nodiscard]] bool has_insufficient_material() const noexcept;
 
   Board& operator=(const Board& other) noexcept = default;
   Board& operator=(Board&& other) noexcept = default;

@@ -1,3 +1,4 @@
+#include <bitbishop/attacks/checkers.hpp>
 #include <bitbishop/moves/move_builder.hpp>
 #include <bitbishop/moves/position.hpp>
 
@@ -14,4 +15,12 @@ void Position::revert_move() {
     last_exec.revert(board);
     move_execution_history.pop_back();
   }
+}
+
+[[nodiscard]] bool Position::is_in_check() const {
+  Color us = board.get_side_to_move();
+  Color them = ColorUtil::opposite(us);
+  Square king_square = board.king_square(us).value();
+  const Bitboard checkers = compute_checkers(board, king_square, them);
+  return checkers.any();
 }

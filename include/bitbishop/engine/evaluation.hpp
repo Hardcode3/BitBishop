@@ -14,7 +14,7 @@ using PieceSquareTable = std::array<int, Const::BOARD_SIZE>;
  * @param index Chess board index to flip.
  * @return Horizontally symmetric index.
  */
-CX_FN std::size_t flip_index_horizontally(std::size_t index) {
+CX_FN std::size_t flip_index_vertically(std::size_t index) {
   constexpr std::size_t WIDTH = Const::BOARD_WIDTH;
   constexpr std::size_t SIZE = Const::BOARD_SIZE;
   return (SIZE - 1) - (index / WIDTH * WIDTH) - ((SIZE - 1 - index) % WIDTH);
@@ -29,7 +29,7 @@ CX_FN PieceSquareTable flip_psqt(const PieceSquareTable& psqt) {
   using namespace Const;
   PieceSquareTable result;
   for (std::size_t i = 0; i < BOARD_SIZE; ++i) {
-    result[flip_index_horizontally(i)] = psqt[i];
+    result[flip_index_vertically(i)] = psqt[i];
   }
   return result;
 }
@@ -38,6 +38,9 @@ CX_FN PieceSquareTable flip_psqt(const PieceSquareTable& psqt) {
  * @brief Material values in centipawns.
  */
 enum MaterialValue : std::uint16_t { PAWN = 100, KNIGHT = 320, BISHOP = 330, ROOK = 500, QUEEN = 900, KING = 20'000 };
+
+CX_INLINE int MATE_SCORE = 1'000'000;
+CX_INLINE int MATE_THRESHOLD = 999'000;
 
 /**
  * @brief Piece-Square Tables for pawns.
@@ -176,7 +179,6 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT
  * @param board Board to evaluate material on
  * @param side Color to evaluate material for
  * @return Absolute (positive, same for black and white) score
- * @note No coefficient *(-1) applied to blacks
  */
 [[nodiscard]] int evaluate_material(const Board& board, Color side) noexcept;
 
@@ -185,7 +187,6 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT
  * @param psqt Piece square table to use for evaluation
  * @param bitboard Bitboard representing occupied squares for the same piece's type than psqt
  * @return Absolute (positive or negative, same for black and white) score
- * @note No coefficient *(-1) applied to blacks
  */
 [[nodiscard]] int compute_score_from_psqt(const PieceSquareTable& psqt, const Bitboard& bitboard) noexcept;
 
@@ -194,7 +195,6 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT
  * @param board Board to evaluate material on
  * @param side Color to evaluate material for
  * @return Absolute (positive or negative) score
- * @note No coefficient *(-1) applied to blacks
  */
 [[nodiscard]] int evaluate_psqt(const Board& board, Color side) noexcept;
 
@@ -202,10 +202,9 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT
  * @brief Provides a score for the current board state.
  * @param board Board to evaluate material on
  * @param side Color to evaluate material for
- * @return integer with negative scores being in favour of blacks, positive in favour of whites and zeo being
+ * @return integer with negative scores being in favour of blacks, positive in favour of whites and zero being
  * neutral.
- * @note Coefficient *(-1) applied to blacks and *(1) applied to whites
  */
-[[nodiscard]] int evaluate(const Board& board, Color side) noexcept;
+[[nodiscard]] int evaluate(const Board& board) noexcept;
 
 }  // namespace Eval
