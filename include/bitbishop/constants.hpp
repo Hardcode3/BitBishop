@@ -26,6 +26,7 @@ namespace Const {
 // Board dimensions
 CX_INLINE int BOARD_WIDTH = 8;                         // Chess board is 8x8
 CX_INLINE int BOARD_SIZE = BOARD_WIDTH * BOARD_WIDTH;  // Total 64 squares
+CX_INLINE int DISTINCT_PIECES_COUNT = 12;              // 12 piece types (6 white + 6 black)
 
 // Rank indices (rows, numbered 1-8 from white's perspective)
 CX_INLINE int RANK_1_IND = 0;
