@@ -26,11 +26,18 @@ class Piece {
   enum Type : std::uint8_t { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 
   /**
-   * @brief Number of distinct piece types.
+   * @brief Number of distinct piece types discarding color.
    *
    * Useful for array sizing and iteration without magic numbers.
    */
   static CX_VALUE std::size_t TYPE_COUNT = 6;
+
+  /**
+   * @brief Number of distinct piece types considering color (6 whites, 6 blacks).
+   *
+   * Useful for array sizing and iteration without magic numbers.
+   */
+  static CX_VALUE std::size_t DISTINCT_PIECES_COUNT = 12;
 
   /**
    * @brief Distinct piece types.
