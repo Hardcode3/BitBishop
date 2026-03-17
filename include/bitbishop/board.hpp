@@ -5,6 +5,7 @@
 #include <bitbishop/move.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
+#include <bitbishop/zobrist.hpp>
 #include <optional>
 #include <vector>
 
@@ -67,6 +68,7 @@ class Board {
 
   // Game state
   BoardState m_state;
+  Zobrist::Key m_zobrist_hash = Zobrist::NULL_HASH;
 
  public:
   /**
@@ -252,13 +254,21 @@ class Board {
   [[nodiscard]] std::size_t pieces_count() const noexcept { return occupied().count(); }
 
   [[nodiscard]] BoardState get_state() const { return m_state; }
-  void set_state(BoardState state) { m_state = state; }
+  void set_state(BoardState state) {
+    Zobrist::mutate_board_state_diff(m_state, state, m_zobrist_hash);
+    m_state = state;
+  }
 
   [[nodiscard]] Color get_side_to_move() const noexcept {
     return (m_state.m_is_white_turn) ? Color::WHITE : Color::BLACK;
   }
   void set_side_to_move(Color us) noexcept {
-    (us == Color::WHITE) ? m_state.m_is_white_turn = true : m_state.m_is_white_turn = false;
+    const bool next_is_white_turn = (us == Color::WHITE);
+    if (m_state.m_is_white_turn == next_is_white_turn) {
+      return;
+    }
+    m_state.m_is_white_turn = next_is_white_turn;
+    Zobrist::mutate_side_to_move(m_zobrist_hash);
   }
 
   /**
@@ -323,6 +333,8 @@ class Board {
   [[nodiscard]] bool can_castle_queenside(Color side) const noexcept;
 
   [[nodiscard]] bool has_insufficient_material() const noexcept;
+
+  [[nodiscard]] Zobrist::Key get_zobrist_hash() const noexcept { return m_zobrist_hash; }
 
   Board& operator=(const Board& other) noexcept = default;
   Board& operator=(Board&& other) noexcept = default;
