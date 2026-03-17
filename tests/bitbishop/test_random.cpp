@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <bitbishop/random.hpp>  // adjust include if needed
+#include <bitbishop/random.hpp>
 #include <cstdint>
 
 static constexpr uint64_t INITIAL_SEED = 0xdd40af6e35fd248ULL;
