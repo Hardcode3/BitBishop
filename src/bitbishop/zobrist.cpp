@@ -1,3 +1,4 @@
+#include <bitbishop/board.hpp>
 #include <bitbishop/zobrist.hpp>
 
 void Zobrist::mutate_piece(Square square, Piece piece, Zobrist::Key& key) {
@@ -61,7 +62,7 @@ void Zobrist::mutate_en_passant_square(Square epsq, Zobrist::Key& key) { key ^= 
 Zobrist::Key Zobrist::compute_hash(const Board& board) {
   using namespace Zobrist;
 
-  Key key = 0;
+  Key key = NULL_HASH;
 
   for (int sq = 0; sq < Const::BOARD_SIZE; ++sq) {
     Square square(sq);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <bitbishop/board.hpp>
 #include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 #include <bitbishop/piece.hpp>
@@ -9,9 +8,19 @@
 #include <bitbishop/square.hpp>
 #include <cstdint>
 
+// bitbishop/board.hpp uses Zobrist features and the current Zobrist implementation also uses Board & BoardState.
+// Forward declaration below and include inside bitbishop/zobrist.cpp solves this circular dependency.
+struct BoardState;
+class Board;
+
 namespace Zobrist {
 
 using Key = uint64_t;
+
+/**
+ * Neutral hash value to start a fresh Zobrist hash.
+ */
+CX_INLINE Zobrist::Key NULL_HASH = 0ULL;
 
 /**
  * @brief Zobrist random key tables used for chess position hashing.
