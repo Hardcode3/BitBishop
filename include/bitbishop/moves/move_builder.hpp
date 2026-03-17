@@ -8,6 +8,10 @@
  * MoveBuilder takes a high-level Move and a Board, and generates a
  * MoveExecution that includes piece placements, removals, promotions,
  * castling, en passant, and board state updates.
+ *
+ * Responsibilities:
+ * - Understand chess rules
+ * - Decide which effects are required
  */
 class MoveBuilder {
  private:
