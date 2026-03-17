@@ -13,6 +13,8 @@ struct BoardState {
   std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
 
   // Castling abilities
+  // TODO: Use a 4-bits mask instead: same meaning but there is no conversion from booleans
+  // to int to compute Zobrist hash.
   bool m_white_castle_kingside;   ///< White may castle kingside
   bool m_white_castle_queenside;  ///< White may castle queenside
   bool m_black_castle_kingside;   ///< Black may castle kingside
