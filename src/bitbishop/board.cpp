@@ -317,6 +317,13 @@ bool Board::operator==(const Board& other) const {
     return true;
   }
 
+  // Zobrist key is a fast, deterministic fingerprint of the position identity
+  // fields we compare below (piece placement + side/castling/en-passant).
+  // If keys differ, boards cannot be equal.
+  if (m_zobrist_hash != other.m_zobrist_hash) {
+    return false;
+  }
+
   // Do not compare half-move clock and full-move number
   // This is not relevant for position identity and we don't care about game history equality
   return m_w_pawns == other.m_w_pawns && m_w_rooks == other.m_w_rooks && m_w_bishops == other.m_w_bishops &&
