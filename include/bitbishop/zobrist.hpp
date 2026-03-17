@@ -14,15 +14,29 @@ namespace Zobrist {
 using Key = uint64_t;
 
 /**
- * @brief Zobrist random key tables used for position hashing.
+ * @brief Zobrist random key tables used for chess position hashing.
  *
- * Stores pre-generated random 64-bit keys for:
- * - each (piece, square) combination
- * - castling rights states
- * - en-passant file
- * - side to move
+ * Zobrist hashing assigns a random 64-bit value to each independent
+ * component of a chess position. A position hash is produced by XOR-
+ * combining the values corresponding to the current board state.
  *
- * These tables are XOR-combined to produce a unique hash for a board position.
+ * This structure stores the pre-generated random keys for all position
+ * features required by the hash:
+ *
+ *  - Piece placement:
+ *      One key for every (piece type, square) combination.
+ *
+ *  - Castling rights:
+ *      One key for each of the 16 possible castling-rights states.
+ *
+ *  - En-passant file:
+ *      One key for each file (a–h) that may contain an en-passant target.
+ *
+ *  - Side to move:
+ *      A single key toggled when the side to move is black.
+ *
+ * These values are XOR-combined to compute a unique hash (with very high
+ * probability) for a given chess position.
  */
 struct Tables {
   std::array<std::array<Key, Const::BOARD_SIZE>, Piece::DISTINCT_PIECES_COUNT> pieces{};
@@ -32,10 +46,13 @@ struct Tables {
 };
 
 /**
- * @brief Generates deterministic Zobrist random tables.
+ * @brief Generates deterministic Zobrist key tables.
  *
- * Uses the splitmix64 generator with a fixed seed so that the same
- * random keys are produced across program runs and builds.
+ * The tables are filled using the splitmix64 pseudo-random number generator.
+ * A fixed seed is used so the same random values are produced across
+ * program runs and builds, ensuring deterministic hashes.
+ *
+ * Each call to splitmix64 mutates the seed and returns a new random 64-bit value.
  *
  * @return Fully initialized Zobrist key tables.
  */
@@ -68,110 +85,140 @@ CX_FN Tables generate() {
 /**
  * @brief Global Zobrist tables instance.
  *
- * Generated once (typically at compile time) and reused for all hash
- * computations during program execution.
+ * The tables are generated once and reused throughout the engine.
+ * They are typically computed at compile time when supported by the compiler.
+ *
+ * All hashing operations reference this shared table.
  */
 CX_INLINE Tables tables = generate();
 
 /**
  * @brief Converts a Piece to its Zobrist table index.
  *
- * Piece indices are arranged as:
- * - White pieces: 0–5
- * - Black pieces: 6–11
+ * Zobrist piece keys are organized as:
  *
- * Ordering within each color:
- * Pawn, Knight, Bishop, Rook, Queen, King.
+ *  White pieces:
+ *    0  Pawn
+ *    1  Knight
+ *    2  Bishop
+ *    3  Rook
+ *    4  Queen
+ *    5  King
+ *
+ *  Black pieces:
+ *    6  Pawn
+ *    7  Knight
+ *    8  Bishop
+ *    9  Rook
+ *   10  Queen
+ *   11  King
+ *
+ * This mapping ensures a unique index for every piece type and color.
  *
  * @param piece Piece to convert.
  * @return Index into Tables::pieces.
  */
 CX_FN int piece_index(Piece piece) {
-  // NOLINTBEGIN(readability-magic-numbers)
-  int base = (piece.color() == Color::WHITE) ? 0 : 6;
-
-  switch (piece.type()) {
-    case Piece::Type::PAWN:
-      return base + 0;
-    case Piece::Type::KNIGHT:
-      return base + 1;
-    case Piece::Type::BISHOP:
-      return base + 2;
-    case Piece::Type::ROOK:
-      return base + 3;
-    case Piece::Type::QUEEN:
-      return base + 4;
-    case Piece::Type::KING:
-      return base + 5;
-  }
-  // NOLINTEND(readability-magic-numbers)
-
-  return 0;
+  const int base = (piece.color() == Color::WHITE) ? 0 : 6;  // NOLINT: (readability-magic-numbers)
+  const int piece_type_index = static_cast<int>(piece.type());
+  return base + piece_type_index;
 }
 
 /**
- * @brief XORs the Zobrist key corresponding to a specific piece on a square.
+ * @brief XORs the Zobrist key corresponding to a piece on a square.
  *
- * Each piece contributes a unique random value based on:
- *   - its type and color (mapped via piece_index())
- *   - its square
+ * This function toggles the hash contribution of a specific piece
+ * occupying a given square.
  *
- * The selected random key from Tables::pieces is XORed into the provided
- * hash key. Because XOR is reversible, calling this function again with
- * the same parameters removes the contribution from the hash.
+ * Because Zobrist hashing uses XOR, applying the same mutation twice
+ * cancels the effect. This allows efficient incremental updates when
+ * pieces are moved, captured, or restored.
  *
- * This property allows efficient incremental hash updates when pieces
- * are added, removed, or moved during move making.
+ * Typical usage:
+ *
+ *  - Removing a piece:
+ *      mutate_piece(square, piece, hash)
+ *
+ *  - Placing the same piece again:
+ *      mutate_piece(square, piece, hash)
  *
  * @param square Square occupied by the piece.
- * @param piece Piece whose contribution should be applied to the hash.
+ * @param piece Piece whose contribution should be toggled.
  * @param key Zobrist hash key to mutate.
  */
 void mutate_piece(Square square, Piece piece, Zobrist::Key& key);
 
 /**
- * @brief XORs the Zobrist key representing the side to move.
+ * @brief Toggles the Zobrist key representing the side to move.
  *
- * A dedicated random key is used to distinguish positions where the
- * same board configuration occurs with different players to move.
+ * A single random key distinguishes positions where the board layout
+ * is identical but the active player differs.
  *
- * By convention this key is XORed when the side to move is black.
- * Applying the same mutation again reverses the change.
+ * By convention, the key is XORed when the side to move becomes black.
+ * Calling this function again reverts the change.
  *
  * @param key Zobrist hash key to mutate.
  */
 void mutate_side_to_move(Zobrist::Key& key);
 
 /**
- * @brief XORs the Zobrist key encoding the board's castling rights.
+ * @brief Applies the Zobrist hash delta between two board states.
  *
- * Castling rights are packed into a 4-bit integer where each bit
- * represents the availability of a specific right:
+ * This function updates the hash by XOR-removing the contributions
+ * of the previous state and XOR-adding the contributions of the next state.
  *
- *   bit 0 (0001): white kingside
- *   bit 1 (0010): white queenside
- *   bit 2 (0100): black kingside
- *   bit 3 (1000): black queenside
+ * The following components are considered:
  *
- * The resulting value (0–15) indexes Tables::castling, and the
- * corresponding random key is XORed into the hash.
+ *  - Side to move
+ *  - Castling rights
+ *  - En-passant file
  *
- * @param board Board whose castling rights should be encoded.
+ * Only fields that differ between the two states are mutated.
+ * This allows efficient incremental hashing when applying or undoing moves.
+ *
+ * @param prev Previous board state.
+ * @param next Next board state.
  * @param key Zobrist hash key to mutate.
  */
-void mutate_castling_rights(const Board& board, Zobrist::Key& key);
+void mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zobrist::Key& key);
+
+/**
+ * @brief XORs the Zobrist key encoding the board's castling rights.
+ *
+ * Castling rights are encoded into a 4-bit integer:
+ *
+ *   bit 0 → white kingside
+ *   bit 1 → white queenside
+ *   bit 2 → black kingside
+ *   bit 3 → black queenside
+ *
+ * The resulting value ranges from 0–15 and indexes Tables::castling.
+ *
+ * Example encodings:
+ *
+ *   0000 → no castling rights
+ *   0001 → white kingside
+ *   0011 → white kingside + queenside
+ *   1111 → all castling rights
+ *
+ * The corresponding random key is XORed into the hash.
+ *
+ * @param state Board state containing castling rights.
+ * @param key Zobrist hash key to mutate.
+ */
+void mutate_castling_rights(const BoardState& state, Zobrist::Key& key);
 
 /**
  * @brief XORs the Zobrist key representing the en-passant file.
  *
- * If an en-passant square exists, only the file of that square
- * (a–h) is relevant because the rank is implied by the side that
- * performed the double pawn push.
+ * When an en-passant capture is possible, only the file (a–h) of the
+ * en-passant square contributes to the hash. The rank is implied by
+ * the side that performed the double pawn push.
  *
- * The file index (0–7) selects one of eight random keys from
- * Tables::en_passant, which is then XORed into the hash.
+ * The file index (0–7) selects one of the eight keys stored in
+ * Tables::en_passant.
  *
- * Applying the same mutation again removes the contribution.
+ * Applying the same mutation twice cancels the contribution.
  *
  * @param epsq En-passant square.
  * @param key Zobrist hash key to mutate.
@@ -179,52 +226,36 @@ void mutate_castling_rights(const Board& board, Zobrist::Key& key);
 void mutate_en_passant_square(Square epsq, Zobrist::Key& key);
 
 /**
- * @brief Computes the Zobrist hash of a board position.
+ * @brief Computes the Zobrist hash of an entire board position.
  *
- * Zobrist hashing represents a chess position as a 64-bit key generated by
- * XOR-combining random numbers associated with individual elements of the
- * position. Each feature of the board contributes a deterministic random value
- * from the pre-generated Zobrist tables.
+ * This function builds the hash from scratch by XOR-combining
+ * the random keys associated with all components of the position:
  *
- * The resulting key uniquely (with very high probability) identifies the
- * position and is typically used for transposition tables, repetition
- * detection, and caching search results.
+ *  1. Piece placement
+ *     Every piece on the board contributes its (piece, square) key.
  *
- * The hash is constructed from the following components:
+ *  2. Side to move
+ *     A dedicated key is toggled when the side to move is black.
  *
- * 1. Piece placement
- *    Each (piece type, square) pair has an associated random key. For every
- *    piece present on the board, the corresponding key is XORed into the hash.
+ *  3. Castling rights
+ *     The current castling-rights mask selects one of 16 keys.
  *
- * 2. Side to move
- *    If the side to move is black, a dedicated random key is XORed into the
- *    hash. This ensures identical board positions with different players to
- *    move produce different hashes.
+ *  4. En-passant file
+ *     If an en-passant square exists, its file selects one of 8 keys.
  *
- * 3. Castling rights
- *    Castling rights are encoded as a 4-bit value representing the availability
- *    of the following rights:
- *      - White kingside
- *      - White queenside
- *      - Black kingside
- *      - Black queenside
+ * The resulting 64-bit value uniquely identifies the position with
+ * extremely high probability.
  *
- *    The resulting value (0–15) indexes a table of random keys. The selected
- *    key is XORed into the hash.
+ * This function is typically used:
  *
- * 4. En-passant file
- *    If an en-passant square exists, the file of that square (a–h) is used to
- *    select one of eight random keys. That key is XORed into the hash.
+ *  - when initializing a position
+ *  - when verifying incremental hash correctness
  *
- * XOR is used because it has two important properties:
- *  - Reversibility: applying the same key twice cancels it out
- *  - Order independence: the result is independent of the order of operations
- *
- * These properties allow efficient incremental hash updates when making or
- * unmaking moves.
+ * During normal search, engines update the hash incrementally using
+ * the mutation functions instead of recomputing it entirely.
  *
  * @param board Board position to hash.
- * @return 64-bit Zobrist hash key representing the position.
+ * @return Zobrist hash key representing the position.
  */
 Zobrist::Key compute_hash(const Board& board);
 
