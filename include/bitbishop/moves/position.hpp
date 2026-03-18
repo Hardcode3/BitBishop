@@ -50,12 +50,22 @@ class Position {
   [[nodiscard]] bool can_unmake() const { return !move_execution_history.empty(); }
 
   /**
-   * @brief Returns the number of occurrences of the current position in history.
+   * @brief Calculates the frequency of the current position in the game history.
    *
-   * Only positions since the last pawn move or capture are considered (using the board's half-move clock),
-   * since positions cannot repeat across irreversible moves.
+   * This function performs an optimized lookback to detect repetitions (3-fold, 5-fold).
    *
-   * @return Occurrence count (includes the current position)
+   * ### Optimization Logic:
+   *
+   * - Irreversibility: The search is bounded by the halfmove clock.
+   * Since pawn moves and captures are irreversible, a position cannot repeat if it occurred prior to the last reset of
+   * the clock.
+   *
+   * - Side-to-Move: For a position to be identical, the same player must be on move.
+   * The function skips every other ply because positions with different players to move are mathematically distinct.
+   *
+   * - Early Exit: The search terminates early if the count reaches the mandatory fivefold repetition count.
+   *
+   * * @return The number of occurrences found, including the current one (minimum is 1).
    */
   [[nodiscard]] int repetition_count() const noexcept;
 

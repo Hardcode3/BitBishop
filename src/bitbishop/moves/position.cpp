@@ -35,15 +35,26 @@ void Position::revert_move() {
   int count = 1;
 
   const int halfmove_clock = board.get_state().m_halfmove_clock;
+
+  // If a pawn moved 2 turns ago, it is mathematically impossible for the current position to have occurred 4 turns ago
+  // (a pawn move is irreversible).
+  // Therefore, we only need to look back as far as the halfmove_clock allows.
+  // We also ensure we don't look back further than the actual history size (to avoid index out-of-bounds).
   const int max_back_plies = std::min<int>(halfmove_clock, static_cast<int>(zobrist_hashes_history.size()) - 1);
 
+  // An irreversible move just happened or the game just started.
   if (max_back_plies < 2) {
     return count;
   }
 
   const int stop_index = static_cast<int>(zobrist_hashes_history.size()) - 1 - max_back_plies;
 
-  // Same side-to-move positions are always an even number of plies apart.
+  // For a position to be a "repetition" in chess, it’s not enough for the pieces to be on the same squares.
+  // The same player must also be on move.
+  // If it is White's turn now (Index N), it must have been White's turn in the repeating position:
+  // - Index N: Current (White) -> size() - 1 is the current turn (cannot be the same position).
+  // - Index N-1: Previous (Black) -> size() - 2 was the opponent's turn (impossible to be the same position).
+  // - Index N-2: Previous (White) -> size() - 3 was the last time it was our turn.
   for (int i = static_cast<int>(zobrist_hashes_history.size()) - 3; i >= stop_index; i -= 2) {
     if (zobrist_hashes_history[static_cast<std::size_t>(i)] == key) {
       ++count;
