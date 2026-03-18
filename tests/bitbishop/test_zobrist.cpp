@@ -8,7 +8,7 @@
 using namespace Zobrist;
 
 TEST(ZobristTest, MutatePieceIsReversible) {
-  Key key = 0;
+  Key key = NULL_HASH;
 
   Square sq = Squares::E4;
   Piece piece = Pieces::WHITE_KNIGHT;
@@ -22,7 +22,7 @@ TEST(ZobristTest, MutatePieceIsReversible) {
 }
 
 TEST(ZobristTest, MutateSideToMoveIsReversible) {
-  Key key = 0;
+  Key key = NULL_HASH;
   Key original = key;
 
   mutate_side_to_move(key);
@@ -32,7 +32,7 @@ TEST(ZobristTest, MutateSideToMoveIsReversible) {
 }
 
 TEST(ZobristTest, MutateEnPassantIsReversible) {
-  Key key = 0;
+  Key key = NULL_HASH;
 
   Square sq = Squares::E6;
 
@@ -52,7 +52,7 @@ TEST(ZobristTest, MutateCastlingRightsIsReversible) {
   state.m_black_castle_kingside = false;
   state.m_black_castle_queenside = true;
 
-  Key key = 0;
+  Key key = NULL_HASH;
   Key original = key;
 
   mutate_castling_rights(state, key);
@@ -68,7 +68,7 @@ TEST(ZobristTest, BoardStateDiffSideToMove) {
   prev.m_is_white_turn = true;
   next.m_is_white_turn = false;
 
-  Key key = 0;
+  Key key = NULL_HASH;
 
   mutate_board_state_diff(prev, next, key);
 
@@ -85,7 +85,7 @@ TEST(ZobristTest, BoardStateDiffCastlingRights) {
   prev.m_white_castle_kingside = true;
   next.m_white_castle_kingside = false;
 
-  Key key = 0;
+  Key key = NULL_HASH;
 
   mutate_board_state_diff(prev, next, key);
 
@@ -103,7 +103,7 @@ TEST(ZobristTest, BoardStateDiffEnPassant) {
   prev.m_en_passant_sq = Squares::E6;
   next.m_en_passant_sq = Squares::D6;
 
-  Key key = 0;
+  Key key = NULL_HASH;
 
   mutate_board_state_diff(prev, next, key);
 
