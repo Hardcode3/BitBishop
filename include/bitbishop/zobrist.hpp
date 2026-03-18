@@ -23,6 +23,12 @@ using Key = uint64_t;
 CX_INLINE Zobrist::Key NULL_HASH = 0ULL;
 
 /**
+ * Fixed seed to compute Zobrist hash tables consistently across different systems.
+ * Do not change this value.
+ */
+CX_INLINE uint64_t SEED = 0x994c3ac5e71fafcbULL;
+
+/**
  * @brief Zobrist random key tables used for chess position hashing.
  *
  * Zobrist hashing assigns a random 64-bit value to each independent
@@ -70,7 +76,7 @@ CX_FN Tables generate() {
   using namespace Const;
 
   Tables zobrist_tbl{};
-  uint64_t seed = 0x994c3ac5e71fafcbULL;  // NOLINT(readability-magic-numbers)
+  uint64_t seed = Zobrist::SEED;
 
   for (int p_ind = 0; p_ind < Piece::DISTINCT_PIECES_COUNT; ++p_ind) {
     for (int sq = 0; sq < BOARD_SIZE; ++sq) {
