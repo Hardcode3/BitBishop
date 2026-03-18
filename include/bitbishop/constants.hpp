@@ -47,4 +47,20 @@ CX_INLINE int FILE_F_IND = 5;
 CX_INLINE int FILE_G_IND = 6;
 CX_INLINE int FILE_H_IND = 7;
 
+/**
+ * Number of possible encodings for castling right.
+ * Used in Zobrist hashing.
+ * There are 4 possible castling rights so 2^4 = 16 different states.
+ */
+CX_INLINE int CASTLING_RIGHTS_STATES_COUNT = 16;
+
+/**
+ * Number of possible encodings for en passant.
+ * Used in Zobrist hashing.
+ * En passant can only be described by the file (A to H aka. 8 files).
+ * Only the file of the en-passant square matters because the rank
+ * is implied by the side that performed the double pawn push.
+ */
+CX_INLINE int EN_PASSANT_STATES_COUNT = 8;
+
 }  // namespace Const

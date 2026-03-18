@@ -69,6 +69,8 @@ Board::Board(const std::string& fen) {
 
   // Sixth token: Fullmove number
   iss >> m_state.m_fullmove_number;
+
+  m_zobrist_hash = Zobrist::compute_hash(*this);
 }
 
 Bitboard Board::white_pieces() const {
@@ -159,30 +161,36 @@ void Board::set_piece(Square square, Piece piece) {
   // Use color to select white or black bitboards, then type for the specific piece
   if (piece.is_white()) {
     switch (piece.type()) {
-        // clang-format off
-    case Piece::PAWN:   m_w_pawns.set(square);   return;
-    case Piece::KNIGHT: m_w_knights.set(square); return;
-    case Piece::BISHOP: m_w_bishops.set(square); return;
-    case Piece::ROOK:   m_w_rooks.set(square);   return;
-    case Piece::QUEEN:  m_w_queens.set(square);   return;
-    case Piece::KING:   m_w_king.set(square);    return;
-        // clang-format on
+      // clang-format off
+      case Piece::PAWN:   m_w_pawns.set(square);   break;
+      case Piece::KNIGHT: m_w_knights.set(square); break;
+      case Piece::BISHOP: m_w_bishops.set(square); break;
+      case Piece::ROOK:   m_w_rooks.set(square);   break;
+      case Piece::QUEEN:  m_w_queens.set(square);  break;
+      case Piece::KING:   m_w_king.set(square);    break;
+      // clang-format on
     }
   } else {  // is_black()
     switch (piece.type()) {
-        // clang-format off
-      case Piece::PAWN:   m_b_pawns.set(square);   return;
-      case Piece::KNIGHT: m_b_knights.set(square); return;
-      case Piece::BISHOP: m_b_bishops.set(square); return;
-      case Piece::ROOK:   m_b_rooks.set(square);   return;
-      case Piece::QUEEN:  m_b_queens.set(square);   return;
-      case Piece::KING:   m_b_king.set(square);    return;
-        // clang-format on
+      // clang-format off
+      case Piece::PAWN:   m_b_pawns.set(square);   break;
+      case Piece::KNIGHT: m_b_knights.set(square); break;
+      case Piece::BISHOP: m_b_bishops.set(square); break;
+      case Piece::ROOK:   m_b_rooks.set(square);   break;
+      case Piece::QUEEN:  m_b_queens.set(square);  break;
+      case Piece::KING:   m_b_king.set(square);    break;
+      // clang-format on
     }
   }
+
+  Zobrist::mutate_piece(square, piece, m_zobrist_hash);
 }
 
 void Board::remove_piece(Square square) {
+  if (const std::optional<Piece> existing_piece = get_piece(square)) {
+    Zobrist::mutate_piece(square, *existing_piece, m_zobrist_hash);
+  }
+
   // clear the square from ALL bitboards (only one will match)
   m_w_pawns.clear(square);
   m_w_knights.clear(square);
@@ -307,6 +315,13 @@ bool Board::has_insufficient_material() const noexcept {
 bool Board::operator==(const Board& other) const {
   if (this == &other) {
     return true;
+  }
+
+  // Zobrist key is a fast, deterministic fingerprint of the position identity
+  // fields we compare below (piece placement + side/castling/en-passant).
+  // If keys differ, boards cannot be equal.
+  if (m_zobrist_hash != other.m_zobrist_hash) {
+    return false;
   }
 
   // Do not compare half-move clock and full-move number

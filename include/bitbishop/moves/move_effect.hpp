@@ -3,6 +3,7 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
+#include <bitbishop/zobrist.hpp>
 
 /**
  * @brief Represents a single low-level board modification.
@@ -10,6 +11,9 @@
  * A chess move may consist of multiple effects: placing a piece, removing a
  * piece, or updating board state (e.g., castling rights, en passant). Each
  * MoveEffect describes exactly one such change and can be applied or reverted.
+ *
+ *  * Responsibilities:
+ * - Apply a board mutation (place or remove a piece, update state)
  */
 struct MoveEffect {
   /**
@@ -17,11 +21,11 @@ struct MoveEffect {
    */
   enum class Type : uint8_t { Place, Remove, BoardState };
 
-  Type type;                         ///< Effect category
-  Square square = Squares::A1;       ///< Target square (for Place/Remove)
-  Piece piece = Pieces::WHITE_KING;  ///< Piece involved (for Place/Remove)
-  BoardState prev_state;             ///< State before change (for BoardState effect)
-  BoardState next_state;             ///< State after change (for BoardState effect)
+  Type type;                               ///< Effect category
+  Square square = Squares::A1;             ///< Target square (for Place/Remove)
+  Piece piece = Pieces::WHITE_KING;        ///< Piece involved (for Place/Remove)
+  BoardState prev_state;                   ///< State before change (for BoardState effect)
+  BoardState next_state;                   ///< State after change (for BoardState effect)
 
   /**
    * @brief Creates a piece placement effect.

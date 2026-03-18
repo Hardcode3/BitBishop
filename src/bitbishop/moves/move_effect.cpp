@@ -2,19 +2,18 @@
 #include <utility>
 
 MoveEffect MoveEffect::place(Square sq, Piece piece) {
-  return MoveEffect{.type = Type::Place, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
+  MoveEffect effect{.type = Type::Place, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
+  return effect;
 }
 
 MoveEffect MoveEffect::remove(Square sq, Piece piece) {
-  return MoveEffect{.type = Type::Remove, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
+  MoveEffect effect{.type = Type::Remove, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
+  return effect;
 }
 
 MoveEffect MoveEffect::state_change(const BoardState& prev, const BoardState& next) {
-  return MoveEffect{.type = Type::BoardState,
-                    .square = Squares::A1,        // dummy value cause no default init on this object
-                    .piece = Pieces::WHITE_KING,  // dummy value cause no default init on this object
-                    .prev_state = prev,
-                    .next_state = next};
+  MoveEffect effect{.type = Type::BoardState, .prev_state = prev, .next_state = next};
+  return effect;
 }
 
 void MoveEffect::apply(Board& board) const {
