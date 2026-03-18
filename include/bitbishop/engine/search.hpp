@@ -4,9 +4,21 @@
 #include <limits>
 #include <optional>
 
+class Position;
+
 namespace Search {
 
-CX_INLINE int ALPHA_INIT = std::numeric_limits<int>::min();
+// We implement negamax with alpha-beta by flipping the window at each ply:
+//   score = -negamax(child, depth-1, -beta, -alpha, ...)
+// That requires negating `alpha`/`beta`. Negating `INT_MIN` is undefined behaviour in C++,
+// so we never use it as the initial alpha bound:
+// In Two's Complement, the range of signed integers is asymmetric:
+// [-2^(n-1), 2^(n-1) - 1].
+// Negating the most negative value (e.g., -2147483648) results in a value
+// that exceeds INT_MAX (2147483647). In C++, signed integer overflow
+// is Undefined Behavior (UB). We use min() + 1 to ensure that -alpha
+// is always representable within the bounds of a standard int.
+CX_INLINE int ALPHA_INIT = std::numeric_limits<int>::min() + 1;
 CX_INLINE int BETA_INIT = std::numeric_limits<int>::max();
 
 struct BestMove {
@@ -24,7 +36,7 @@ struct BestMove {
 /**
  * @brief Finds the score using only quiet moves.
  *
- * @param board Current position
+ * @param position Current position (board + history)
  * @param alpha Best score the current side can guarantee
  * @param beta Best score the opponent side can guarantee
  *
@@ -47,12 +59,12 @@ struct BestMove {
  * positions.
  * """
  */
-[[nodiscard]] int quiesce(Board& board, int alpha, int beta);
+[[nodiscard]] int quiesce(Position& position, int alpha, int beta);
 
 /**
  * @brief Finds the best achievable move for the side to move assuming an optimal play on both sides.
  *
- * @param board Current position
+ * @param position Current position (board + history)
  * @param depth Remaining search depth
  * @param alpha Lower bound, aka. minimum score we already guaranteed to get.
  * @param beta Upper bound, aka. maximum score the opponent is willing to let us have.
@@ -68,6 +80,6 @@ struct BestMove {
  * @see https://www.chessprogramming.org/Alpha-Beta
  * @see https://www.dogeystamp.com/chess2/
  */
-[[nodiscard]] BestMove negamax(Board& board, std::size_t depth, int alpha, int beta, int ply);
+[[nodiscard]] BestMove negamax(Position& position, std::size_t depth, int alpha, int beta, int ply);
 
 }  // namespace Search

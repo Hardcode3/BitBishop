@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/board.hpp>
+#include <bitbishop/helpers/repetition.hpp>
 #include <bitbishop/moves/position.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
@@ -65,4 +66,46 @@ TEST(PositionTest, CanUnmakeReflectsMoveHistory) {
 
   // After revert, history is empty
   EXPECT_FALSE(pos.can_unmake());
+}
+
+TEST(PositionTest, RepetitionCountDetectsThreefoldAndFivefold) {
+  Board board = Board::StartingPosition();
+  Position pos(board);
+
+  EXPECT_EQ(pos.repetition_count(), 1);
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 2);
+  EXPECT_FALSE(pos.is_threefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 3);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+  EXPECT_FALSE(pos.is_fivefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 4);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+  EXPECT_FALSE(pos.is_fivefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 5);
+  EXPECT_TRUE(pos.is_fivefold_repetition());
+}
+
+TEST(PositionTest, RepetitionCountRollsBackOnRevert) {
+  Board board = Board::StartingPosition();
+  Position pos(board);
+
+  apply_knight_repetition_cycle(pos);
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 3);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+
+  for (int i = 0; i < 4; ++i) {
+    pos.revert_move();
+  }
+
+  EXPECT_EQ(pos.repetition_count(), 2);
+  EXPECT_FALSE(pos.is_threefold_repetition());
 }

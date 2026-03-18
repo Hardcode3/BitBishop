@@ -4,8 +4,16 @@
 #include <bitbishop/moves/position.hpp>
 
 // https://www.chessprogramming.org/Quiescence_Search
-int Search::quiesce(Board& board, int alpha, int beta) {
-  Position position(board);
+int Search::quiesce(Position& position, int alpha, int beta) {
+  const Board& board = position.get_board();
+
+  if (position.is_threefold_repetition()) {
+    return 0;
+  }
+
+  if (board.get_state().m_halfmove_clock >= Const::MAX_HALF_MOVES_BEFORE_DRAW) {
+    return 0;
+  }
 
   if (board.has_insufficient_material()) {
     return 0;
@@ -29,7 +37,10 @@ int Search::quiesce(Board& board, int alpha, int beta) {
       continue;
     }
     position.apply_move(move);
-    int score = -quiesce(board, -beta, -alpha);
+
+    // Quiescence window flip: child is searched with (-beta, -alpha) and the returned score is negated.
+    // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
+    int score = -quiesce(position, -beta, -alpha);
     position.revert_move();
 
     if (score >= beta) {
@@ -41,13 +52,19 @@ int Search::quiesce(Board& board, int alpha, int beta) {
   return alpha;
 }
 
-Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int beta, int ply) {
+Search::BestMove Search::negamax(Position& position, std::size_t depth, int alpha, int beta, int ply) {
+  const Board& board = position.get_board();
+
   BestMove best;
-  Position position(board);
   std::vector<Move> moves;
 
+  if (position.is_threefold_repetition()) {
+    best.score = 0;
+    return best;
+  }
+
   if (depth == 0) {
-    best.score = quiesce(board, alpha, beta);
+    best.score = quiesce(position, alpha, beta);
     return best;
   }
 
@@ -67,10 +84,17 @@ Search::BestMove Search::negamax(Board& board, std::size_t depth, int alpha, int
     return best;
   }
 
+  if (board.get_state().m_halfmove_clock >= Const::MAX_HALF_MOVES_BEFORE_DRAW) {
+    best.score = 0;
+    return best;
+  }
+
   int bestScore = ALPHA_INIT;
   for (const Move& move : moves) {
     position.apply_move(move);
-    int score = -negamax(board, depth - 1, -beta, -alpha, ply + 1).score;
+    // Negamax window flip: child is searched with (-beta, -alpha) and the returned score is negated.
+    // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
+    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1).score;
     position.revert_move();
 
     if (score > bestScore) {
