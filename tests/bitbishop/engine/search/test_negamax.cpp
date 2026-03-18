@@ -2,6 +2,7 @@
 
 #include <bitbishop/engine/evaluation.hpp>
 #include <bitbishop/engine/search.hpp>
+#include <bitbishop/helpers/repetition.hpp>
 #include <bitbishop/moves/position.hpp>
 #include <tuple>
 
@@ -111,26 +112,6 @@ TEST(NegaMaxTest, KingAndBishopVsKingAndSameColorBishopIsInsufficientMaterialDra
   EXPECT_EQ(best.score, 0);
   EXPECT_FALSE(best.move.has_value());
 }
-
-namespace {
-/**
- * @brief Helper that reaches the same position again after 4 plies.
- *
- * Sequence from the starting position:
- *   1. Ng1-f3  ... Ng8-f6
- *   2. Nf3-g1  ... Nf6-g8
- *
- * This returns to the initial layout with the same side to move, which is the basic
- * building block used by repetition-related search tests below.
- */
-void apply_knight_repetition_cycle(Position& pos) {
-  // Returns to the initial layout (with the same side-to-move) after 4 plies.
-  pos.apply_move(Move::make(G1, F3));
-  pos.apply_move(Move::make(G8, F6));
-  pos.apply_move(Move::make(F3, G1));
-  pos.apply_move(Move::make(F6, G8));
-}
-}  // namespace
 
 /**
  * @test Search returns a draw score on threefold repetition.

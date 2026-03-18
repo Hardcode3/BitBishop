@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/board.hpp>
+#include <bitbishop/helpers/repetition.hpp>
 #include <bitbishop/moves/position.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
@@ -66,16 +67,6 @@ TEST(PositionTest, CanUnmakeReflectsMoveHistory) {
   // After revert, history is empty
   EXPECT_FALSE(pos.can_unmake());
 }
-
-namespace {
-void apply_knight_repetition_cycle(Position& pos) {
-  // Starting position ↔ (Nf3, Nf6, Ng1, Ng8) returns to the initial layout.
-  pos.apply_move(Move::make(G1, F3));
-  pos.apply_move(Move::make(G8, F6));
-  pos.apply_move(Move::make(F3, G1));
-  pos.apply_move(Move::make(F6, G8));
-}
-}  // namespace
 
 TEST(PositionTest, RepetitionCountDetectsThreefoldAndFivefold) {
   Board board = Board::StartingPosition();
