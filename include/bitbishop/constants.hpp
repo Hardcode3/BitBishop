@@ -63,4 +63,18 @@ CX_INLINE int CASTLING_RIGHTS_STATES_COUNT = 16;
  */
 CX_INLINE int EN_PASSANT_STATES_COUNT = 8;
 
+/**
+ * Number of allowed half-moves before claiming a draw.
+ * 50-move rule: draw can be claimed after 100 half-moves without a pawn move or capture.
+ */
+CX_INLINE int MAX_HALF_MOVES_BEFORE_DRAW = 100;
+
+/** https://en.wikipedia.org/wiki/Threefold_repetition */
+CX_INLINE int THREEFOLD_REPETITION_COUNT = 3;
+
+/** https://en.wikipedia.org/wiki/Threefold_repetition#Fivefold_repetition */
+CX_INLINE int FIVEFOLD_REPETITION_COUNT = 5;
+
+/** Number of  */
+
 }  // namespace Const
