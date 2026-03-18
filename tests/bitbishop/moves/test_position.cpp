@@ -66,3 +66,55 @@ TEST(PositionTest, CanUnmakeReflectsMoveHistory) {
   // After revert, history is empty
   EXPECT_FALSE(pos.can_unmake());
 }
+
+namespace {
+void apply_knight_repetition_cycle(Position& pos) {
+  // Starting position ↔ (Nf3, Nf6, Ng1, Ng8) returns to the initial layout.
+  pos.apply_move(Move::make(G1, F3));
+  pos.apply_move(Move::make(G8, F6));
+  pos.apply_move(Move::make(F3, G1));
+  pos.apply_move(Move::make(F6, G8));
+}
+}  // namespace
+
+TEST(PositionTest, RepetitionCountDetectsThreefoldAndFivefold) {
+  Board board = Board::StartingPosition();
+  Position pos(board);
+
+  EXPECT_EQ(pos.repetition_count(), 1);
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 2);
+  EXPECT_FALSE(pos.is_threefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 3);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+  EXPECT_FALSE(pos.is_fivefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 4);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+  EXPECT_FALSE(pos.is_fivefold_repetition());
+
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 5);
+  EXPECT_TRUE(pos.is_fivefold_repetition());
+}
+
+TEST(PositionTest, RepetitionCountRollsBackOnRevert) {
+  Board board = Board::StartingPosition();
+  Position pos(board);
+
+  apply_knight_repetition_cycle(pos);
+  apply_knight_repetition_cycle(pos);
+  EXPECT_EQ(pos.repetition_count(), 3);
+  EXPECT_TRUE(pos.is_threefold_repetition());
+
+  for (int i = 0; i < 4; ++i) {
+    pos.revert_move();
+  }
+
+  EXPECT_EQ(pos.repetition_count(), 2);
+  EXPECT_FALSE(pos.is_threefold_repetition());
+}
