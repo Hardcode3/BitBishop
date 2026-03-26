@@ -39,6 +39,13 @@ class Position {
   void revert_move();
 
   /**
+   * @brief Clears move history and re-syncs repetition tracking with the current board.
+   *
+   * Use this after externally resetting the underlying Board (e.g., new game, FEN load).
+   */
+  void reset();
+
+  /**
    * @brief Returns the current board (read-only).
    */
   [[nodiscard]] const Board& get_board() const { return board; }
