@@ -1,14 +1,14 @@
 message(STATUS "> Found main directory")
 
-add_executable(SandBox sandbox.cpp)
-target_link_libraries(SandBox PRIVATE Bitbishop spdlog::spdlog)
+add_executable(sandbox sandbox.cpp)
+target_link_libraries(sandbox PRIVATE Bitbishop spdlog::spdlog)
 
-add_executable(UCIChessEngine uci_loop.cpp)
-target_link_libraries(UCIChessEngine PRIVATE Bitbishop spdlog::spdlog)
+add_executable(bitbishop bitbishop.cpp)
+target_link_libraries(bitbishop PRIVATE Bitbishop spdlog::spdlog)
 
 set_property(
     TARGET
-        SandBox
-        UCIChessEngine
+        sandbox
+        bitbishop
     PROPERTY FOLDER executables
 )
