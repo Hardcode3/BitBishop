@@ -1,9 +1,14 @@
 #pragma once
 
 #include <bitbishop/config.hpp>
+#include <bitbishop/constants.hpp>
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
+#include <cctype>
+#include <format>
 #include <optional>
+#include <stdexcept>
+#include <string>
 
 /**
  * @struct Move
@@ -56,6 +61,56 @@ struct Move {
     }
 
     return uci;
+  }
+
+  static Move from_uci(const std::string& str) {
+    if (str.size() < 4 || str.size() > 5) {
+      throw std::runtime_error(std::format("Invalid UCI move '{}', expected 4 or 5 characters", str));
+    }
+
+    const Square from(str.substr(0, 2));
+    const Square to(str.substr(2, 2));
+
+    Move move = Move::make(from, to);
+
+    using namespace Squares;
+    if ((from == E1 && (to == G1 || to == C1)) || (from == E8 && (to == G8 || to == C8))) {
+      move.is_castling = true;
+    }
+
+    if (str.size() == 5) {
+      if (move.is_castling) {
+        throw std::runtime_error(std::format("Invalid UCI move '{}', castling cannot include promotion", str));
+      }
+
+      const char promo = static_cast<char>(std::tolower(static_cast<unsigned char>(str.at(4))));
+      Piece::Type type;
+      switch (promo) {
+        case 'q':
+          type = Piece::Type::QUEEN;
+          break;
+        case 'r':
+          type = Piece::Type::ROOK;
+          break;
+        case 'b':
+          type = Piece::Type::BISHOP;
+          break;
+        case 'n':
+          type = Piece::Type::KNIGHT;
+          break;
+        default:
+          throw std::runtime_error(std::format("Invalid UCI move '{}', unknown promotion piece '{}'", str, promo));
+      }
+
+      if (to.rank() != Const::RANK_8_IND && to.rank() != Const::RANK_1_IND) {
+        throw std::runtime_error(std::format("Invalid UCI move '{}', promotion must land on rank 1 or 8", str));
+      }
+
+      const Color color = (to.rank() == Const::RANK_8_IND) ? Color::WHITE : Color::BLACK;
+      move.promotion = Piece(type, color);
+    }
+
+    return move;
   }
 
   /**
