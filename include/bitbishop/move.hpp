@@ -37,13 +37,14 @@ struct Move {
   [[nodiscard]] std::string to_uci() const;
 
   /**
-   * @brief Creates a move from its UCI string notation.
-   * @return Move instance.
+   * @brief Creates a move instance from its UCI (Universal Chess Interface) string notation.
    *
-   * UCI move string has 4 or 5 characters.
-   * - The two first characters correspond to the square where the piece is moving from.
-   * - Next two chars correspond to the square where the piece is moving to.
-   * - The final optional character corresponds to the piece type if the move depicted is a promotion.
+   * @param str The UCI string representing the move. It must have either 4 or 5 characters:
+   *   - The first two characters denote the source square of the piece.
+   *   - The next two characters denote the destination square of the piece.
+   *   - The fifth character (optional) specifies the promoted piece type if this is a promotion move.
+   *
+   * @return Move A new Move object initialized with the provided UCI string.
    *
    * Note that promotion piece is always lowercase because it's color is implicitely described by the destination
    * square.
