@@ -199,7 +199,7 @@ TEST(MoveTest, FromUciInvalidLengthThrows) {
 }
 
 TEST(MoveTest, FromUciInvalidPromotionPieceThrows) {
-  EXPECT_THROW(Move::from_uci("e7e8x"), std::runtime_error);
+  EXPECT_THROW(Move::from_uci("e7e8p"), std::runtime_error);
 }
 
 TEST(MoveTest, FromUciInvalidPromotionRankThrows) {
