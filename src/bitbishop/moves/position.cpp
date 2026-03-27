@@ -27,6 +27,12 @@ void Position::revert_move() {
   }
 }
 
+void Position::reset() {
+  move_execution_history.clear();
+  zobrist_hashes_history.clear();
+  zobrist_hashes_history.push_back(board.get_zobrist_hash());
+}
+
 [[nodiscard]] int Position::repetition_count() const noexcept {
   assert(!zobrist_hashes_history.empty());
 

@@ -213,6 +213,15 @@ class Piece {
   [[nodiscard]] CX_FN char to_char() const { return Piece::to_char(m_type, m_color); }
 
   /**
+   * @brief Tells if a piece can result from a promotion.
+   * @return True if the piece is a Queen, Rook, Bishop or a Knight.
+   */
+  [[nodiscard]] CX_FN bool is_promotion() const {
+    return (m_type == Piece::Type::QUEEN || m_type == Piece::Type::ROOK || m_type == Piece::Type::BISHOP ||
+            m_type == Piece::Type::KNIGHT);
+  }
+
+  /**
    * @brief Equality operator.
    * @param other Piece to compare against
    * @return true if both type and color match

@@ -148,3 +148,60 @@ TEST(MoveTest, ToUciStringInvalidPromotionPieceDiscardsPromotionChar) {
   EXPECT_TRUE(std::regex_match(res, uci_move_regex));
   EXPECT_EQ(res, "e7e8");
 }
+
+TEST(MoveTest, FromUciRegularMove) {
+  Move m = Move::from_uci("e2e4");
+
+  EXPECT_EQ(m.from, E2);
+  EXPECT_EQ(m.to, E4);
+  EXPECT_FALSE(m.promotion.has_value());
+  EXPECT_FALSE(m.is_capture);
+  EXPECT_FALSE(m.is_en_passant);
+  EXPECT_FALSE(m.is_castling);
+}
+
+TEST(MoveTest, FromUciCastlingMove) {
+  Move m = Move::from_uci("e1g1");
+
+  EXPECT_EQ(m.from, E1);
+  EXPECT_EQ(m.to, G1);
+  EXPECT_FALSE(m.promotion.has_value());
+  EXPECT_FALSE(m.is_capture);
+  EXPECT_FALSE(m.is_en_passant);
+  EXPECT_TRUE(m.is_castling);
+}
+
+TEST(MoveTest, FromUciPromotionWhite) {
+  Move m = Move::from_uci("e7e8q");
+
+  EXPECT_EQ(m.from, E7);
+  EXPECT_EQ(m.to, E8);
+  ASSERT_TRUE(m.promotion.has_value());
+  EXPECT_EQ(m.promotion->type(), Piece::Type::QUEEN);
+  EXPECT_TRUE(m.promotion->is_white());
+  EXPECT_FALSE(m.is_castling);
+}
+
+TEST(MoveTest, FromUciPromotionBlack) {
+  Move m = Move::from_uci("a2a1n");
+
+  EXPECT_EQ(m.from, A2);
+  EXPECT_EQ(m.to, A1);
+  ASSERT_TRUE(m.promotion.has_value());
+  EXPECT_EQ(m.promotion->type(), Piece::Type::KNIGHT);
+  EXPECT_TRUE(m.promotion->is_black());
+  EXPECT_FALSE(m.is_castling);
+}
+
+TEST(MoveTest, FromUciInvalidLengthThrows) {
+  EXPECT_THROW(Move::from_uci("e2e"), std::runtime_error);
+  EXPECT_THROW(Move::from_uci("e2e4q1"), std::runtime_error);
+}
+
+TEST(MoveTest, FromUciInvalidPromotionPieceThrows) {
+  EXPECT_THROW(Move::from_uci("e7e8p"), std::runtime_error);
+}
+
+TEST(MoveTest, FromUciInvalidPromotionRankThrows) {
+  EXPECT_THROW(Move::from_uci("e2e4q"), std::runtime_error);
+}

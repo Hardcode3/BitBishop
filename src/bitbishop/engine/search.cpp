@@ -4,7 +4,10 @@
 #include <bitbishop/moves/position.hpp>
 
 // https://www.chessprogramming.org/Quiescence_Search
-int Search::quiesce(Position& position, int alpha, int beta) {
+int Search::quiesce(Position& position, int alpha, int beta, std::stop_token stop_token) {
+  if (stop_token.stop_requested()) {
+    return alpha;
+  }
   const Board& board = position.get_board();
 
   if (position.is_threefold_repetition()) {
@@ -33,6 +36,9 @@ int Search::quiesce(Position& position, int alpha, int beta) {
   // To generate only capture moves and not all moves top discard some in the end
 
   for (const Move& move : moves) {
+    if (stop_token.stop_requested()) {
+      return alpha;
+    }
     if (!move.is_capture) {
       continue;
     }
@@ -40,8 +46,12 @@ int Search::quiesce(Position& position, int alpha, int beta) {
 
     // Quiescence window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -quiesce(position, -beta, -alpha);
+    int score = -quiesce(position, -beta, -alpha, stop_token);
     position.revert_move();
+
+    if (stop_token.stop_requested()) {
+      return alpha;
+    }
 
     if (score >= beta) {
       return beta;
@@ -52,11 +62,21 @@ int Search::quiesce(Position& position, int alpha, int beta) {
   return alpha;
 }
 
-Search::BestMove Search::negamax(Position& position, std::size_t depth, int alpha, int beta, int ply) {
+Search::BestMove Search::negamax(Position& position,
+                                 std::size_t depth,
+                                 int alpha,
+                                 int beta,
+                                 int ply,
+                                 std::stop_token stop_token) {
   const Board& board = position.get_board();
 
   BestMove best;
   std::vector<Move> moves;
+
+  if (stop_token.stop_requested()) {
+    best.score = 0;
+    return best;
+  }
 
   if (position.is_threefold_repetition()) {
     best.score = 0;
@@ -64,7 +84,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
   }
 
   if (depth == 0) {
-    best.score = quiesce(position, alpha, beta);
+    best.score = quiesce(position, alpha, beta, stop_token);
     return best;
   }
 
@@ -91,11 +111,20 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
 
   int bestScore = ALPHA_INIT;
   for (const Move& move : moves) {
+    if (stop_token.stop_requested()) {
+      best.score = bestScore;
+      return best;
+    }
     position.apply_move(move);
     // Negamax window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1).score;
+    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stop_token).score;
     position.revert_move();
+
+    if (stop_token.stop_requested()) {
+      best.score = bestScore;
+      return best;
+    }
 
     if (score > bestScore) {
       bestScore = score;

@@ -3,6 +3,7 @@
 #include <bitbishop/board.hpp>
 #include <limits>
 #include <optional>
+#include <stop_token>
 
 class Position;
 
@@ -59,7 +60,10 @@ struct BestMove {
  * positions.
  * """
  */
-[[nodiscard]] int quiesce(Position& position, int alpha, int beta);
+[[nodiscard]] int quiesce(Position& position,
+                          int alpha,
+                          int beta,
+                          std::stop_token stop_token = {});
 
 /**
  * @brief Finds the best achievable move for the side to move assuming an optimal play on both sides.
@@ -80,6 +84,11 @@ struct BestMove {
  * @see https://www.chessprogramming.org/Alpha-Beta
  * @see https://www.dogeystamp.com/chess2/
  */
-[[nodiscard]] BestMove negamax(Position& position, std::size_t depth, int alpha, int beta, int ply);
+[[nodiscard]] BestMove negamax(Position& position,
+                               std::size_t depth,
+                               int alpha,
+                               int beta,
+                               int ply,
+                               std::stop_token stop_token = {});
 
 }  // namespace Search

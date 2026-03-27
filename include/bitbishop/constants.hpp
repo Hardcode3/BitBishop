@@ -75,6 +75,4 @@ CX_INLINE int THREEFOLD_REPETITION_COUNT = 3;
 /** https://en.wikipedia.org/wiki/Threefold_repetition#Fivefold_repetition */
 CX_INLINE int FIVEFOLD_REPETITION_COUNT = 5;
 
-/** Number of  */
-
 }  // namespace Const
