@@ -31,6 +31,7 @@ void Uci::UciEngine::dispatch(std::string_view line) {
   } else if (line == "stop") {
     controller.stop();
   } else if (line == "quit") {
+    controller.stop();
     std::exit(0);
   }
   // unknown lines are discarded silently following uci rules
@@ -127,5 +128,6 @@ void Uci::UciEngine::handle_go(std::string_view line) {
     }
   }
 
-  controller.start(position, limits, out_stream);
+  controller.start();
+  controller.wait();
 }

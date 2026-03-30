@@ -9,24 +9,24 @@ class UciEngineTest : public ::testing::Test {
  protected:
   std::stringstream input;
   std::stringstream output;
+  std::unique_ptr<Uci::UciEngine> engine_ptr;
 
-  void SetUp() override {
-    // Clear streams before each test
-    input.clear();
-    output.clear();
-  }
+  void SetUp() override { engine_ptr = std::make_unique<Uci::UciEngine>(input, output); }
 
   void TearDown() override {
-    // Clean up after each test
     input.str("");
+    input.clear();
+
     output.str("");
+    output.clear();
+
+    engine_ptr.reset();
   }
 };
 
 TEST_F(UciEngineTest, UciCommandOutputsIdAndOk) {
-  Uci::UciEngine engine(input, output);
-
-  engine.dispatch("uci");
+  input.str("uci\n");
+  engine_ptr->loop();
 
   const std::string res = output.str();
   EXPECT_NE(res.find("id name BitBishop"), std::string::npos);
@@ -35,19 +35,17 @@ TEST_F(UciEngineTest, UciCommandOutputsIdAndOk) {
 }
 
 TEST_F(UciEngineTest, IsReadyCommandOutputsReadyOk) {
-  Uci::UciEngine engine(input, output);
-
-  engine.dispatch("isready");
+  input.str("isready\n");
+  engine_ptr->loop();
 
   EXPECT_EQ(output.str(), "readyok\n");
 }
 
 TEST_F(UciEngineTest, PositionStartposMovesAppliesMoves) {
-  Uci::UciEngine engine(input, output);
+  input.str("position startpos moves e2e4\n");
+  engine_ptr->loop();
 
-  engine.dispatch("position startpos moves e2e4");
-
-  const Board &board = engine.get_board();
+  const Board &board = engine_ptr->get_board();
   auto moved = board.get_piece(E4);
   auto origin = board.get_piece(E2);
 
@@ -58,11 +56,10 @@ TEST_F(UciEngineTest, PositionStartposMovesAppliesMoves) {
 }
 
 TEST_F(UciEngineTest, PositionFenMovesAppliesMoves) {
-  Uci::UciEngine engine(input, output);
+  input.str("position fen 8/8/8/8/8/8/4P3/4K3 w - - 0 1 moves e2e4\n");
+  engine_ptr->loop();
 
-  engine.dispatch("position fen 8/8/8/8/8/8/4P3/4K3 w - - 0 1 moves e2e4");
-
-  const Board &board = engine.get_board();
+  const Board &board = engine_ptr->get_board();
   auto moved = board.get_piece(E4);
   auto origin = board.get_piece(E2);
 
@@ -73,12 +70,12 @@ TEST_F(UciEngineTest, PositionFenMovesAppliesMoves) {
 }
 
 TEST_F(UciEngineTest, UciNewGameResetsBoard) {
-  Uci::UciEngine engine(input, output);
+  input.str(
+      "position startpos moves e2e4\n"
+      "ucinewgame\n");
+  engine_ptr->loop();
 
-  engine.dispatch("position startpos moves e2e4");
-  engine.dispatch("ucinewgame");
-
-  const Board &board = engine.get_board();
+  const Board &board = engine_ptr->get_board();
   auto start_pawn = board.get_piece(E2);
   auto moved = board.get_piece(E4);
 
@@ -89,30 +86,27 @@ TEST_F(UciEngineTest, UciNewGameResetsBoard) {
 }
 
 TEST_F(UciEngineTest, GoWithoutPositionUsesStartpos) {
-  {
-    Uci::UciEngine engine(input, output);
-    engine.dispatch("go depth 1");
-  }
+  input.str("go depth 1\n");
+  engine_ptr->loop();
 
   const std::string res = output.str();
   EXPECT_NE(res.find("bestmove "), std::string::npos);
 }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
-  Uci::UciEngine engine(input, output);
-
-  engine.dispatch("this_is_not_a_uci_command");
+  input.str("this_is_not_a_uci_command\n");
+  engine_ptr->loop();
 
   EXPECT_TRUE(output.str().empty());
 }
 
 TEST_F(UciEngineTest, PositionStartposResetsBoard) {
-  Uci::UciEngine engine(input, output);
+  input.str(
+      "position startpos moves e2e4\n"
+      "position startpos\n");
+  engine_ptr->loop();
 
-  engine.dispatch("position startpos moves e2e4");
-  engine.dispatch("position startpos");
-
-  const Board &board = engine.get_board();
+  const Board &board = engine_ptr->get_board();
   auto start_pawn = board.get_piece(E2);
   auto moved = board.get_piece(E4);
 
@@ -123,11 +117,10 @@ TEST_F(UciEngineTest, PositionStartposResetsBoard) {
 }
 
 TEST_F(UciEngineTest, InvalidMoveStopsFurtherProcessing) {
-  Uci::UciEngine engine(input, output);
+  input.str("position startpos moves e2e4 notamove e7e5\n");
+  engine_ptr->loop();
 
-  engine.dispatch("position startpos moves e2e4 notamove e7e5");
-
-  const Board &board = engine.get_board();
+  const Board &board = engine_ptr->get_board();
   auto e4 = board.get_piece(E4);
   auto e2 = board.get_piece(E2);
   auto e5 = board.get_piece(E5);
@@ -144,12 +137,11 @@ TEST_F(UciEngineTest, InvalidMoveStopsFurtherProcessing) {
 }
 
 TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
-  {
-    Uci::UciEngine engine(input, output);
-    engine.dispatch("position startpos");
-    engine.dispatch("go infinite");
-    engine.dispatch("stop");
-  }
+  input.str(
+      "position startpos\n"
+      "go infinite\n"
+      "stop\n");
+  engine_ptr->loop();
 
   const std::string res = output.str();
   EXPECT_NE(res.find("bestmove "), std::string::npos);

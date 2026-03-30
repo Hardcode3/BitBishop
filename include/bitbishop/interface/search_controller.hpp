@@ -15,7 +15,7 @@ namespace Uci {
  * This struct holds various parameters that control the search depth and timing.
  */
 struct SearchLimits {
-  std::optional<int> depth;         ///< Search depth limit (in ply)
+  std::optional<int> depth = 1;     ///< Search depth limit (in ply)
   std::optional<int> movetime;      ///< Move time limit (in milliseconds)
   std::optional<int> wtime, btime;  ///< White/black time limits (in milliseconds)
   std::optional<int> winc, binc;    ///< White/black increment limits (in milliseconds)
@@ -29,33 +29,42 @@ struct SearchLimits {
  * It uses a background thread to perform the search and communicates results through a callback.
  */
 class SearchController {
-  std::jthread worker;          // Worker thread for search operations
-  Position *pos = nullptr;      // Pointer to the current game position
-  std::ostream *out = nullptr;  // Output stream for UCI communication
-  SearchLimits limits;          // Current search parameters
+  std::thread worker{};                ///< Worker thread for search operations
+  std::atomic<bool> stop_flag{false};  ///< Flag used to forward the stop order to the worker(s)
+  Board board;                         ///< Current chess board
+  Position position;                   ///< Game position associated to the current chess board
+  SearchLimits limits;                 ///< Current search parameters
+  std::ostream* out;                   ///< Output stream for UCI communication
 
   /**
    * @brief Executes the search algorithm in a background thread.
-   *
-   * @param stop_token Token to request cancellation of the search
    */
-  void run(std::stop_token stop_token);
+  void run();
 
  public:
+  SearchController(Board board, SearchLimits limits, std::ostream& ostream = std::cout);
+  ~SearchController();
+
   /**
    * @brief Starts the search process with given parameters.
    *
    * Initializes the search controller with a new worker thread and parameters.
    * If no depth is specified, switches to infinite search mode.
-   *
-   * @param pos Reference to the current game position
-   * @param limits Search parameters to use
-   * @param out_stream Output stream for UCI communication
    */
-  void start(Position &pos, SearchLimits limits, std::ostream &out_stream);
+  void start();
 
   /**
-   * @brief Requests the worker thread to stop its current operation.
+   * @brief Requests the worker thread to stop naturaly the best move search.
+   *
+   * Thread finishes when a best move has been found.
+   */
+  void wait();
+
+  /**
+   * @brief Requests the worker thread to interrupt (stop early) the best move search.
+   *
+   * Thread interruption finishes early the best move search and may not be able to return a best move.
+   * An intermediate state may be returned instead.
    */
   void stop();
 };

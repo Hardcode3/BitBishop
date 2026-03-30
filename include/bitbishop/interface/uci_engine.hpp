@@ -26,8 +26,8 @@ std::vector<std::string> split(std::string_view str);
  * game state management, and search control.
  */
 class UciEngine {
-  Board board;                  ///< Board representation of the game state
-  Position position;            ///< Current game position
+  Board board;                  ///< Current chess board
+  Position position;            ///< Game position associated to the current chess board
   SearchController controller;  ///< Manages the search process
 
   std::istream &in_stream;   ///< Input stream for UCI commands
@@ -47,8 +47,8 @@ class UciEngine {
    */
   UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
       : board(Board::StartingPosition()),
-        position{Position(board)},
-        controller{},
+        position(Position(board)),
+        controller(SearchController(board, SearchLimits{}, output)),
         in_stream(input),
         out_stream(output) {}
 
@@ -59,6 +59,16 @@ class UciEngine {
    */
   void loop();
 
+  /**
+   * @brief Gets the current board state.
+   *
+   * Provides read-only access to the current board representation.
+   *
+   * @return const Board& Reference to the current board state
+   */
+  [[nodiscard]] const Board &get_board() const { return board; }
+
+ private:
   /**
    * @brief Dispatches UCI commands to their respective handlers.
    *
@@ -76,16 +86,6 @@ class UciEngine {
    */
   void dispatch(std::string_view line);
 
-  /**
-   * @brief Gets the current board state.
-   *
-   * Provides read-only access to the current board representation.
-   *
-   * @return const Board& Reference to the current board state
-   */
-  [[nodiscard]] const Board &get_board() const { return board; }
-
- private:
   /**
    * @brief Handles the "uci" command.
    *
