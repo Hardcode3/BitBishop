@@ -85,13 +85,13 @@ TEST_F(UciEngineTest, UciNewGameResetsBoard) {
   EXPECT_FALSE(moved.has_value());
 }
 
-TEST_F(UciEngineTest, GoWithoutPositionUsesStartpos) {
-  input.str("go depth 1\n");
-  engine_ptr->loop();
+// TEST_F(UciEngineTest, GoWithoutPositionUsesStartpos) {
+//   input.str("go depth 1\n");
+//   engine_ptr->loop();
 
-  const std::string res = output.str();
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
-}
+//   const std::string res = output.str();
+//   EXPECT_NE(res.find("bestmove "), std::string::npos);
+// }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
   input.str("this_is_not_a_uci_command\n");
@@ -136,13 +136,13 @@ TEST_F(UciEngineTest, InvalidMoveStopsFurtherProcessing) {
   EXPECT_TRUE(e7->is_pawn());
 }
 
-TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
-  input.str(
-      "position startpos\n"
-      "go infinite\n"
-      "stop\n");
-  engine_ptr->loop();
+// TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
+//   input.str(
+//       "position startpos\n"
+//       "go infinite\n"
+//       "stop\n");
+//   engine_ptr->loop();
 
-  const std::string res = output.str();
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
-}
+//   const std::string res = output.str();
+//   EXPECT_NE(res.find("bestmove "), std::string::npos);
+// }

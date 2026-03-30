@@ -29,6 +29,7 @@ class UciEngine {
   Board board;                  ///< Current chess board
   Position position;            ///< Game position associated to the current chess board
   SearchController controller;  ///< Manages the search process
+  bool is_running;
 
   std::istream &in_stream;   ///< Input stream for UCI commands
   std::ostream &out_stream;  ///< Output stream for UCI responses
@@ -48,6 +49,7 @@ class UciEngine {
   UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
       : board(Board::StartingPosition()),
         position(Position(board)),
+        is_running(true),
         controller(SearchController(board, SearchLimits{}, output)),
         in_stream(input),
         out_stream(output) {}

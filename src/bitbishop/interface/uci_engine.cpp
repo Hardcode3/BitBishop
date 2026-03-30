@@ -12,7 +12,7 @@ std::vector<std::string> Uci::split(std::string_view str) {
 
 void Uci::UciEngine::loop() {
   std::string line;
-  while (std::getline(in_stream, line)) {
+  while (is_running && std::getline(in_stream, line)) {
     dispatch(line);
   }
 };
@@ -32,7 +32,7 @@ void Uci::UciEngine::dispatch(std::string_view line) {
     controller.stop();
   } else if (line == "quit") {
     controller.stop();
-    std::exit(0);
+    is_running = false;
   }
   // unknown lines are discarded silently following uci rules
 };
