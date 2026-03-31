@@ -10,6 +10,14 @@ std::vector<std::string> Uci::split(std::string_view str) {
   return tokens;
 }
 
+Uci::UciEngine::UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
+    : is_running(true),
+      board(Board::StartingPosition()),
+      position(Position(board)),
+      controller(SearchController(board, SearchLimits{}, out_stream)),
+      in_stream(input),
+      out_stream(output) {}
+
 void Uci::UciEngine::loop() {
   std::string line;
   while (is_running && std::getline(in_stream, line)) {
@@ -51,34 +59,36 @@ void Uci::UciEngine::handle_new_game() {
 }
 
 void Uci::UciEngine::handle_position(std::string_view line) {
+  using namespace Const;
+
   std::vector<std::string> tokens = split(line);
   if (tokens.size() < 2) {
     return;
   }
 
   std::size_t offset = 1;  // skip "position"
-  if (tokens[offset] == "startpos") {
-    board = Board::StartingPosition();
-    position.reset();
+  if (tokens[offset] == "startpos") {  // "position startpos ..."
+    const Board new_position = Board::StartingPosition();
     ++offset;
-  } else if (tokens[offset] == "fen") {
+  } else if (tokens[offset] == "fen") {  // "position fen ..."
     ++offset;
-    if (tokens.size() < offset + 6) {
+    if (tokens.size() < offset + FEN_NOTATION_COMPONENT_COUNT) {
       return;
     }
-
-    std::string fen = tokens[offset];
+    std::string fen;
+    fen.reserve(FEN_NOTATION_MAX_CHAR_COUNT);
+    fen += tokens[offset];
     for (int i = 1; i < 6; ++i) {
       fen += " ";
       fen += tokens[offset + i];
     }
-    offset += 6;
-    board = Board(fen);
-    position.reset();
+    offset += FEN_NOTATION_COMPONENT_COUNT;
+    const Board new_position(fen);
   } else {
     return;
   }
 
+  // "position ... moves e2e4 f2f4"
   if (offset < tokens.size() && tokens[offset] == "moves") {
     ++offset;
     while (offset < tokens.size()) {
