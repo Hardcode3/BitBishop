@@ -46,13 +46,7 @@ class UciEngine {
    * @param input Reference to input stream (default: std::cin)
    * @param output Reference to output stream (default: std::cout)
    */
-  UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
-      : board(Board::StartingPosition()),
-        position(Position(board)),
-        is_running(true),
-        controller(SearchController(board, SearchLimits{}, output)),
-        in_stream(input),
-        out_stream(output) {}
+  UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout);
 
   /**
    * @brief Main loop to process incoming UCI commands.
