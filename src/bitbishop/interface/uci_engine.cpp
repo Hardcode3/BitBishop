@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <bitbishop/interface/uci_engine.hpp>
 
 std::vector<std::string> Uci::split(std::string_view str) {
@@ -16,7 +18,7 @@ Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
       position(Position(board)),
       in_stream(input),
       out_stream(output),
-      controller(SearchController(board, SearchLimits{}, out_stream)) {}
+      controller_ptr(nullptr) {}
 
 void Uci::UciEngine::loop() {
   std::string line;
@@ -37,10 +39,9 @@ void Uci::UciEngine::dispatch(std::string_view line) {
   } else if (line.starts_with("go")) {
     handle_go(line);
   } else if (line == "stop") {
-    controller.stop();
+    handle_stop();
   } else if (line == "quit") {
-    controller.stop();
-    is_running = false;
+    handle_quit();
   }
   // unknown lines are discarded silently following uci rules
 };
@@ -53,7 +54,6 @@ void Uci::UciEngine::handle_uci() {
 }
 
 void Uci::UciEngine::handle_new_game() {
-  controller.stop();
   board = Board::StartingPosition();
   position.reset();
 }
@@ -68,7 +68,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
 
   std::size_t offset = 1;  // skip "position"
   if (tokens[offset] == "startpos") {  // "position startpos ..."
-    const Board new_position = Board::StartingPosition();
+    board = Board::StartingPosition();
     ++offset;
   } else if (tokens[offset] == "fen") {  // "position fen ..."
     ++offset;
@@ -83,7 +83,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
       fen += tokens[offset + i];
     }
     offset += FEN_NOTATION_COMPONENT_COUNT;
-    const Board new_position(fen);
+    board = Board(fen);
   } else {
     return;
   }
@@ -103,7 +103,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
 }
 
 void Uci::UciEngine::handle_go(std::string_view line) {
-  controller.stop();
+  release_search_controller();
 
   std::vector<std::string> tokens = split(line);
   SearchLimits limits;
@@ -138,6 +138,22 @@ void Uci::UciEngine::handle_go(std::string_view line) {
     }
   }
 
-  controller.start();
-  controller.wait();
+  controller_ptr = std::make_unique<SearchController>(board, limits, out_stream);
+  assert(controller_ptr != nullptr);
+  controller_ptr->start();
+}
+
+void Uci::UciEngine::handle_stop() { release_search_controller(); }
+
+void Uci::UciEngine::handle_quit() {
+  release_search_controller();
+  is_running = false;
+}
+
+void Uci::UciEngine::release_search_controller() {
+  if (controller_ptr) {
+    controller_ptr->stop();
+    controller_ptr.reset();
+  }
+  assert(controller_ptr == nullptr);
 }

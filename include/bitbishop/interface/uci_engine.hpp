@@ -28,7 +28,7 @@ std::vector<std::string> split(std::string_view str);
 class UciEngine {
   Board board;                  ///< Current chess board
   Position position;            ///< Game position associated to the current chess board
-  SearchController controller;  ///< Manages the search process
+  std::unique_ptr<SearchController> controller_ptr;  ///< Manages the search process
   bool is_running;
 
   std::istream &in_stream;   ///< Input stream for UCI commands
@@ -113,6 +113,22 @@ class UciEngine {
    * @param line The input command line containing the search parameters
    */
   void handle_go(std::string_view line);
+
+  /**
+   * @brief Handles the "stop" command.
+   *
+   * Terminates early the best move search. Best move may be inconsistent.
+   */
+  void handle_stop();
+
+  /**
+   * @brief Handles the "quit" command.
+   *
+   * Terminates the best move search as soon as possible and exits the program by breaking the UCI loop.
+   */
+  void handle_quit();
+
+  void release_search_controller();
 };
 
 }  // namespace Uci

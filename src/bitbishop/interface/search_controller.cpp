@@ -1,7 +1,7 @@
 #include <bitbishop/interface/search_controller.hpp>
 
 Uci::SearchController::SearchController(Board board, SearchLimits limits, std::ostream& ostream)
-    : board(board), position(Position(board)), limits(limits), out(&ostream) {}
+    : board(board), position(Position(this->board)), limits(limits), out(&ostream) {}
 
 Uci::SearchController::~SearchController() { stop(); }
 
