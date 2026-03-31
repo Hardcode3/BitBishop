@@ -5,7 +5,7 @@
 
 // https://www.chessprogramming.org/Quiescence_Search
 int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* stop_flag) {
-  if (stop_flag && stop_flag->load()) {
+  if (stop_flag != nullptr && stop_flag->load()) {
     return alpha;
   }
 
@@ -37,7 +37,7 @@ int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* 
   // To generate only capture moves and not all moves top discard some in the end
 
   for (const Move& move : moves) {
-    if (stop_flag && stop_flag->load()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       return alpha;
     }
     if (!move.is_capture) {
@@ -50,7 +50,7 @@ int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* 
     int score = -quiesce(position, -beta, -alpha, stop_flag);
     position.revert_move();
 
-    if (stop_flag && stop_flag->load()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       return alpha;
     }
 
@@ -70,7 +70,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
   BestMove best;
   std::vector<Move> moves;
 
-  if (stop_flag && stop_flag->load()) {
+  if (stop_flag != nullptr && stop_flag->load()) {
     best.score = 0;
     return best;
   }
@@ -108,7 +108,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
 
   int bestScore = ALPHA_INIT;
   for (const Move& move : moves) {
-    if (stop_flag && stop_flag->load()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       best.score = bestScore;
       return best;
     }
@@ -118,7 +118,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
     int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stop_flag).score;
     position.revert_move();
 
-    if (stop_flag && stop_flag->load()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       best.score = bestScore;
       return best;
     }

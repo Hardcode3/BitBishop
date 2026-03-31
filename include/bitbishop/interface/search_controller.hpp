@@ -29,7 +29,7 @@ struct SearchLimits {
  * It uses a background thread to perform the search and communicates results through a callback.
  */
 class SearchController {
-  std::thread worker{};                ///< Worker thread for search operations
+  std::thread worker;                  ///< Worker thread for search operations
   std::atomic<bool> stop_flag{false};  ///< Flag used to forward the stop order to the worker(s)
   Board board;                         ///< Current chess board
   Position position;                   ///< Game position associated to the current chess board

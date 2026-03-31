@@ -8,7 +8,8 @@ Uci::SearchController::~SearchController() { stop(); }
 void Uci::SearchController::run() {
   using namespace Search;
 
-  BestMove best, last_best;
+  BestMove best;
+  BestMove last_best;
   try {
     if (limits.infinite) {
       for (int current_depth = 1; !stop_flag.load(); ++current_depth) {

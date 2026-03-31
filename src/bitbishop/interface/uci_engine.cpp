@@ -1,6 +1,5 @@
-#include <assert.h>
-
 #include <bitbishop/interface/uci_engine.hpp>
+#include <cassert>
 
 std::vector<std::string> Uci::split(std::string_view str) {
   std::vector<std::string> tokens;
@@ -66,7 +65,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
     return;
   }
 
-  std::size_t offset = 1;  // skip "position"
+  std::size_t offset = 1;              // skip "position"
   if (tokens[offset] == "startpos") {  // "position startpos ..."
     board = Board::StartingPosition();
     ++offset;
@@ -78,7 +77,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
     std::string fen;
     fen.reserve(FEN_NOTATION_MAX_CHAR_COUNT);
     fen += tokens[offset];
-    for (int i = 1; i < 6; ++i) {
+    for (int i = 1; i < FEN_NOTATION_COMPONENT_COUNT; ++i) {
       fen += " ";
       fen += tokens[offset + i];
     }
@@ -108,32 +107,28 @@ void Uci::UciEngine::handle_go(std::string_view line) {
   std::vector<std::string> tokens = split(line);
   SearchLimits limits;
 
-  for (std::size_t offset = 1; offset < tokens.size(); ++offset) {
-    if (tokens[offset] == "depth") {
-      if (offset + 1 < tokens.size()) {
-        limits.depth = std::stoi(tokens[++offset]);
+  for (std::size_t i = 1; i < tokens.size(); ++i) {
+    const auto &tok = tokens[i];
+
+    auto read = [&](std::optional<int> &target) {
+      if (i + 1 < tokens.size()) {
+        target = std::stoi(tokens[++i]);
       }
-    } else if (tokens[offset] == "movetime") {
-      if (offset + 1 < tokens.size()) {
-        limits.movetime = std::stoi(tokens[++offset]);
-      }
-    } else if (tokens[offset] == "wtime") {
-      if (offset + 1 < tokens.size()) {
-        limits.wtime = std::stoi(tokens[++offset]);
-      }
-    } else if (tokens[offset] == "btime") {
-      if (offset + 1 < tokens.size()) {
-        limits.btime = std::stoi(tokens[++offset]);
-      }
-    } else if (tokens[offset] == "winc") {
-      if (offset + 1 < tokens.size()) {
-        limits.winc = std::stoi(tokens[++offset]);
-      }
-    } else if (tokens[offset] == "binc") {
-      if (offset + 1 < tokens.size()) {
-        limits.binc = std::stoi(tokens[++offset]);
-      }
-    } else if (tokens[offset] == "infinite") {
+    };
+
+    if (tok == "depth") {
+      read(limits.depth);
+    } else if (tok == "movetime") {
+      read(limits.movetime);
+    } else if (tok == "wtime") {
+      read(limits.wtime);
+    } else if (tok == "btime") {
+      read(limits.btime);
+    } else if (tok == "winc") {
+      read(limits.winc);
+    } else if (tok == "binc") {
+      read(limits.binc);
+    } else if (tok == "infinite") {
       limits.infinite = true;
     }
   }
