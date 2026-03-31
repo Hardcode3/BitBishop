@@ -5,8 +5,7 @@
 TEST(SearchLimitsTest, DefaultsAreEmptyAndNotInfinite) {
   Uci::SearchLimits limits;
 
-  EXPECT_TRUE(limits.depth.has_value());
-  EXPECT_EQ(limits.depth.value(), 1);
+  EXPECT_FALSE(limits.depth.has_value());
   EXPECT_FALSE(limits.movetime.has_value());
   EXPECT_FALSE(limits.wtime.has_value());
   EXPECT_FALSE(limits.btime.has_value());

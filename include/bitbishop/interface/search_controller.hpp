@@ -15,7 +15,7 @@ namespace Uci {
  * This struct holds various parameters that control the search depth and timing.
  */
 struct SearchLimits {
-  std::optional<int> depth = 1;     ///< Search depth limit (in ply)
+  std::optional<int> depth;         ///< Search depth limit (in ply)
   std::optional<int> movetime;      ///< Move time limit (in milliseconds)
   std::optional<int> wtime, btime;  ///< White/black time limits (in milliseconds)
   std::optional<int> winc, binc;    ///< White/black increment limits (in milliseconds)
