@@ -10,13 +10,13 @@ std::vector<std::string> Uci::split(std::string_view str) {
   return tokens;
 }
 
-Uci::UciEngine::UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
+Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
     : is_running(true),
       board(Board::StartingPosition()),
       position(Position(board)),
-      controller(SearchController(board, SearchLimits{}, out_stream)),
       in_stream(input),
-      out_stream(output) {}
+      out_stream(output),
+      controller(SearchController(board, SearchLimits{}, out_stream)) {}
 
 void Uci::UciEngine::loop() {
   std::string line;
