@@ -35,14 +35,20 @@ class BlockingStreamBuf : public std::streambuf {
 
  protected:
   /**
-   * @brief Provide next character to the stream (blocking if needed).
+   * @brief Provide next character to the stream or blocks until one exists.
    *
    * Waits until data is available or the stream is closed. Returns EOF when
    * no more data is available and the stream is closed.
+   *
+   * Example:
+   * - Call #1 → 'u'  pos=1
+   * - Call #2 → 'c'  pos=2
+   * - Call #3 → 'i'  pos=3
+   * - Call #4 → '\n' pos=4
+   * - Call #5 → waits or EOF
    */
   int_type underflow() override {
     std::unique_lock<std::mutex> lock(m_);
-
     cv_.wait(lock, [&] { return pos_ < buffer_.size() || closed_; });
 
     if (pos_ >= buffer_.size()) {
@@ -50,10 +56,14 @@ class BlockingStreamBuf : public std::streambuf {
     }
 
     char* base = &buffer_[pos_];
-    setg(base, base, base + 1);
+
+    // Set the values of the pointers defining the get area
+    this->setg(base, base, base + 1);
 
     ++pos_;
-    return traits_type::to_int_type(*gptr());
+
+    // Returns the pointer to the current character (get pointer) in the get area.
+    return traits_type::to_int_type(*this->gptr());
   }
 
  private:
@@ -94,12 +104,71 @@ class BlockingIStream : public std::istream {
 };
 
 /**
- * @brief Test fixture for UciEngine using a real threaded loop.
+ * @brief GoogleTest fixture for exercising UciEngine in a realistic threaded setup.
  *
- * Simulates a real UCI environment:
- * - Engine runs in its own thread
- * - Input is fed asynchronously
- * - Output is captured via stringstream
+ * This fixture reproduces the behavior of a real UCI session by decoupling
+ * input and output across two threads:
+ *
+ * - The engine runs in its own thread and executes UciEngine::loop().
+ * - The test thread acts as the GUI/client, sending commands and observing output.
+ *
+ * ### I/O Model
+ *
+ * Input (stdin simulation):
+ * - Implemented via BlockingIStream (std::istream-compatible).
+ * - Pull-based and blocking: the engine consumes input using std::getline().
+ * - The engine thread blocks while waiting for data, mimicking std::cin behavior.
+ * - The test thread produces input via write(), which appends to an internal buffer
+ *   and notifies the waiting engine thread.
+ *
+ * Output (stdout simulation):
+ * - Captured using std::stringstream.
+ * - Push-based: the engine writes output immediately.
+ * - The test thread passively inspects output (e.g., via polling or wait_for).
+ * - No synchronization is required for output access in this setup.
+ *
+ * ### Thread Interaction
+ *
+ *                 ┌────────────────────┐
+ *                 │ BlockingIStream    │
+ *                 │ (std::istream)     │
+ *                 └─────────┬──────────┘
+ *                           │
+ *                           ▼
+ *                 ┌────────────────────┐
+ *                 │ BlockingStreamBuf  │
+ *                 │ buffer_ = ""       │
+ *                 └─────────┬──────────┘
+ *                           │
+ *         ┌─────────────────┴─────────────────┐
+ *         ▼                                   ▼
+ * [Test thread]                        [Engine thread]
+ *
+ * write("uci\n")                          getline()
+ *  pushes data eagerly            pulls data lazily (blocking)
+ *      │                                     │
+ *      ▼                                     ▼
+ * buffer_ += "uci\n"                     underflow()
+ * notify_one()                               │
+ *                                            ▼
+ *                                      reads 'u','c','i','\n'
+ *                                            │
+ *                                            ▼
+ *                                      returns "uci"
+ *
+ * ### Lifecycle
+ *
+ * - SetUp():
+ *     - Instantiates the engine with simulated input/output streams.
+ *     - Launches the engine loop in a dedicated thread.
+ *
+ * - TearDown():
+ *     - Sends the "quit" command to terminate the loop.
+ *     - Closes the input stream to unblock any pending reads.
+ *     - Joins the engine thread to ensure clean shutdown.
+ *
+ * This fixture is intended for integration-style tests where realistic
+ * concurrency and blocking behavior are required.
  */
 class UciEngineTest : public ::testing::Test {
  protected:
