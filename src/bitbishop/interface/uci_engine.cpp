@@ -14,7 +14,7 @@ std::vector<std::string> Uci::split(std::string_view str) {
 Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
     : is_running(true),
       board(Board::StartingPosition()),
-      position(Position(board)),
+      position(Position(this->board)),
       in_stream(input),
       out_stream(output),
       search_worker_ptr(nullptr) {}
