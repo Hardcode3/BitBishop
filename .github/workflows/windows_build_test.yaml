@@ -1,8 +1,8 @@
 name: Windows Build Test
 
 on:
-  push:
   workflow_dispatch:
+  merge_group:
 
 jobs:
   windows-build:

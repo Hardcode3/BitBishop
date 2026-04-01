@@ -1,8 +1,10 @@
 name: Clang Tidy Linting
 
 on:
-  push:
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+  merge_group:
 
 permissions:
   contents: read
