@@ -26,7 +26,7 @@ TEST(SearchControllerTest, StartEmitsABestmoveWithInfiniteSearch) {
 
   Uci::SearchWorker controller(board, limits, out);
   controller.start();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
   controller.stop();
 
   const std::string res = out.str();
