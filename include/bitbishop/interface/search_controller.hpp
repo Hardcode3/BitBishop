@@ -28,7 +28,7 @@ struct SearchLimits {
  * This class handles the execution of search operations based on UCI parameters.
  * It uses a background thread to perform the search and communicates results through a callback.
  */
-class SearchController {
+class SearchWorker {
   std::thread worker;                  ///< Worker thread for search operations
   std::atomic<bool> stop_flag{false};  ///< Flag used to forward the stop order to the worker(s)
   Board board;                         ///< Current chess board
@@ -42,8 +42,8 @@ class SearchController {
   void run();
 
  public:
-  SearchController(Board board, SearchLimits limits, std::ostream& ostream = std::cout);
-  ~SearchController();
+  SearchWorker(Board board, SearchLimits limits, std::ostream& ostream = std::cout);
+  ~SearchWorker();
 
   /**
    * @brief Starts the search process with given parameters.

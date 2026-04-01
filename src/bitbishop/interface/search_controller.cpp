@@ -1,11 +1,11 @@
 #include <bitbishop/interface/search_controller.hpp>
 
-Uci::SearchController::SearchController(Board board, SearchLimits limits, std::ostream& ostream)
+Uci::SearchWorker::SearchWorker(Board board, SearchLimits limits, std::ostream& ostream)
     : board(board), position(Position(this->board)), limits(limits), out(&ostream) {}
 
-Uci::SearchController::~SearchController() { stop(); }
+Uci::SearchWorker::~SearchWorker() { stop(); }
 
-void Uci::SearchController::run() {
+void Uci::SearchWorker::run() {
   using namespace Search;
 
   BestMove best;
@@ -32,7 +32,7 @@ void Uci::SearchController::run() {
   (*out) << "bestmove " << best_move_str << "\n" << std::flush;
 }
 
-void Uci::SearchController::start() {
+void Uci::SearchWorker::start() {
   stop();
   stop_flag.store(false);
 
@@ -40,16 +40,16 @@ void Uci::SearchController::start() {
     limits.infinite = true;
   }
 
-  worker = std::thread(&SearchController::run, this);
+  worker = std::thread(&SearchWorker::run, this);
 }
 
-void Uci::SearchController::wait() {
+void Uci::SearchWorker::wait() {
   if (worker.joinable()) {
     worker.join();
   }
 }
 
-void Uci::SearchController::stop() {
+void Uci::SearchWorker::stop() {
   stop_flag.store(true);
   wait();
 }

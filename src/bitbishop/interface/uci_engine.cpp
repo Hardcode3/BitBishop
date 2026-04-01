@@ -17,7 +17,7 @@ Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
       position(Position(board)),
       in_stream(input),
       out_stream(output),
-      controller_ptr(nullptr) {}
+      search_worker_ptr(nullptr) {}
 
 void Uci::UciEngine::loop() {
   std::string line;
@@ -133,9 +133,9 @@ void Uci::UciEngine::handle_go(std::string_view line) {
     }
   }
 
-  controller_ptr = std::make_unique<SearchController>(board, limits, out_stream);
-  assert(controller_ptr != nullptr);
-  controller_ptr->start();
+  search_worker_ptr = std::make_unique<SearchWorker>(board, limits, out_stream);
+  assert(search_worker_ptr != nullptr);
+  search_worker_ptr->start();
 }
 
 void Uci::UciEngine::handle_stop() { release_search_controller(); }
@@ -146,9 +146,9 @@ void Uci::UciEngine::handle_quit() {
 }
 
 void Uci::UciEngine::release_search_controller() {
-  if (controller_ptr) {
-    controller_ptr->stop();
-    controller_ptr.reset();
+  if (search_worker_ptr) {
+    search_worker_ptr->stop();
+    search_worker_ptr.reset();
   }
-  assert(controller_ptr == nullptr);
+  assert(search_worker_ptr == nullptr);
 }

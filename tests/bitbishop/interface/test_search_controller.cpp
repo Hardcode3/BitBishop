@@ -9,7 +9,7 @@ TEST(SearchControllerTest, StartEmitsABestmoveWithDepth1) {
   limits.depth = 1;
   std::ostringstream out;
 
-  Uci::SearchController controller(board, limits, out);
+  Uci::SearchWorker controller(board, limits, out);
   controller.start();
   controller.wait();
 
@@ -24,7 +24,7 @@ TEST(SearchControllerTest, StartEmitsABestmoveWithInfiniteSearch) {
   limits.infinite = true;
   std::ostringstream out;
 
-  Uci::SearchController controller(board, limits, out);
+  Uci::SearchWorker controller(board, limits, out);
   controller.start();
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   controller.stop();

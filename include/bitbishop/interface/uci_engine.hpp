@@ -28,7 +28,7 @@ std::vector<std::string> split(std::string_view str);
 class UciEngine {
   Board board;                  ///< Current chess board
   Position position;            ///< Game position associated to the current chess board
-  std::unique_ptr<SearchController> controller_ptr;  ///< Manages the search process
+  std::unique_ptr<SearchWorker> search_worker_ptr;  ///< Manages the search process
   bool is_running;
 
   std::istream &in_stream;   ///< Input stream for UCI commands
