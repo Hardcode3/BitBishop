@@ -3,7 +3,7 @@ name: Windows Build Test
 on:
   workflow_dispatch:
   pull_request:
-    types: [ready_for_review, synchronize]
+    types: [labeled]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-windows-build
@@ -11,6 +11,7 @@ concurrency:
 
 jobs:
   windows-build:
+    if: github.event.label.name == 'pre-merge-checks'
     runs-on: windows-2022
     name: ${{ matrix.test_preset }}
 
