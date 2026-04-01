@@ -11,7 +11,7 @@ permissions:
   packages: read
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}
+  group: pr-${{ github.event.pull_request.number }}-linux-build
   cancel-in-progress: true
 
 jobs:
