@@ -138,6 +138,10 @@ void Uci::UciEngine::handle_go(std::vector<std::string> &line) {
     }
   }
 
+  if (!limits.depth) {
+    limits.infinite = true;  // Only depth and infinite limits are supported for now
+  }
+
   search_worker_ptr = std::make_unique<SearchWorker>(board, limits, out_stream);
   assert(search_worker_ptr != nullptr);
   search_worker_ptr->start();

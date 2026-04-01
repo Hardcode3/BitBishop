@@ -1,11 +1,7 @@
 #include <bitbishop/interface/search_controller.hpp>
 
 Uci::SearchWorker::SearchWorker(Board board, SearchLimits limits, std::ostream& ostream)
-    : board(board), position(Position(this->board)), limits(limits), out(&ostream) {
-  if (!limits.depth) {
-    limits.infinite = true;
-  }
-}
+    : board(board), position(Position(this->board)), limits(limits), out(&ostream) {}
 
 Uci::SearchWorker::~SearchWorker() { stop(); }
 
