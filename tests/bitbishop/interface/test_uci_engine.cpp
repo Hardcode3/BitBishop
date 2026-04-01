@@ -91,9 +91,13 @@ class UciEngineTest : public ::testing::Test {
    * @brief Gracefully stop the engine and join thread.
    */
   void TearDown() override {
-    input.write("quit\n");
-    input.close();
-    engine_thread.join();
+    if (input) {
+      input.write("quit\n");
+      input.close();
+    }
+    if (engine_thread.joinable()) {
+      engine_thread.join();
+    }
   }
 };
 
@@ -121,21 +125,72 @@ bool wait_for(std::function<bool()> pred, std::chrono::milliseconds timeout = st
   return false;
 }
 
+void assert_output_contains(const std::stringstream& output, const std::string& token,
+                            std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
+  wait_for([&] { return output.str().find(token) != std::string::npos; }, timeout);
+  ASSERT_TRUE(wait_for([&] { return output.str().find(token) != std::string::npos; }))
+      << "Expected output to contain: " << token << "\nActual output:\n"
+      << output.str();
+}
+
+void assert_output_not_contains(const std::stringstream& output, const std::string& token,
+                                std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
+  ASSERT_FALSE(wait_for([&] { return output.str().find(token) == std::string::npos; }))
+      << "Expected output not to contain: " << token << "\nActual output:\n"
+      << output.str();
+}
+
+TEST_F(UciEngineTest, CommandWithOnlySpacesDoesNothing) {
+  input.write("   \n");
+
+  SUCCEED();
+}
+
+TEST_F(UciEngineTest, CommandWithExtraWhitespaceWorks) {
+  input.write("   uci       \n");
+
+  assert_output_contains(output, "uciok");
+}
+
+TEST_F(UciEngineTest, CommandWithTabsAndSpacesWorks) {
+  input.write("  \t uci   \t  \n");
+
+  assert_output_contains(output, "uciok");
+}
+
+TEST_F(UciEngineTest, CommandWithReturnsAndSpacesWorks) {
+  input.write("  \r uci   \r  \n");
+
+  assert_output_contains(output, "uciok");
+}
+
 TEST_F(UciEngineTest, UciCommandOutputsIdAndOk) {
   input.write("uci\n");
 
-  ASSERT_TRUE(wait_for([&] { return output.str().find("uciok") != std::string::npos; }));
+  assert_output_contains(output, "uciok");
 
   const std::string res = output.str();
 
-  EXPECT_NE(res.find("id name BitBishop"), std::string::npos);
-  EXPECT_NE(res.find("id author Hardcode"), std::string::npos);
+  assert_output_contains(output, "id name BitBishop");
+  assert_output_contains(output, "id author Hardcode");
+}
+
+TEST_F(UciEngineTest, MultipleUciCommandsDoNotBreakEngine) {
+  input.write("uci\nuci\n");
+
+  assert_output_contains(output, "uciok");
 }
 
 TEST_F(UciEngineTest, IsReadyCommandOutputsReadyOk) {
+  input.write("uci\nisready\n");
+
+  assert_output_contains(output, "readyok");
+}
+
+TEST_F(UciEngineTest, IsReadyBeforeUciStillWorks) {
   input.write("isready\n");
 
-  ASSERT_TRUE(wait_for([&] { return output.str().find("readyok") != std::string::npos; }));
+  assert_output_contains(output, "readyok");
 }
 
 TEST_F(UciEngineTest, PositionCommandWithOneArgDoesNothing) {
@@ -180,6 +235,40 @@ TEST_F(UciEngineTest, PositionStartposMovesAppliesMoves) {
   EXPECT_TRUE(moved->is_white());
   EXPECT_TRUE(moved->is_pawn());
   EXPECT_FALSE(origin.has_value());
+}
+
+TEST_F(UciEngineTest, PositionStartposMovesWithSpacesAppliesMoves) {
+  input.write("position    startpos             moves e2e4\n");
+
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
+
+  const Board& board = engine->get_board();
+  auto moved = board.get_piece(E4);
+  auto origin = board.get_piece(E2);
+
+  ASSERT_TRUE(moved.has_value());
+  EXPECT_TRUE(moved->is_white());
+  EXPECT_TRUE(moved->is_pawn());
+  EXPECT_FALSE(origin.has_value());
+}
+
+TEST_F(UciEngineTest, PositionStartposWithEmptyMovesDoesNothing) {
+  input.write("position startpos moves\n");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
+}
+
+TEST_F(UciEngineTest, PositionWithoutNewlineDoesNotApply) {
+  input.write("position startpos moves e2e4");  // no '\n'
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
 
 TEST_F(UciEngineTest, PositionFenMovesAppliesMoves) {
@@ -228,7 +317,7 @@ TEST_F(UciEngineTest, UciNewGameResetsBoard) {
 TEST_F(UciEngineTest, GoWithoutPositionProducesBestMove) {
   input.write("go depth 2\n");
 
-  ASSERT_TRUE(wait_for([&] { return output.str().find("bestmove ") != std::string::npos; }));
+  assert_output_contains(output, "bestmove ");
 }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
@@ -287,7 +376,7 @@ TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
       "go infinite\n"
       "stop\n");
 
-  ASSERT_TRUE(wait_for([&] { return output.str().find("bestmove ") != std::string::npos; }));
+  assert_output_contains(output, "bestmove ");
 }
 
 TEST_F(UciEngineTest, GoWithoutDepthIsInfinite) {
@@ -304,5 +393,47 @@ TEST_F(UciEngineTest, GoStopGoDoesNotCrash) {
       "stop\n"
       "go depth 2\n");
 
-  ASSERT_TRUE(wait_for([&] { return output.str().find("bestmove ") != std::string::npos; }));
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, StopWithoutGoDoesNothing) {
+  input.write("stop\n");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  EXPECT_TRUE(output.str().empty());
+}
+
+TEST_F(UciEngineTest, DoubleStopDoesNotCrash) {
+  input.write(
+      "go infinite\n"
+      "stop\n"
+      "stop\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, GoWhileAlreadySearchingStopsAndRestarts) {
+  input.write(
+      "go infinite\n"
+      "go depth 2\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, RapidFireCommandsDoNotBreakEngine) {
+  input.write(
+      "uci\n"
+      "isready\n"
+      "position startpos\n"
+      "go depth 1\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, EngineStopsOnInputCloseEOF) {
+  input.close();
+  engine_thread.join();
+
+  SUCCEED();
 }
