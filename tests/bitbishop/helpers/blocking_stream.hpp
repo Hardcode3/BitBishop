@@ -77,6 +77,8 @@ class BlockingStreamBuf : public std::streambuf {
  *
  * Acts like std::cin for the engine, but allows controlled, thread-safe
  * injection of input from tests.
+ *
+ * @see UciEngineTest
  */
 class BlockingIStream : public std::istream {
  public:
