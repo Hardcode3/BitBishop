@@ -86,6 +86,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
   } else {
     return;
   }
+  position.reset();
 
   // "position ... moves e2e4 f2f4"
   if (offset < tokens.size() && tokens[offset] == "moves") {
