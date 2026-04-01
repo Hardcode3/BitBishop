@@ -103,7 +103,7 @@ void Uci::UciEngine::handle_position(std::string_view line) {
 }
 
 void Uci::UciEngine::handle_go(std::string_view line) {
-  release_search_controller();
+  reset_search_worker();
 
   std::vector<std::string> tokens = split(line);
   SearchLimits limits;
@@ -139,14 +139,14 @@ void Uci::UciEngine::handle_go(std::string_view line) {
   search_worker_ptr->start();
 }
 
-void Uci::UciEngine::handle_stop() { release_search_controller(); }
+void Uci::UciEngine::handle_stop() { reset_search_worker(); }
 
 void Uci::UciEngine::handle_quit() {
-  release_search_controller();
+  reset_search_worker();
   is_running = false;
 }
 
-void Uci::UciEngine::release_search_controller() {
+void Uci::UciEngine::reset_search_worker() {
   if (search_worker_ptr) {
     search_worker_ptr->stop();
     search_worker_ptr.reset();

@@ -128,7 +128,10 @@ class UciEngine {
    */
   void handle_quit();
 
-  void release_search_controller();
+  /**
+   * @brief Stops as soon as possible the search thread and resets it for later computations.
+   */
+  void reset_search_worker();
 };
 
 }  // namespace Uci
