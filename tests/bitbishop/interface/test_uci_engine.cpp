@@ -1,53 +1,233 @@
 #include <gtest/gtest.h>
 
+#include <bitbishop/helpers/blocking_stream.hpp>
 #include <bitbishop/interface/uci_engine.hpp>
-#include <sstream>
 
 using namespace Squares;
 
+/**
+ * @brief GoogleTest fixture for exercising UciEngine in a realistic threaded setup.
+ *
+ * This fixture reproduces the behavior of a real UCI session by decoupling
+ * input and output across two threads:
+ *
+ * - The engine runs in its own thread and executes UciEngine::loop().
+ * - The test thread acts as the GUI/client, sending commands and observing output.
+ *
+ * ### I/O Model
+ *
+ * Input (stdin simulation):
+ * - Implemented via BlockingIStream (std::istream-compatible).
+ * - Pull-based and blocking: the engine consumes input using std::getline().
+ * - The engine thread blocks while waiting for data, mimicking std::cin behavior.
+ * - The test thread produces input via write(), which appends to an internal buffer
+ *   and notifies the waiting engine thread.
+ *
+ * Output (stdout simulation):
+ * - Captured using std::stringstream.
+ * - Push-based: the engine writes output immediately.
+ * - The test thread passively inspects output (e.g., via polling or wait_for).
+ * - No synchronization is required for output access in this setup.
+ *
+ * ### Thread Interaction
+ *
+ *                 ┌────────────────────┐
+ *                 │ BlockingIStream    │
+ *                 │ (std::istream)     │
+ *                 └─────────┬──────────┘
+ *                           │
+ *                           ▼
+ *                 ┌────────────────────┐
+ *                 │ BlockingStreamBuf  │
+ *                 │ buffer_ = ""       │
+ *                 └─────────┬──────────┘
+ *                           │
+ *         ┌─────────────────┴─────────────────┐
+ *         ▼                                   ▼
+ * [Test thread]                        [Engine thread]
+ *
+ * write("uci\n")                          getline()
+ *  pushes data eagerly            pulls data lazily (blocking)
+ *      │                                     │
+ *      ▼                                     ▼
+ * buffer_ += "uci\n"                     underflow()
+ * notify_one()                               │
+ *                                            ▼
+ *                                      reads 'u','c','i','\n'
+ *                                            │
+ *                                            ▼
+ *                                      returns "uci"
+ *
+ * ### Lifecycle
+ *
+ * - SetUp():
+ *     - Instantiates the engine with simulated input/output streams.
+ *     - Launches the engine loop in a dedicated thread.
+ *
+ * - TearDown():
+ *     - Sends the "quit" command to terminate the loop.
+ *     - Closes the input stream to unblock any pending reads.
+ *     - Joins the engine thread to ensure clean shutdown.
+ *
+ * This fixture is intended for integration-style tests where realistic
+ * concurrency and blocking behavior are required.
+ */
 class UciEngineTest : public ::testing::Test {
  protected:
-  std::stringstream input;
-  std::stringstream output;
+  BlockingIStream input;                   ///< Simulated stdin
+  std::stringstream output;                ///< Captured stdout
+  std::unique_ptr<Uci::UciEngine> engine;  ///< Engine under test
+  std::thread engine_thread;               ///< Engine execution thread
 
+  /**
+   * @brief Start engine loop in a separate thread.
+   */
   void SetUp() override {
-    // Clear streams before each test
-    input.clear();
-    output.clear();
+    engine = std::make_unique<Uci::UciEngine>(input, output);
+    engine_thread = std::thread([this] { engine->loop(); });
   }
 
+  /**
+   * @brief Gracefully stop the engine and join thread.
+   */
   void TearDown() override {
-    // Clean up after each test
-    input.str("");
-    output.str("");
+    if (input) {
+      input.write("quit\n");
+      input.close();
+    }
+    if (engine_thread.joinable()) {
+      engine_thread.join();
+    }
   }
 };
 
-TEST_F(UciEngineTest, UciCommandOutputsIdAndOk) {
-  Uci::UciEngine engine(input, output);
+/**
+ * @brief Wait until a condition becomes true or timeout expires.
+ *
+ * Polls the predicate periodically until it returns true or the timeout
+ * is reached. Useful for synchronizing with asynchronous engine behavior.
+ *
+ * @param pred Condition to evaluate.
+ * @param timeout Maximum duration to wait.
+ * @param interval Delay between successive checks.
+ * @return true if condition became true within timeout, false otherwise.
+ */
+bool wait_for(std::function<bool()> pred, std::chrono::milliseconds timeout = std::chrono::milliseconds(500),
+              std::chrono::milliseconds interval = std::chrono::milliseconds(10)) {
+  const auto start = std::chrono::steady_clock::now();
 
-  engine.dispatch("uci");
+  while (std::chrono::steady_clock::now() - start < timeout) {
+    if (pred()) {
+      return true;
+    }
+    std::this_thread::sleep_for(interval);
+  }
+  return false;
+}
+
+void assert_output_contains(const std::stringstream& output, const std::string& token,
+                            std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
+  wait_for([&] { return output.str().find(token) != std::string::npos; }, timeout);
+  ASSERT_TRUE(wait_for([&] { return output.str().find(token) != std::string::npos; }))
+      << "Expected output to contain: " << token << "\nActual output:\n"
+      << output.str();
+}
+
+void assert_output_not_contains(const std::stringstream& output, const std::string& token,
+                                std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
+  ASSERT_FALSE(wait_for([&] { return output.str().find(token) == std::string::npos; }))
+      << "Expected output not to contain: " << token << "\nActual output:\n"
+      << output.str();
+}
+
+TEST_F(UciEngineTest, CommandWithOnlySpacesDoesNothing) {
+  input.write("   \n");
+
+  SUCCEED();
+}
+
+TEST_F(UciEngineTest, CommandWithExtraWhitespaceWorks) {
+  input.write("   uci       \n");
+
+  assert_output_contains(output, "uciok");
+}
+
+TEST_F(UciEngineTest, CommandWithTabsAndSpacesWorks) {
+  input.write("  \t uci   \t  \n");
+
+  assert_output_contains(output, "uciok");
+}
+
+TEST_F(UciEngineTest, CommandWithReturnsAndSpacesWorks) {
+  input.write("  \r uci   \r  \n");
+
+  assert_output_contains(output, "uciok");
+}
+
+TEST_F(UciEngineTest, UciCommandOutputsIdAndOk) {
+  input.write("uci\n");
+
+  assert_output_contains(output, "uciok");
 
   const std::string res = output.str();
-  EXPECT_NE(res.find("id name BitBishop"), std::string::npos);
-  EXPECT_NE(res.find("id author Hardcode"), std::string::npos);
-  EXPECT_NE(res.find("uciok"), std::string::npos);
+
+  assert_output_contains(output, "id name BitBishop");
+  assert_output_contains(output, "id author Hardcode");
+}
+
+TEST_F(UciEngineTest, MultipleUciCommandsDoNotBreakEngine) {
+  input.write("uci\nuci\n");
+
+  assert_output_contains(output, "uciok");
 }
 
 TEST_F(UciEngineTest, IsReadyCommandOutputsReadyOk) {
-  Uci::UciEngine engine(input, output);
+  input.write("uci\nisready\n");
 
-  engine.dispatch("isready");
+  assert_output_contains(output, "readyok");
+}
 
-  EXPECT_EQ(output.str(), "readyok\n");
+TEST_F(UciEngineTest, IsReadyBeforeUciStillWorks) {
+  input.write("isready\n");
+
+  assert_output_contains(output, "readyok");
+}
+
+TEST_F(UciEngineTest, PositionCommandWithOneArgDoesNothing) {
+  input.write("position");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
+}
+
+TEST_F(UciEngineTest, PositionCommandWithMissingFenArgDoesNothing) {
+  // Invalid fen: missing color to play (FEN has 5 components instead of 6)
+  input.write("position fen rnkqnbbr/pppppppp/8/8/8/8/PPPPPPPP/RNKQNBBR - - 0 1");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
+}
+
+TEST_F(UciEngineTest, PositionCommandWithInvalidSecondaryKeyworkDoesNothing) {
+  // Invalid command: fren instead of fen
+  input.write("position fren ...");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
 
 TEST_F(UciEngineTest, PositionStartposMovesAppliesMoves) {
-  Uci::UciEngine engine(input, output);
+  input.write("position startpos moves e2e4\n");
 
-  engine.dispatch("position startpos moves e2e4");
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
 
-  const Board &board = engine.get_board();
+  const Board& board = engine->get_board();
   auto moved = board.get_piece(E4);
   auto origin = board.get_piece(E2);
 
@@ -57,28 +237,74 @@ TEST_F(UciEngineTest, PositionStartposMovesAppliesMoves) {
   EXPECT_FALSE(origin.has_value());
 }
 
-TEST_F(UciEngineTest, PositionFenMovesAppliesMoves) {
-  Uci::UciEngine engine(input, output);
+TEST_F(UciEngineTest, PositionStartposMovesWithSpacesAppliesMoves) {
+  input.write("position    startpos             moves e2e4\n");
 
-  engine.dispatch("position fen 8/8/8/8/8/8/4P3/4K3 w - - 0 1 moves e2e4");
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
 
-  const Board &board = engine.get_board();
+  const Board& board = engine->get_board();
   auto moved = board.get_piece(E4);
   auto origin = board.get_piece(E2);
 
   ASSERT_TRUE(moved.has_value());
   EXPECT_TRUE(moved->is_white());
   EXPECT_TRUE(moved->is_pawn());
+  EXPECT_FALSE(origin.has_value());
+}
+
+TEST_F(UciEngineTest, PositionStartposWithEmptyMovesDoesNothing) {
+  input.write("position startpos moves\n");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
+}
+
+TEST_F(UciEngineTest, PositionWithoutNewlineDoesNotApply) {
+  input.write("position startpos moves e2e4");  // no '\n'
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
+}
+
+TEST_F(UciEngineTest, PositionFenMovesAppliesMoves) {
+  input.write("position fen rnqkbbnr/pppppppp/8/8/3P1Q2/8/PPP1PPPP/RN1KBBNR b - - 0 1 moves e1b4\n");
+
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(B4).has_value();
+  }));
+
+  const Board& board = engine->get_board();
+  auto moved = board.get_piece(B4);
+  auto origin = board.get_piece(E1);
+
+  ASSERT_TRUE(moved.has_value());
+  EXPECT_TRUE(moved->is_white());
+  EXPECT_TRUE(moved->is_bishop());
   EXPECT_FALSE(origin.has_value());
 }
 
 TEST_F(UciEngineTest, UciNewGameResetsBoard) {
-  Uci::UciEngine engine(input, output);
+  input.write("position startpos moves e2e4\n");
 
-  engine.dispatch("position startpos moves e2e4");
-  engine.dispatch("ucinewgame");
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
 
-  const Board &board = engine.get_board();
+  input.write("ucinewgame\n");
+
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E2).has_value();
+  }));
+
+  const Board& board = engine->get_board();
   auto start_pawn = board.get_piece(E2);
   auto moved = board.get_piece(E4);
 
@@ -88,46 +314,47 @@ TEST_F(UciEngineTest, UciNewGameResetsBoard) {
   EXPECT_FALSE(moved.has_value());
 }
 
-TEST_F(UciEngineTest, GoWithoutPositionUsesStartpos) {
-  {
-    Uci::UciEngine engine(input, output);
-    engine.dispatch("go depth 1");
-  }
+TEST_F(UciEngineTest, GoWithoutPositionProducesBestMove) {
+  input.write("go depth 2\n");
 
-  const std::string res = output.str();
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
+  assert_output_contains(output, "bestmove ");
 }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
-  Uci::UciEngine engine(input, output);
+  input.write("this_is_not_a_uci_command\n");
 
-  engine.dispatch("this_is_not_a_uci_command");
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
   EXPECT_TRUE(output.str().empty());
 }
 
 TEST_F(UciEngineTest, PositionStartposResetsBoard) {
-  Uci::UciEngine engine(input, output);
+  input.write("position fen 8/8/8/8/8/4P3/8/4K3 b - - 0 1 moves e3e4\n");
 
-  engine.dispatch("position startpos moves e2e4");
-  engine.dispatch("position startpos");
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
 
-  const Board &board = engine.get_board();
-  auto start_pawn = board.get_piece(E2);
-  auto moved = board.get_piece(E4);
+  input.write("position startpos\n");
 
-  ASSERT_TRUE(start_pawn.has_value());
-  EXPECT_TRUE(start_pawn->is_white());
-  EXPECT_TRUE(start_pawn->is_pawn());
-  EXPECT_FALSE(moved.has_value());
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E2).has_value();
+  }));
+
+  ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
 
 TEST_F(UciEngineTest, InvalidMoveStopsFurtherProcessing) {
-  Uci::UciEngine engine(input, output);
+  input.write("position startpos moves e2e4 notamove e7e5\n");
 
-  engine.dispatch("position startpos moves e2e4 notamove e7e5");
+  ASSERT_TRUE(wait_for([&] {
+    const Board& b = engine->get_board();
+    return b.get_piece(E4).has_value();
+  }));
 
-  const Board &board = engine.get_board();
+  const Board& board = engine->get_board();
   auto e4 = board.get_piece(E4);
   auto e2 = board.get_piece(E2);
   auto e5 = board.get_piece(E5);
@@ -144,13 +371,69 @@ TEST_F(UciEngineTest, InvalidMoveStopsFurtherProcessing) {
 }
 
 TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
-  {
-    Uci::UciEngine engine(input, output);
-    engine.dispatch("position startpos");
-    engine.dispatch("go infinite");
-    engine.dispatch("stop");
-  }
+  input.write(
+      "position startpos\n"
+      "go infinite\n"
+      "stop\n");
 
-  const std::string res = output.str();
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, GoWithoutDepthIsInfinite) {
+  input.write("go");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+  ASSERT_TRUE(output.str().find("bestmove ") == std::string::npos);
+}
+
+TEST_F(UciEngineTest, GoStopGoDoesNotCrash) {
+  input.write(
+      "go infinite\n"
+      "stop\n"
+      "go depth 2\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, StopWithoutGoDoesNothing) {
+  input.write("stop\n");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+  EXPECT_TRUE(output.str().empty());
+}
+
+TEST_F(UciEngineTest, DoubleStopDoesNotCrash) {
+  input.write(
+      "go infinite\n"
+      "stop\n"
+      "stop\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, GoWhileAlreadySearchingStopsAndRestarts) {
+  input.write(
+      "go infinite\n"
+      "go depth 2\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, RapidFireCommandsDoNotBreakEngine) {
+  input.write(
+      "uci\n"
+      "isready\n"
+      "position startpos\n"
+      "go depth 1\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
+TEST_F(UciEngineTest, EngineStopsOnInputCloseEOF) {
+  input.close();
+  engine_thread.join();
+
+  SUCCEED();
 }

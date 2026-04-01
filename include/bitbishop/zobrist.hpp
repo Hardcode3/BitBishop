@@ -78,17 +78,17 @@ CX_FN Tables generate() {
   Tables zobrist_tbl{};
   uint64_t seed = Zobrist::SEED;
 
-  for (int p_ind = 0; p_ind < Piece::DISTINCT_PIECES_COUNT; ++p_ind) {
-    for (int sq = 0; sq < BOARD_SIZE; ++sq) {
+  for (std::size_t p_ind = 0; p_ind < Piece::DISTINCT_PIECES_COUNT; ++p_ind) {
+    for (std::size_t sq = 0; sq < BOARD_SIZE; ++sq) {
       zobrist_tbl.pieces[p_ind][sq] = splitmix64(seed);
     }
   }
 
-  for (int i = 0; i < CASTLING_RIGHTS_STATES_COUNT; ++i) {
+  for (std::size_t i = 0; i < CASTLING_RIGHTS_STATES_COUNT; ++i) {
     zobrist_tbl.castling[i] = splitmix64(seed);
   }
 
-  for (int f = 0; f < EN_PASSANT_STATES_COUNT; ++f) {
+  for (std::size_t f = 0; f < EN_PASSANT_STATES_COUNT; ++f) {
     zobrist_tbl.en_passant[f] = splitmix64(seed);
   }
 

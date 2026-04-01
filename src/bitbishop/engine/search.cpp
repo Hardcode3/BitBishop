@@ -4,15 +4,16 @@
 #include <bitbishop/moves/position.hpp>
 
 // https://www.chessprogramming.org/Quiescence_Search
-int Search::quiesce(Position& position, int alpha, int beta, std::stop_token stop_token) {
-  if (stop_token.stop_requested()) {
+int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* stop_flag) {
+  if (stop_flag != nullptr && stop_flag->load()) {
     return alpha;
   }
-  const Board& board = position.get_board();
 
   if (position.is_threefold_repetition()) {
     return 0;
   }
+
+  const Board& board = position.get_board();
 
   if (board.get_state().m_halfmove_clock >= Const::MAX_HALF_MOVES_BEFORE_DRAW) {
     return 0;
@@ -36,7 +37,7 @@ int Search::quiesce(Position& position, int alpha, int beta, std::stop_token sto
   // To generate only capture moves and not all moves top discard some in the end
 
   for (const Move& move : moves) {
-    if (stop_token.stop_requested()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       return alpha;
     }
     if (!move.is_capture) {
@@ -46,10 +47,10 @@ int Search::quiesce(Position& position, int alpha, int beta, std::stop_token sto
 
     // Quiescence window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -quiesce(position, -beta, -alpha, stop_token);
+    int score = -quiesce(position, -beta, -alpha, stop_flag);
     position.revert_move();
 
-    if (stop_token.stop_requested()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       return alpha;
     }
 
@@ -62,18 +63,14 @@ int Search::quiesce(Position& position, int alpha, int beta, std::stop_token sto
   return alpha;
 }
 
-Search::BestMove Search::negamax(Position& position,
-                                 std::size_t depth,
-                                 int alpha,
-                                 int beta,
-                                 int ply,
-                                 std::stop_token stop_token) {
+Search::BestMove Search::negamax(Position& position, std::size_t depth, int alpha, int beta, int ply,
+                                 std::atomic<bool>* stop_flag) {
   const Board& board = position.get_board();
 
   BestMove best;
   std::vector<Move> moves;
 
-  if (stop_token.stop_requested()) {
+  if (stop_flag != nullptr && stop_flag->load()) {
     best.score = 0;
     return best;
   }
@@ -84,7 +81,7 @@ Search::BestMove Search::negamax(Position& position,
   }
 
   if (depth == 0) {
-    best.score = quiesce(position, alpha, beta, stop_token);
+    best.score = quiesce(position, alpha, beta, stop_flag);
     return best;
   }
 
@@ -111,17 +108,17 @@ Search::BestMove Search::negamax(Position& position,
 
   int bestScore = ALPHA_INIT;
   for (const Move& move : moves) {
-    if (stop_token.stop_requested()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       best.score = bestScore;
       return best;
     }
     position.apply_move(move);
     // Negamax window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stop_token).score;
+    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stop_flag).score;
     position.revert_move();
 
-    if (stop_token.stop_requested()) {
+    if (stop_flag != nullptr && stop_flag->load()) {
       best.score = bestScore;
       return best;
     }

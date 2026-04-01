@@ -75,4 +75,27 @@ CX_INLINE int THREEFOLD_REPETITION_COUNT = 3;
 /** https://en.wikipedia.org/wiki/Threefold_repetition#Fivefold_repetition */
 CX_INLINE int FIVEFOLD_REPETITION_COUNT = 5;
 
+/** Number of components (separated with spaces) of the FEN notation.
+ *
+ * Fen:
+ * - rbbnknrq/pppppppp/8/8/8/8/PPPPPPPP/RBBNKNRQ w - - 0 1
+ * Components:
+ * - 1111111111111111111111111111111111111111111 2 3 4 5 6
+ *
+ * https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation
+ */
+CX_INLINE int FEN_NOTATION_COMPONENT_COUNT = 6;
+
+/** Maximum number of characters a FEN string can have (for pre-allocation).
+ * https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation
+ */
+CX_INLINE int FEN_NOTATION_MAX_CHAR_COUNT = BOARD_SIZE  // 64 chessboard squares
+                                            + 7         // slashes (separators between ranks)
+                                            + 1         // color to play
+                                            + 4         // castling rights
+                                            + 1         // en passant square
+                                            + 1         // halfmove
+                                            + 1         // fullmove
+    ;
+
 }  // namespace Const

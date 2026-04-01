@@ -160,15 +160,22 @@ TEST(MoveTest, FromUciRegularMove) {
   EXPECT_FALSE(m.is_castling);
 }
 
-TEST(MoveTest, FromUciCastlingMove) {
-  Move m = Move::from_uci("e1g1");
+TEST(MoveTest, FromUciWhiteKingsideCastlingMove) {
+  std::array<Move, 4> castling_moves = {Move::from_uci("e1g1"), Move::from_uci("e1c1"), Move::from_uci("e8g8"),
+                                        Move::from_uci("e8c8")};
 
-  EXPECT_EQ(m.from, E1);
-  EXPECT_EQ(m.to, G1);
-  EXPECT_FALSE(m.promotion.has_value());
-  EXPECT_FALSE(m.is_capture);
-  EXPECT_FALSE(m.is_en_passant);
-  EXPECT_TRUE(m.is_castling);
+  for (const Move& m : castling_moves) {
+    EXPECT_EQ(m.from.file(), Const::FILE_E_IND);
+    EXPECT_TRUE((m.to.file() == Const::FILE_C_IND) || (m.to.file() == Const::FILE_G_IND));
+    EXPECT_FALSE(m.promotion.has_value());
+    EXPECT_FALSE(m.is_capture);
+    EXPECT_FALSE(m.is_en_passant);
+    EXPECT_TRUE(m.is_castling);
+  }
+}
+
+TEST(MoveTest, FromUciCastlingMoveWithPromotionThrows) {
+  EXPECT_THROW(std::ignore = Move::from_uci("e8g8p"), std::runtime_error);
 }
 
 TEST(MoveTest, FromUciPromotionWhite) {

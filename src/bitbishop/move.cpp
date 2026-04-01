@@ -9,7 +9,8 @@
 
   if (promotion && promotion->is_promotion()) {
     // Turn to lowecase by ORing the char with 0010 0000 = 0x20 = 32
-    uci += (promotion->to_char() | 0x20);
+    static const char CHAR_TO_LOWER_OR_VALUE = 0x20;
+    uci += (promotion->to_char() | CHAR_TO_LOWER_OR_VALUE);
   }
 
   return uci;

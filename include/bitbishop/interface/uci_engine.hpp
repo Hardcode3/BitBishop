@@ -16,8 +16,10 @@ namespace Uci {
  *
  * @param str The input string view to split
  * @return std::vector<std::string> Vector of tokens extracted from the input string
+ *
+ * @note Discards all kinds of whitespaces (tabs, return, multi-spaces) from a string.
  */
-std::vector<std::string> split(std::string_view str);
+[[nodiscard]] std::vector<std::string> split(const std::string &str);
 
 /**
  * @brief Implements the UCI protocol interface for a chess engine.
@@ -26,9 +28,10 @@ std::vector<std::string> split(std::string_view str);
  * game state management, and search control.
  */
 class UciEngine {
-  Board board;                  ///< Board representation of the game state
-  Position position;            ///< Current game position
-  SearchController controller;  ///< Manages the search process
+  Board board;                  ///< Current chess board
+  Position position;            ///< Game position associated to the current chess board
+  std::unique_ptr<SearchWorker> search_worker_ptr;  ///< Manages the search process
+  bool is_running;
 
   std::istream &in_stream;   ///< Input stream for UCI commands
   std::ostream &out_stream;  ///< Output stream for UCI responses
@@ -45,12 +48,7 @@ class UciEngine {
    * @param input Reference to input stream (default: std::cin)
    * @param output Reference to output stream (default: std::cout)
    */
-  UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout)
-      : board(Board::StartingPosition()),
-        position{Position(board)},
-        controller{},
-        in_stream(input),
-        out_stream(output) {}
+  UciEngine(std::istream &input = std::cin, std::ostream &output = std::cout);
 
   /**
    * @brief Main loop to process incoming UCI commands.
@@ -59,6 +57,16 @@ class UciEngine {
    */
   void loop();
 
+  /**
+   * @brief Gets the current board state.
+   *
+   * Provides read-only access to the current board representation.
+   *
+   * @return const Board& Reference to the current board state
+   */
+  [[nodiscard]] const Board &get_board() const { return board; }
+
+ private:
   /**
    * @brief Dispatches UCI commands to their respective handlers.
    *
@@ -72,20 +80,10 @@ class UciEngine {
    * - "stop"
    * - "quit"
    *
-   * @param line The input command line to process
+   * @param line The input command tokens to process
    */
-  void dispatch(std::string_view line);
+  void dispatch(std::vector<std::string> &line);
 
-  /**
-   * @brief Gets the current board state.
-   *
-   * Provides read-only access to the current board representation.
-   *
-   * @return const Board& Reference to the current board state
-   */
-  [[nodiscard]] const Board &get_board() const { return board; }
-
- private:
   /**
    * @brief Handles the "uci" command.
    *
@@ -105,18 +103,37 @@ class UciEngine {
    *
    * Processes position setup commands including startpos, fen, and move sequences.
    *
-   * @param line The input command line containing the position information
+   * @param line The input command tokens containing the position information
    */
-  void handle_position(std::string_view line);
+  void handle_position(std::vector<std::string> &line);
 
   /**
    * @brief Parses and handles "go" commands.
    *
    * Processes search commands (depth, movetime, etc.) and starts the search controller.
    *
-   * @param line The input command line containing the search parameters
+   * @param line The input command tokens containing the search parameters
    */
-  void handle_go(std::string_view line);
+  void handle_go(std::vector<std::string> &line);
+
+  /**
+   * @brief Handles the "stop" command.
+   *
+   * Terminates early the best move search. Best move may be inconsistent.
+   */
+  void handle_stop();
+
+  /**
+   * @brief Handles the "quit" command.
+   *
+   * Terminates the best move search as soon as possible and exits the program by breaking the UCI loop.
+   */
+  void handle_quit();
+
+  /**
+   * @brief Stops as soon as possible the search thread and resets it for later computations.
+   */
+  void reset_search_worker();
 };
 
 }  // namespace Uci

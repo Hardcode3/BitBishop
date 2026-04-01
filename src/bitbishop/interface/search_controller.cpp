@@ -1,43 +1,51 @@
 #include <bitbishop/interface/search_controller.hpp>
 
-void Uci::SearchController::run(std::stop_token stop_token) {
+Uci::SearchWorker::SearchWorker(Board board, SearchLimits limits, std::ostream& ostream)
+    : board(board), position(Position(this->board)), limits(limits), out(&ostream) {}
+
+Uci::SearchWorker::~SearchWorker() { stop(); }
+
+void Uci::SearchWorker::run() {
   using namespace Search;
 
   BestMove best;
-  if (limits.infinite) {
-    for (int current_depth = 1; !stop_token.stop_requested(); ++current_depth) {
-      best = negamax(*pos, current_depth, ALPHA_INIT, BETA_INIT, 0, stop_token);
-      if (stop_token.stop_requested()) {
-        break;
+  BestMove last_best;
+  try {
+    if (limits.infinite) {
+      for (int current_depth = 1; !stop_flag.load(); ++current_depth) {
+        best = negamax(position, current_depth, ALPHA_INIT, BETA_INIT, 0, &stop_flag);
+        if (!stop_flag.load()) {
+          last_best = best;
+        }
       }
+    } else if (limits.depth) {
+      best = negamax(position, *limits.depth, ALPHA_INIT, BETA_INIT, 0, &stop_flag);
     }
-  } else {
-    best = negamax(*pos, *limits.depth, ALPHA_INIT, BETA_INIT, 0, stop_token);
+  } catch (const std::exception& e) {
+    (*out) << "info string exception " << e.what() << "\n";
+  } catch (...) {
+    (*out) << "info string unknown exception\n";
   }
-  if (best.move) {
-    (*out) << "bestmove " << (*best.move).to_uci() << "\n";
-  } else {
-    (*out) << "bestmove "
-           << "0000\n";
-  }
+
+  const BestMove& final = (last_best.move) ? last_best : best;
+  const std::string best_move_str = (final.move) ? (*final.move).to_uci() : "0000";
+  (*out) << "bestmove " << best_move_str << "\n";
   (*out) << std::flush;
 }
 
-void Uci::SearchController::start(Position &pos, SearchLimits limits, std::ostream &out_stream) {
-  if (worker.joinable()) {
-    worker.request_stop();
-    worker.join();
-  }
-
-  if (!limits.depth) {
-    limits.infinite = true;
-  }
-
-  this->pos = &pos;
-  out = &out_stream;
-  this->limits = limits;
-
-  worker = std::jthread([this](std::stop_token stop_token) { run(stop_token); });
+void Uci::SearchWorker::start() {
+  stop();
+  stop_flag.store(false);
+  worker = std::thread(&SearchWorker::run, this);
 }
 
-void Uci::SearchController::stop() { worker.request_stop(); }
+void Uci::SearchWorker::wait() {
+  if (worker.joinable()) {
+    worker.join();
+  }
+}
+
+void Uci::SearchWorker::stop() {
+  stop_flag.store(true);
+  wait();
+}
