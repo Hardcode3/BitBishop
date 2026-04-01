@@ -16,8 +16,10 @@ namespace Uci {
  *
  * @param str The input string view to split
  * @return std::vector<std::string> Vector of tokens extracted from the input string
+ *
+ * @note Discards all kinds of whitespaces (tabs, return, multi-spaces) from a string.
  */
-std::vector<std::string> split(std::string_view str);
+[[nodiscard]] std::vector<std::string> split(const std::string &str);
 
 /**
  * @brief Implements the UCI protocol interface for a chess engine.
@@ -78,9 +80,9 @@ class UciEngine {
    * - "stop"
    * - "quit"
    *
-   * @param line The input command line to process
+   * @param line The input command tokens to process
    */
-  void dispatch(std::string_view line);
+  void dispatch(std::vector<std::string> &line);
 
   /**
    * @brief Handles the "uci" command.
@@ -101,18 +103,18 @@ class UciEngine {
    *
    * Processes position setup commands including startpos, fen, and move sequences.
    *
-   * @param line The input command line containing the position information
+   * @param line The input command tokens containing the position information
    */
-  void handle_position(std::string_view line);
+  void handle_position(std::vector<std::string> &line);
 
   /**
    * @brief Parses and handles "go" commands.
    *
    * Processes search commands (depth, movetime, etc.) and starts the search controller.
    *
-   * @param line The input command line containing the search parameters
+   * @param line The input command tokens containing the search parameters
    */
-  void handle_go(std::string_view line);
+  void handle_go(std::vector<std::string> &line);
 
   /**
    * @brief Handles the "stop" command.
