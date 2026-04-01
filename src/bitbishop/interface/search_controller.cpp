@@ -29,7 +29,8 @@ void Uci::SearchWorker::run() {
 
   const BestMove& final = (last_best.move) ? last_best : best;
   const std::string best_move_str = (final.move) ? (*final.move).to_uci() : "0000";
-  (*out) << "bestmove " << best_move_str << "\n" << std::flush;
+  (*out) << "bestmove " << best_move_str << "\n";
+  (*out) << std::flush;
 }
 
 void Uci::SearchWorker::start() {
