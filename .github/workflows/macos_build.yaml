@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  macos-build:
+  macos-intel-build:
     if: |
       github.event_name == 'pull_request' &&
       (
@@ -26,64 +26,37 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
         )
       )
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+    name: macos-26-intel - quick-validation-clang-release
+    uses: ./.github/workflows/_rwf_macos_build_test.yaml
+    with:
+      runner: macos-26-intel
+      arch: intel
+      name: clang_release
+      configure_preset: clang_release
+      build_preset: clang_release
+      test_preset: quick-validation-clang-release
+    secrets: inherit
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-26-intel
-            arch: intel
-            name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
-
-          - runner: macos-26
-            arch: arm64
-            name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup pre-installed VCPKG
-        run: |
-          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
-
-      - name: Cache VCPKG
-        run: |
-          # Use the GitHub Actions cache as a binary source
-          echo "VCPKG_BINARY_SOURCES=clear;x-gha,readwrite" >> $GITHUB_ENV
-        env:
-          # These variables are required for the 'x-gha' provider to talk to GitHub's cache API
-          ACTIONS_CACHE_URL: ${{ secrets.ACTIONS_CACHE_URL }}
-          ACTIONS_RUNTIME_TOKEN: ${{ secrets.ACTIONS_RUNTIME_TOKEN }}
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build
-          key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
-
-      - name: Configure (${{ matrix.configure_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
-        with:
-          step-name: Configure (${{ matrix.configure_preset }})
-          command: "cmake --preset ${{ matrix.configure_preset }}"
-
-      - name: Build (${{ matrix.build_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
-        with:
-          step-name: Build (${{ matrix.build_preset }})
-          command: "cmake --build --preset ${{ matrix.build_preset }}"
-
-      - name: Test (${{ matrix.test_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
-        with:
-          step-name: Test (${{ matrix.test_preset }})
-          command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
+  macos-arm-build:
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (
+          github.event.action == 'labeled' &&
+          github.event.label.name == 'run-pre-merge-checks'
+        ) ||
+        (
+          github.event.action != 'labeled' &&
+          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+        )
+      )
+    name: macos-26 - quick-validation-clang-release
+    uses: ./.github/workflows/_rwf_macos_build_test.yaml
+    with:
+      runner: macos-26
+      arch: arm64
+      name: clang_release
+      configure_preset: clang_release
+      build_preset: clang_release
+      test_preset: quick-validation-clang-release
+    secrets: inherit
