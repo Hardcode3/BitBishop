@@ -31,7 +31,6 @@ jobs:
     with:
       runner: windows-2022
       arch: x64
-      name: msvc_release
       configure_preset: msvc_release
       build_preset: msvc_release
       test_preset: quick-validation-msvc-release
@@ -55,7 +54,6 @@ jobs:
     with:
       runner: windows-2025
       arch: x64
-      name: msvc_release
       configure_preset: msvc_release
       build_preset: msvc_release
       test_preset: quick-validation-msvc-release
@@ -79,7 +77,6 @@ jobs:
     with:
       runner: windows-11-arm
       arch: arm64
-      name: msvc_release
       configure_preset: msvc_release
       build_preset: msvc_release
       test_preset: quick-validation-msvc-release

@@ -31,7 +31,6 @@ jobs:
     with:
       runner: macos-26-intel
       arch: intel
-      name: clang_release
       configure_preset: clang_release
       build_preset: clang_release
       test_preset: quick-validation-clang-release
@@ -55,7 +54,6 @@ jobs:
     with:
       runner: macos-26
       arch: arm64
-      name: clang_release
       configure_preset: clang_release
       build_preset: clang_release
       test_preset: quick-validation-clang-release

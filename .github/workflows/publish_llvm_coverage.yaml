@@ -1,0 +1,90 @@
+name: Publish LLVM Coverage
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  linux-coverage-publish:
+    runs-on: ubuntu-24.04
+    name: ubuntu-24.04 - quick-validation-clang-debug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Linux CI
+        uses: ./.github/actions/_setup_linux_ci
+        with:
+          arch: x64
+          cache-name: clang_debug
+
+      - name: Configure (clang_debug)
+        uses: ./.github/actions/_log_to_gh_summary_bash
+        with:
+          step-name: Configure (clang_debug)
+          command: "cmake --preset clang_debug"
+
+      - name: Build (clang_debug)
+        uses: ./.github/actions/_log_to_gh_summary_bash
+        with:
+          step-name: Build (clang_debug)
+          command: "cmake --build --preset clang_debug"
+
+      - name: Test (quick-validation-clang-debug)
+        uses: ./.github/actions/_log_to_gh_summary_bash
+        with:
+          step-name: Test (quick-validation-clang-debug)
+          command: "ctest --preset quick-validation-clang-debug --output-on-failure"
+
+      - name: Generate html coverage report
+        id: htmlcov
+        uses: ./.github/actions/_generate_llvm_html_coverage
+        with:
+          build-preset: ${{ inputs.build-preset }}
+
+      - name: Generate shields.io badge
+        id: shieldsio
+        shell: bash
+        run: |
+          set +e
+          cmake --build --preset "${{ inputs.build-preset }}" --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
+          COV_EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+
+          SHIELDSIO_REGION_COV_BADGE_FILE=$(grep -Po "Shields.io Region Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_FUNCTION_COV_BADGE_FILE=$(grep -Po "Shields.io Function Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_LINE_COV_BADGE_FILE=$(grep -Po "Shields.io Line Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+          SHIELDSIO_BRANCH_COV_BADGE_FILE=$(grep -Po "Shields.io Branch Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+
+          echo "SHIELDSIO_REGION_COV_BADGE_FILE=$SHIELDSIO_REGION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_FUNCTION_COV_BADGE_FILE=$SHIELDSIO_FUNCTION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_LINE_COV_BADGE_FILE=$SHIELDSIO_LINE_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+          echo "SHIELDSIO_BRANCH_COV_BADGE_FILE=$SHIELDSIO_BRANCH_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+
+          exit $COV_EXIT_CODE
+
+      - name: Prepare files
+        shell: bash
+        run: |
+          mkdir -p "${{ inputs.publish-dir }}/coverage/badges"
+          cp -r "${{ steps.htmlcov.outputs.html-cov-dir }}" "${{ inputs.publish-dir }}/coverage/"
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_REGION_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_FUNCTION_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_LINE_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+          cp "${{ steps.shieldsio.outputs.SHIELDSIO_BRANCH_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+
+      - name: Publish coverage badge and report to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ inputs.github-token }}
+          publish_branch: ${{ inputs.publish-branch }}
+          publish_dir: ${{ inputs.publish-dir }}
+          keep_files: true

@@ -9,9 +9,6 @@ on:
       arch:
         required: true
         type: string
-      name:
-        required: true
-        type: string
       configure_preset:
         required: true
         type: string
@@ -41,14 +38,14 @@ jobs:
             C:\vcpkg\packages
             C:\vcpkg\buildtrees
             ~\AppData\Local\vcpkg\archives
-          key: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-${{ inputs.name }}-${{ hashFiles('vcpkg.json') }}
+          key: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-${{ inputs.build_preset }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build_preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-${{ inputs.arch }}-cmake-
 
       - name: Configure (${{ inputs.configure_preset }})

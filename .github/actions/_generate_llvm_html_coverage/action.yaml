@@ -1,0 +1,28 @@
+name: Generate LLVM HTML Coverage
+description: Builds the HTML coverage report for a coverage-enabled LLVM preset
+
+inputs:
+  build-preset:
+    description: CMake build preset used to generate HTML coverage artifacts
+    required: true
+
+outputs:
+  html-cov-dir:
+    description: Directory containing the generated HTML coverage report
+    value: ${{ steps.htmlcov.outputs.html_cov_dir }}
+
+runs:
+  using: composite
+  steps:
+    - id: htmlcov
+      shell: bash
+      run: |
+        set +e
+        cmake --build --preset "${{ inputs.build-preset }}" --target coverage-html 2>&1 | tee coverage_html_summary.txt
+        COV_EXIT_CODE=${PIPESTATUS[0]}
+        set -e
+
+        HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
+        echo "html_cov_dir=$HTML_COV_DIR" >> "$GITHUB_OUTPUT"
+
+        exit $COV_EXIT_CODE

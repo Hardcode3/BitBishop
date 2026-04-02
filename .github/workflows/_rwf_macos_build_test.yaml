@@ -9,9 +9,6 @@ on:
       arch:
         required: true
         type: string
-      name:
-        required: true
-        type: string
       configure_preset:
         required: true
         type: string
@@ -49,7 +46,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build_preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-${{ inputs.arch }}-cmake-
 
       - name: Configure (${{ inputs.configure_preset }})

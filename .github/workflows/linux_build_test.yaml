@@ -1,8 +1,6 @@
 name: Linux Build Test
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [opened, reopened, synchronize, labeled]
@@ -26,30 +24,20 @@ jobs:
     steps:
       - id: set-matrix
         env:
-          EVENT_NAME: ${{ github.event_name }}
           EVENT_ACTION: ${{ github.event.action }}
-          REF: ${{ github.ref }}
-          HAS_PREMERGE_LABEL: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') || false }}
+          HAS_PREMERGE_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
           ADDED_LABEL: ${{ github.event.action == 'labeled' && github.event.label.name || '' }}
         run: |
-          if [[ "$EVENT_NAME" == "push" && "$REF" == "refs/heads/main" ]]; then
+          if [[ "$EVENT_ACTION" == "labeled" && "$ADDED_LABEL" == "run-pre-merge-checks" ]] || \
+             [[ "$EVENT_ACTION" != "labeled" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":true}
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
             ]}'
-          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" == "labeled" && "$ADDED_LABEL" == "run-pre-merge-checks" ]]; then
+          elif [[ "$EVENT_ACTION" != "labeled" ]]; then
             MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false},
-              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false}
-            ]}'
-          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" != "labeled" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
-            MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":false},
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false},
-              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false}
-            ]}'
-          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" != "labeled" ]]; then
-            MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":false}
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
             ]}'
           else
             MATRIX='{"include":[]}'
@@ -78,10 +66,6 @@ jobs:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
-    permissions:
-      # The main-branch coverage lane publishes to gh-pages.
-      contents: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -89,7 +73,7 @@ jobs:
         uses: ./.github/actions/_setup_linux_ci
         with:
           arch: ${{ matrix.arch }}
-          cache-name: ${{ matrix.name }}
+          cache-name: ${{ matrix.build_preset }}
 
       - name: Configure (${{ matrix.configure_preset }})
         uses: ./.github/actions/_log_to_gh_summary_bash
@@ -109,9 +93,17 @@ jobs:
           step-name: Test (${{ matrix.test_preset }})
           command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
 
-      - name: Publish coverage (${{ matrix.build_preset }})
-        if: matrix.publish_coverage
-        uses: ./.github/actions/_publish_linux_coverage
+      - name: Generate coverage HTML (${{ matrix.build_preset }})
+        if: matrix.build_preset == 'clang_debug'
+        id: htmlcov
+        uses: ./.github/actions/_generate_llvm_html_coverage
         with:
           build-preset: ${{ matrix.build_preset }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload coverage artifact (${{ matrix.build_preset }})
+        if: matrix.build_preset == 'clang_debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: llvm-html-coverage-${{ matrix.runner }}-${{ matrix.build_preset }}
+          path: ${{ steps.htmlcov.outputs.html-cov-dir }}
+          if-no-files-found: error
