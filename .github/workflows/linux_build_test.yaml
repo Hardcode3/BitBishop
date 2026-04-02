@@ -2,8 +2,10 @@ name: Linux Build Test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ] # triggers coverage badges generation after merge on main
   pull_request:
-    branches: [ main ]
+    branches: [ main ] # triggers debug builds on push and release builds on pr labelling
     types: [labeled, synchronize]
 
 concurrency:
