@@ -11,7 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  # coverage artefacts export requires write priviledges
+  # (html report and shields.io badge)
+  contents: write
+
   packages: read
 
 jobs:
