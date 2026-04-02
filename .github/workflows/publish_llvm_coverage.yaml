@@ -20,23 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Linux CI
-        uses: ./.github/actions/_setup_linux_ci
+      - name: Setup, configure, and build Linux CI
+        uses: ./.github/actions/_setup_configure_build_linux
         with:
           arch: x64
-          cache-name: clang_debug
-
-      - name: Configure (clang_debug)
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Configure (clang_debug)
-          command: "cmake --preset clang_debug"
-
-      - name: Build (clang_debug)
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Build (clang_debug)
-          command: "cmake --build --preset clang_debug"
+          configure-preset: clang_debug
+          build-preset: clang_debug
 
       - name: Publish coverage (clang_debug)
         uses: ./.github/actions/_publish_llvm_coverage

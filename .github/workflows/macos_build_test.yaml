@@ -13,26 +13,37 @@ permissions:
   contents: read
 
 jobs:
-  macos-intel-build:
+  macos-build:
     if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: macos-26-intel - quick-validation-clang-release
-    uses: ./.github/workflows/_rwf_macos_build_test.yaml
-    with:
-      runner: macos-26-intel
-      arch: intel
-      configure_preset: clang_release
-      build_preset: clang_release
-      test_preset: quick-validation-clang-release
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-26-intel
+            arch: intel
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
+          - runner: macos-26
+            arch: arm64
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
-  macos-arm-build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: macos-26 - quick-validation-clang-release
-    uses: ./.github/workflows/_rwf_macos_build_test.yaml
-    with:
-      runner: macos-26
-      arch: arm64
-      configure_preset: clang_release
-      build_preset: clang_release
-      test_preset: quick-validation-clang-release
-    secrets: inherit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup, configure, and build macOS CI
+        uses: ./.github/actions/_setup_configure_build_macos
+        with:
+          arch: ${{ matrix.arch }}
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
+
+      - name: Test (${{ matrix.test_preset }})
+        uses: ./.github/actions/_log_to_gh_summary_bash
+        with:
+          step-name: Test (${{ matrix.test_preset }})
+          command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"

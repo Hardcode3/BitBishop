@@ -31,13 +31,13 @@ jobs:
           SHOULD_RUN=true
           if [[ "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
               {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
               {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
             ]}'
           elif [[ "$EVENT_ACTION" != "labeled" ]]; then
             MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
             ]}'
           else
             MATRIX='{"include":[]}'
@@ -64,23 +64,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Linux CI
-        uses: ./.github/actions/_setup_linux_ci
+      - name: Setup, configure, and build Linux CI
+        uses: ./.github/actions/_setup_configure_build_linux
         with:
           arch: ${{ matrix.arch }}
-          cache-name: ${{ matrix.build_preset }}
-
-      - name: Configure (${{ matrix.configure_preset }})
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Configure (${{ matrix.configure_preset }})
-          command: "cmake --preset ${{ matrix.configure_preset }}"
-
-      - name: Build (${{ matrix.build_preset }})
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Build (${{ matrix.build_preset }})
-          command: "cmake --build --preset ${{ matrix.build_preset }}"
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
 
       - name: Test (${{ matrix.test_preset }})
         uses: ./.github/actions/_log_to_gh_summary_bash

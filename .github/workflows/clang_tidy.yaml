@@ -31,20 +31,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Linux CI
-        uses: ./.github/actions/_setup_linux_ci
+      - name: Setup, configure, and run clang-tidy
+        uses: ./.github/actions/_setup_configure_build_linux
         with:
           arch: ${{ matrix.arch }}
-          cache-name: ${{ matrix.build_preset }}
-
-      - name: Configure (${{ matrix.configure_preset }})
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Configure (${{ matrix.configure_preset }})
-          command: "cmake --preset ${{ matrix.configure_preset }}"
-
-      - name: Run clang-tidy
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Run clang-tidy (${{ matrix.configure_preset }})
-          command: "cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy"
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
+          build-target: clang-tidy
+          build-step-name: Run clang-tidy

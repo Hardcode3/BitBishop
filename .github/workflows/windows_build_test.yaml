@@ -13,38 +13,42 @@ permissions:
   contents: read
 
 jobs:
-  windows-2022-build:
+  windows-build:
     if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: windows-2022 - quick-validation-msvc-release
-    uses: ./.github/workflows/_rwf_windows_build_test.yaml
-    with:
-      runner: windows-2022
-      arch: x64
-      configure_preset: msvc_release
-      build_preset: msvc_release
-      test_preset: quick-validation-msvc-release
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-2022
+            arch: x64
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc-release
+          - runner: windows-2025
+            arch: x64
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc-release
+          - runner: windows-11-arm
+            arch: arm64
+            configure_preset: msvc_release_arm64
+            build_preset: msvc_release_arm64
+            test_preset: quick-validation-msvc-release-arm64
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
-  windows-2025-build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: windows-2025 - quick-validation-msvc-release
-    uses: ./.github/workflows/_rwf_windows_build_test.yaml
-    with:
-      runner: windows-2025
-      arch: x64
-      configure_preset: msvc_release
-      build_preset: msvc_release
-      test_preset: quick-validation-msvc-release
-    secrets: inherit
+    steps:
+      - uses: actions/checkout@v4
 
-  windows-11-arm-build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: windows-11-arm - quick-validation-msvc-release-arm64
-    uses: ./.github/workflows/_rwf_windows_build_test.yaml
-    with:
-      runner: windows-11-arm
-      arch: arm64
-      configure_preset: msvc_release_arm64
-      build_preset: msvc_release_arm64
-      test_preset: quick-validation-msvc-release-arm64
-    secrets: inherit
+      - name: Setup, configure, and build Windows CI
+        uses: ./.github/actions/_setup_configure_build_windows
+        with:
+          arch: ${{ matrix.arch }}
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
+
+      - name: Test (${{ matrix.test_preset }})
+        uses: ./.github/actions/_log_to_gh_summary_pwsh
+        with:
+          step-name: Test (${{ matrix.test_preset }})
+          command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
