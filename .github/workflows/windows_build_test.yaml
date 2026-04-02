@@ -18,6 +18,10 @@ jobs:
     strategy:
       matrix:
         include:
+          - name: msvc_debug
+            configure_preset: msvc_debug
+            build_preset: msvc_debug
+            test_preset: quick-validation-msvc-debug
           - name: msvc_release
             configure_preset: msvc_release
             build_preset: msvc_release
