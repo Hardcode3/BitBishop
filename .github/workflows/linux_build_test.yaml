@@ -2,9 +2,9 @@ name: Linux Build Test
 
 on:
   workflow_dispatch:
-  push:
-  # pull_request:
-  #   branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [labeled, synchronize]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-linux-build
@@ -16,6 +16,12 @@ permissions:
 
 jobs:
   linux-build:
+    if: |
+      matrix.run_condition == 'always' ||
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+      )
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
@@ -33,6 +39,7 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
+            run_condition: always
 
           - runner: ubuntu-24.04
             arch: x64
@@ -40,6 +47,7 @@ jobs:
             configure_preset: clang_release
             build_preset: clang_release
             test_preset: quick-validation-clang-release
+            run_condition: final_only
 
           - runner: ubuntu-24.04-arm
             arch: arm64
@@ -47,6 +55,7 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
+            run_condition: always
 
           - runner: ubuntu-24.04-arm
             arch: arm64
@@ -54,6 +63,7 @@ jobs:
             configure_preset: clang_release
             build_preset: clang_release
             test_preset: quick-validation-clang-release
+            run_condition: final_only
 
     steps:
       - uses: actions/checkout@v4

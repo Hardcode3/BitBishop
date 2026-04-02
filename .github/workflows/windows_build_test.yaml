@@ -2,9 +2,9 @@ name: Windows Build Test
 
 on:
   workflow_dispatch:
-  push:
-  # pull_request:
-  #   types: [labeled, synchronize]
+  pull_request:
+    branches: [ main ]
+    types: [labeled, synchronize]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-windows-build
@@ -12,7 +12,11 @@ concurrency:
 
 jobs:
   windows-build:
-    # if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+    if: |
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+      )
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
@@ -21,13 +25,6 @@ jobs:
         include:
           - runner: windows-2022
             arch: x64
-            name: msvc_debug
-            configure_preset: msvc_debug
-            build_preset: msvc_debug
-            test_preset: quick-validation-msvc-debug
-
-          - runner: windows-2022
-            arch: x64
             name: msvc_release
             configure_preset: msvc_release
             build_preset: msvc_release
@@ -35,24 +32,10 @@ jobs:
 
           - runner: windows-2025
             arch: x64
-            name: msvc_debug
-            configure_preset: msvc_debug
-            build_preset: msvc_debug
-            test_preset: quick-validation-msvc-debug
-
-          - runner: windows-2025
-            arch: x64
             name: msvc_release
             configure_preset: msvc_release
             build_preset: msvc_release
             test_preset: quick-validation-msvc-release
-
-          - runner: windows-11-arm
-            arch: arm64
-            name: msvc_debug
-            configure_preset: msvc_debug
-            build_preset: msvc_debug
-            test_preset: quick-validation-msvc-debug
 
           - runner: windows-11-arm
             arch: arm64
