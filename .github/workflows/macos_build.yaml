@@ -31,6 +31,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup vcpkg
+        run: |
+          brew install tree
+          tree -d
+          where vcpkg || true
+          whereis vcpkg || true
+          which vcpkg || true
+          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
+          echo "/tmp/vcpkg" >> $GITHUB_PATH
+          exit 0
+
       - name: Configure (${{ matrix.configure_preset }})
         shell: bash
         run: |
