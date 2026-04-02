@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner: macos-13
+          - runner: macos-26-intel
             arch: intel
             name: clang_debug
             configure_preset: clang_debug
