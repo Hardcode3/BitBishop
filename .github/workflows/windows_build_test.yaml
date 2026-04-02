@@ -47,6 +47,20 @@ jobs:
             build_preset: msvc_release
             test_preset: quick-validation-msvc-release
 
+          - runner: windows-11-arm
+            arch: arm64
+            name: msvc_debug
+            configure_preset: msvc_debug
+            build_preset: msvc_debug
+            test_preset: quick-validation-msvc-debug
+
+          - runner: windows-11-arm
+            arch: arm64
+            name: msvc_release
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc-release
+
     steps:
       - uses: actions/checkout@v4
 
