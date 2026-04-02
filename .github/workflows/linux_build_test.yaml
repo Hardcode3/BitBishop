@@ -39,7 +39,7 @@ jobs:
             name: clang_release
             configure_preset: clang_release
             build_preset: clang_release
-            test_preset: quick-validation-clang_release
+            test_preset: quick-validation-clang-release
 
           - runner: ubuntu-24.04-arm
             arch: arm64
@@ -53,7 +53,7 @@ jobs:
             name: clang_release
             configure_preset: clang_release
             build_preset: clang_release
-            test_preset: quick-validation-clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4

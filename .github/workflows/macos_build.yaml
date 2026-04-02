@@ -38,14 +38,14 @@ jobs:
             name: clang_release
             configure_preset: clang_release
             build_preset: clang_release
-            test_preset: quick-validation-clang_release
+            test_preset: quick-validation-clang-release
 
           - runner: macos-26
             arch: arm64
             name: clang_release
             configure_preset: clang_release
             build_preset: clang_release
-            test_preset: quick-validation-clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
