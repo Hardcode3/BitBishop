@@ -13,11 +13,12 @@ concurrency:
 jobs:
   macos-arm-build:
     # if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    runs-on: macos-26
-    name: ${{ matrix.test_preset }}
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.name }}
 
     strategy:
       matrix:
+        runner: [macos-13, macos-26]
         include:
           - name: clang_debug
             configure_preset: clang_debug
@@ -43,6 +44,13 @@ jobs:
           # These variables are required for the 'x-gha' provider to talk to GitHub's cache API
           ACTIONS_CACHE_URL: ${{ secrets.ACTIONS_CACHE_URL }}
           ACTIONS_RUNTIME_TOKEN: ${{ secrets.ACTIONS_RUNTIME_TOKEN }}
+
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
         uses: ./.github/actions/_log_to_gh_summary
