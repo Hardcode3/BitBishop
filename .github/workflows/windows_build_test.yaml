@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  windows-build:
+  windows-2022-build:
     if: |
       github.event_name == 'pull_request' &&
       (
@@ -26,128 +26,61 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
         )
       )
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+    name: windows-2022 - quick-validation-msvc-release
+    uses: ./.github/workflows/_rwf_windows_build_test.yaml
+    with:
+      runner: windows-2022
+      arch: x64
+      name: msvc_release
+      configure_preset: msvc_release
+      build_preset: msvc_release
+      test_preset: quick-validation-msvc-release
+    secrets: inherit
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: windows-2022
-            arch: x64
-            name: msvc_release
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
+  windows-2025-build:
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (
+          github.event.action == 'labeled' &&
+          github.event.label.name == 'run-pre-merge-checks'
+        ) ||
+        (
+          github.event.action != 'labeled' &&
+          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+        )
+      )
+    name: windows-2025 - quick-validation-msvc-release
+    uses: ./.github/workflows/_rwf_windows_build_test.yaml
+    with:
+      runner: windows-2025
+      arch: x64
+      name: msvc_release
+      configure_preset: msvc_release
+      build_preset: msvc_release
+      test_preset: quick-validation-msvc-release
+    secrets: inherit
 
-          - runner: windows-2025
-            arch: x64
-            name: msvc_release
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
-
-          - runner: windows-11-arm
-            arch: arm64
-            name: msvc_release
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache VCPKG
-        uses: actions/cache@v4
-        with:
-          path: |
-            C:\vcpkg\installed
-            C:\vcpkg\packages
-            C:\vcpkg\buildtrees
-            ~\AppData\Local\vcpkg\archives
-          key: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build
-          key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
-
-      - name: Configure (${{ matrix.configure_preset }})
-        env:
-          VCPKG_ROOT: C:\vcpkg
-        shell: pwsh
-        run: |
-          $outputFile = "configure_output.txt"
-
-          cmake --preset ${{ matrix.configure_preset }} 2>&1 | Tee-Object -FilePath $outputFile
-          $exitCode = $LASTEXITCODE
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Configure Results (click to expand)</summary>"
-          } else {
-            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Configure Results"
-          }
-
-          Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
-          }
-
-          exit $exitCode
-
-      - name: Build (${{ matrix.build_preset }})
-        shell: pwsh
-        run: |
-          $outputFile = "build_output.txt"
-
-          cmake --build --preset ${{ matrix.build_preset }} 2>&1 | Tee-Object -FilePath $outputFile
-          $exitCode = $LASTEXITCODE
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Build Results (click to expand)</summary>"
-          } else {
-            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Build Results"
-          }
-
-          Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
-          }
-
-          exit $exitCode
-
-      - name: Test (${{ matrix.test_preset }})
-        shell: pwsh
-        run: |
-          $outputFile = "test_output.txt"
-
-          ctest --preset ${{ matrix.test_preset }} --output-on-failure 2>&1 | Tee-Object -FilePath $outputFile
-          $exitCode = $LASTEXITCODE
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 Test Results (click to expand)</summary>"
-          } else {
-            Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 Test Results"
-          }
-
-          Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-          Get-Content $outputFile | Add-Content $env:GITHUB_STEP_SUMMARY
-          Add-Content $env:GITHUB_STEP_SUMMARY '```'
-
-          if ($exitCode -eq 0) {
-            Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
-          }
-
-          exit $exitCode
+  windows-11-arm-build:
+    if: |
+      github.event_name == 'pull_request' &&
+      (
+        (
+          github.event.action == 'labeled' &&
+          github.event.label.name == 'run-pre-merge-checks'
+        ) ||
+        (
+          github.event.action != 'labeled' &&
+          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+        )
+      )
+    name: windows-11-arm - quick-validation-msvc-release
+    uses: ./.github/workflows/_rwf_windows_build_test.yaml
+    with:
+      runner: windows-11-arm
+      arch: arm64
+      name: msvc_release
+      configure_preset: msvc_release
+      build_preset: msvc_release
+      test_preset: quick-validation-msvc-release
+    secrets: inherit
