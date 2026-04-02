@@ -31,13 +31,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup vcpkg
+      - name: Use Pre-installed vcpkg
         run: |
-          brew install tree
-          tree /usr/local/bin/vcpkg -d
-          VCPKG_PATH=$(which vcpkg)
-          echo "VCPKG_ROOT=$VCPKG_PATH" >> $GITHUB_ENV
-          echo "$VCPKG_PATH" >> $GITHUB_PATH
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
+          which vcpkg
 
       - name: Configure (${{ matrix.configure_preset }})
         shell: bash
