@@ -19,11 +19,11 @@ runs:
     - shell: bash
       run: |
         set +e
-        eval "${{ inputs.command }} 2>&1 | tee ${{ inputs.tmp_step_output.txt }}"
+        eval "${{ inputs.command }} 2>&1 | tee ${{ inputs.output-file }}"
         EXIT_CODE=${PIPESTATUS[0]}
         set -e
 
-        LOG_SIZE=$(wc -c < ${{ inputs.tmp_step_output.txt }})
+        LOG_SIZE=$(wc -c < ${{ inputs.output-file }})
 
         if [ $EXIT_CODE -eq 0 ]; then
           echo "<details><summary>🟢 ${{ inputs.step-name }} Successful</summary>" >> $GITHUB_STEP_SUMMARY
@@ -35,7 +35,7 @@ runs:
         echo '```text' >> $GITHUB_STEP_SUMMARY
 
         # Guard against 1MB GitHub Step Summary limit: only show the last 500 lines if it's huge
-        tail -n 500 ${{ inputs.tmp_step_output.txt }} >> $GITHUB_STEP_SUMMARY
+        tail -n 500 ${{ inputs.output-file }} >> $GITHUB_STEP_SUMMARY
 
         echo '```' >> $GITHUB_STEP_SUMMARY
 
