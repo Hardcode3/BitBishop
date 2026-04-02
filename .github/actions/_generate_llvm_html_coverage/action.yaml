@@ -23,6 +23,11 @@ runs:
         set -e
 
         HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
+        # -P: Uses Perl-style regex.
+        # -o: Only outputs the matched part (not the whole line).
+        # \K: Tells the engine to match the string but ignore it in the final output.
+        # .*: Matches the rest of the line (the path)
+
         echo "html_cov_dir=$HTML_COV_DIR" >> "$GITHUB_OUTPUT"
 
         exit $COV_EXIT_CODE
