@@ -39,12 +39,12 @@ jobs:
 
   windows-11-arm-build:
     if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    name: windows-11-arm - quick-validation-msvc-release
+    name: windows-11-arm - quick-validation-msvc-release-arm64
     uses: ./.github/workflows/_rwf_windows_build_test.yaml
     with:
       runner: windows-11-arm
       arch: arm64
-      configure_preset: msvc_release
-      build_preset: msvc_release
-      test_preset: quick-validation-msvc-release
+      configure_preset: msvc_release_arm64
+      build_preset: msvc_release_arm64
+      test_preset: quick-validation-msvc-release-arm64
     secrets: inherit

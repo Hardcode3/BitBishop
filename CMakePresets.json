@@ -54,6 +54,7 @@
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_GENERATOR_PLATFORM": "x64",
         "VCPKG_TARGET_TRIPLET": "x64-windows"
       },
       "condition": {
@@ -69,7 +70,24 @@
       "generator": "Visual Studio 17 2022",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_GENERATOR_PLATFORM": "x64",
         "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "msvc_release_arm64",
+      "inherits": "default",
+      "description": "Release build using MSVC for Windows ARM64",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_GENERATOR_PLATFORM": "ARM64",
+        "VCPKG_TARGET_TRIPLET": "arm64-windows"
       },
       "condition": {
         "type": "equals",
@@ -110,6 +128,16 @@
     {
       "name": "msvc_release",
       "configurePreset": "msvc_release",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "msvc_release_arm64",
+      "configurePreset": "msvc_release_arm64",
       "configuration": "Release",
       "condition": {
         "type": "equals",
@@ -249,9 +277,27 @@
       "configuration": "Release"
     },
     {
+      "name": "quick-validation-msvc-release-arm64",
+      "inherits": ["tier-quick", "windows"],
+      "configurePreset": "msvc_release_arm64",
+      "configuration": "Release"
+    },
+    {
+      "name": "intermediate-validation-msvc-release-arm64",
+      "inherits": ["tier-intermediate", "windows"],
+      "configurePreset": "msvc_release_arm64",
+      "configuration": "Release"
+    },
+    {
       "name": "intermediate-validation-msvc-release",
       "inherits": ["tier-intermediate", "windows"],
       "configurePreset": "msvc_release",
+      "configuration": "Release"
+    },
+    {
+      "name": "deep-validation-msvc-release-arm64",
+      "inherits": ["tier-deep", "windows"],
+      "configurePreset": "msvc_release_arm64",
       "configuration": "Release"
     },
     {
@@ -265,6 +311,12 @@
       "inherits": ["tier-all", "windows"],
       "configurePreset": "msvc_release",
       "configuration": "Release"
+    },
+    {
+      "name": "full-suite-msvc-release-arm64",
+      "inherits": ["tier-all", "windows"],
+      "configurePreset": "msvc_release_arm64",
+      "configuration": "Release"
     }
   ],
   "packagePresets": [
@@ -275,6 +327,10 @@
     {
       "name": "msvc_release",
       "configurePreset": "msvc_release"
+    },
+    {
+      "name": "msvc_release_arm64",
+      "configurePreset": "msvc_release_arm64"
     }
   ]
 }

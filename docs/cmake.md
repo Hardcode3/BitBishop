@@ -49,6 +49,7 @@ build/
   ├── clang_release/  # Artifacts for Clang Release
   ├── msvc_debug/     # Artifacts for MSVC Debug
   ├── msvc_release/   # Artifacts for MSVC Release
+  ├── msvc_release_arm64/ # Artifacts for MSVC Release on Windows ARM64
   └── install/        # Staged install artifacts
 ```
 
@@ -114,6 +115,7 @@ These presets handle compiler selection, generator choice and toolchain injectio
 | **`clang_release`** | Unix     | Ninja     | **Production** Optimized build.                                    |
 | **`msvc_debug`**    | Windows  | VS 2022   | **Dev Mode** Uses `x64-windows` triplet.                           |
 | **`msvc_release`**  | Windows  | VS 2022   | **Production** Uses `x64-windows` triplet.                         |
+| **`msvc_release_arm64`** | Windows | VS 2022 | **Production** Uses `arm64-windows` triplet.                      |
 
 ### 👷 Build Presets
 
@@ -123,6 +125,7 @@ These presets handle compiler selection, generator choice and toolchain injectio
 | **`clang_release`** | Unix     | Ninja     | **Production** |
 | **`msvc_debug`**    | Windows  | VS 2022   | **Dev Mode**   |
 | **`msvc_release`**  | Windows  | VS 2022   | **Production** |
+| **`msvc_release_arm64`** | Windows | VS 2022 | **Production** |
 
 ### 🧪 Test Presets Reference
 
@@ -167,8 +170,12 @@ Test presets follow this pattern:
 | `intermediate-validation-msvc-debug`   | Deeper checks on debug build.                   |
 | `full-suite-msvc-debug`                | Run everything on debug.                        |
 | `quick-validation-msvc-release`        | Fast checks on optimized build.                 |
+| `quick-validation-msvc-release-arm64`  | Fast checks on optimized Windows ARM64 build.   |
 | `intermediate-validation-msvc-release` | **Pre-Push.** Standard checks on release build. |
+| `intermediate-validation-msvc-release-arm64` | Standard checks on optimized Windows ARM64 build. |
 | `deep-validation-msvc-release`         | **CI.** Exhaustive checks on release build.     |
+| `deep-validation-msvc-release-arm64`   | Exhaustive checks on optimized Windows ARM64 build. |
+| `full-suite-msvc-release-arm64`        | Run everything on optimized Windows ARM64 build. |
 
 ## 🏗 Developer Guide: How Tests are Discovered
 
