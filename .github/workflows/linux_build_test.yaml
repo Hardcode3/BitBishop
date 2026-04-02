@@ -27,15 +27,29 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner: ubuntu-latest
+          - runner: ubuntu-24.04
             arch: x64
             name: clang_debug
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
 
-          - runner: ubuntu-latest
+          - runner: ubuntu-24.04
             arch: x64
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang_release
+
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
+            test_preset: quick-validation-clang-debug
+
+          - runner: ubuntu-24.04-arm
+            arch: arm64
             name: clang_release
             configure_preset: clang_release
             build_preset: clang_release

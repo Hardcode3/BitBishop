@@ -2,6 +2,7 @@ name: Windows Build Test
 
 on:
   workflow_dispatch:
+  push:
   # pull_request:
   #   types: [labeled, synchronize]
 
@@ -12,17 +13,36 @@ concurrency:
 jobs:
   windows-build:
     if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    runs-on: windows-2022
-    name: ${{ matrix.test_preset }}
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     strategy:
       matrix:
         include:
-          - name: msvc_debug
+          - runner: windows-2022
+            arch: x64
+            name: msvc_debug
             configure_preset: msvc_debug
             build_preset: msvc_debug
             test_preset: quick-validation-msvc-debug
-          - name: msvc_release
+
+          - runner: windows-2022
+            arch: x64
+            name: msvc_release
+            configure_preset: msvc_release
+            build_preset: msvc_release
+            test_preset: quick-validation-msvc-release
+
+          - runner: windows-2025
+            arch: x64
+            name: msvc_debug
+            configure_preset: msvc_debug
+            build_preset: msvc_debug
+            test_preset: quick-validation-msvc-debug
+
+          - runner: windows-2025
+            arch: x64
+            name: msvc_release
             configure_preset: msvc_release
             build_preset: msvc_release
             test_preset: quick-validation-msvc-release
@@ -38,15 +58,15 @@ jobs:
             C:\vcpkg\packages
             C:\vcpkg\buildtrees
             ~\AppData\Local\vcpkg\archives
-          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-vcpkg-
+          key: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
+          key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
         env:
