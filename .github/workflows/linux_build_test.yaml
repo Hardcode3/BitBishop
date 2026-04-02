@@ -21,20 +21,27 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
+        env:
+          IS_PR:            ${{ github.event_name == 'pull_request' }}
+          IS_DISPATCH:      ${{ github.event_name == 'workflow_dispatch' }}
+          HAS_LABEL:        ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]] && \
-             [[ "${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}" == "true" ]]; then
-            MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
-              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
-            ]}'
+          if [[ "$IS_DISPATCH" == "true" ]] || \
+             [[ "$IS_PR" == "true" && "$HAS_LABEL" == "true" ]]; then
+            MATRIX_NAME="release"
+          else
+            MATRIX_NAME="debug"
+          fi
 
+          if [[ "$MATRIX_NAME" == "release" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04",     "arch":"x64",   "name":"clang_release", "configure_preset":"clang_release", "build_preset":"clang_release", "test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm", "arch":"arm64", "name":"clang_release", "configure_preset":"clang_release", "build_preset":"clang_release", "test_preset":"quick-validation-clang-release"}
+            ]}'
           else
             MATRIX='{"include":[
-              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
+              {"runner":"ubuntu-24.04",     "arch":"x64",   "name":"clang_debug", "configure_preset":"clang_debug", "build_preset":"clang_debug", "test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04-arm", "arch":"arm64", "name":"clang_debug", "configure_preset":"clang_debug", "build_preset":"clang_debug", "test_preset":"quick-validation-clang-debug"}
             ]}'
           fi
 
@@ -44,12 +51,6 @@ jobs:
 
   linux-build:
     needs: setup-matrix
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'pull_request' &&
-        contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-      )
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
 
