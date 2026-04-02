@@ -14,18 +14,7 @@ permissions:
 
 jobs:
   windows-2022-build:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'run-pre-merge-checks'
-        ) ||
-        (
-          github.event.action != 'labeled' &&
-          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-        )
-      )
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     name: windows-2022 - quick-validation-msvc-release
     uses: ./.github/workflows/_rwf_windows_build_test.yaml
     with:
@@ -37,18 +26,7 @@ jobs:
     secrets: inherit
 
   windows-2025-build:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'run-pre-merge-checks'
-        ) ||
-        (
-          github.event.action != 'labeled' &&
-          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-        )
-      )
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     name: windows-2025 - quick-validation-msvc-release
     uses: ./.github/workflows/_rwf_windows_build_test.yaml
     with:
@@ -60,18 +38,7 @@ jobs:
     secrets: inherit
 
   windows-11-arm-build:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'run-pre-merge-checks'
-        ) ||
-        (
-          github.event.action != 'labeled' &&
-          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-        )
-      )
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     name: windows-11-arm - quick-validation-msvc-release
     uses: ./.github/workflows/_rwf_windows_build_test.yaml
     with:

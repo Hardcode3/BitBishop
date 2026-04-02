@@ -26,10 +26,8 @@ jobs:
         env:
           EVENT_ACTION: ${{ github.event.action }}
           HAS_PREMERGE_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
-          ADDED_LABEL: ${{ github.event.action == 'labeled' && github.event.label.name || '' }}
         run: |
-          if [[ "$EVENT_ACTION" == "labeled" && "$ADDED_LABEL" == "run-pre-merge-checks" ]] || \
-             [[ "$EVENT_ACTION" != "labeled" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
+          if [[ "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
               {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
               {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},

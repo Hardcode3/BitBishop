@@ -14,18 +14,7 @@ permissions:
 
 jobs:
   macos-intel-build:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'run-pre-merge-checks'
-        ) ||
-        (
-          github.event.action != 'labeled' &&
-          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-        )
-      )
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     name: macos-26-intel - quick-validation-clang-release
     uses: ./.github/workflows/_rwf_macos_build_test.yaml
     with:
@@ -37,18 +26,7 @@ jobs:
     secrets: inherit
 
   macos-arm-build:
-    if: |
-      github.event_name == 'pull_request' &&
-      (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'run-pre-merge-checks'
-        ) ||
-        (
-          github.event.action != 'labeled' &&
-          contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-        )
-      )
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     name: macos-26 - quick-validation-clang-release
     uses: ./.github/workflows/_rwf_macos_build_test.yaml
     with:
