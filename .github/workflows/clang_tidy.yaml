@@ -17,7 +17,7 @@ permissions:
 jobs:
   clang-tidy-linting:
     runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.name }}
+    name: ${{ matrix.runner }} - ${{ matrix.build_preset }}
 
     strategy:
       fail-fast: false
@@ -25,7 +25,6 @@ jobs:
         include:
           - runner: ubuntu-24.04-arm
             arch: arm64
-            name: clang_debug
             configure_preset: clang_debug
             build_preset: clang_debug
 
@@ -36,7 +35,7 @@ jobs:
         uses: ./.github/actions/_setup_linux_ci
         with:
           arch: ${{ matrix.arch }}
-          cache-name: ${{ matrix.name }}
+          cache-name: ${{ matrix.build_preset }}
 
       - name: Configure (${{ matrix.configure_preset }})
         uses: ./.github/actions/_log_to_gh_summary_bash
