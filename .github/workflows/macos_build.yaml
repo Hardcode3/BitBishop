@@ -40,3 +40,4 @@ jobs:
           clang-format --version
           cmake --version
           ninja --version
+          vcpkg --version
