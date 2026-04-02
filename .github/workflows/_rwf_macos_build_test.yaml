@@ -28,6 +28,7 @@ permissions:
 jobs:
   macos-build:
     runs-on: ${{ inputs.runner }}
+    name: macOS Build & Test
 
     steps:
       - uses: actions/checkout@v4
