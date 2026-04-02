@@ -15,43 +15,32 @@ permissions:
   packages: read
 
 jobs:
-setup-matrix:
+  setup-matrix:
     runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        env:
-          PR_FLAG_TRIGGER: run-pre-merge-checks
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]] && \
-             [[ "${{ contains(github.event.pull_request.labels.*.name, env.PR_FLAG_TRIGGER) }}" == "true" ]]; then
-            EOF_MARKER=$(openssl rand -hex 8)
-            {
-              echo "matrix<<$EOF_MARKER"
-              cat <<'JSON'
-          {"include":[
-            {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-            {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
-            {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-            {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
-          ]}
-          JSON
-              echo "$EOF_MARKER"
-            } >> $GITHUB_OUTPUT
+             [[ "${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}" == "true" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
+            ]}'
+
           else
-            EOF_MARKER=$(openssl rand -hex 8)
-            {
-              echo "matrix<<$EOF_MARKER"
-              cat <<'JSON'
-          {"include":[
-            {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
-            {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
-          ]}
-          JSON
-              echo "$EOF_MARKER"
-            } >> $GITHUB_OUTPUT
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
+            ]}'
           fi
+
+          echo "matrix<<EOF" >> $GITHUB_OUTPUT
+          echo "$MATRIX" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
   linux-build:
     needs: setup-matrix
