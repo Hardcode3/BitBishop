@@ -5,6 +5,9 @@ inputs:
   build-preset:
     description: CMake build preset used to generate coverage artifacts
     required: true
+  test-preset:
+    description: CTest preset whose recorded coverage data should be reported
+    required: true
   github-token:
     description: GitHub token used to publish the generated site
     required: true
@@ -25,13 +28,45 @@ runs:
       uses: ./.github/actions/_generate_llvm_html_coverage
       with:
         build-preset: ${{ inputs.build-preset }}
+        test-preset: ${{ inputs.test-preset }}
 
     - name: Generate shields.io badge
       id: shieldsio
       shell: bash
       run: |
+        resolve_llvm_tool() {
+          local tool="$1"
+          local candidate=""
+
+          if candidate=$(command -v "$tool" 2>/dev/null); then
+            printf '%s\n' "$candidate"
+            return 0
+          fi
+
+          for suffix in 20 19 18 17 16; do
+            if candidate=$(command -v "${tool}-${suffix}" 2>/dev/null); then
+              printf '%s\n' "$candidate"
+              return 0
+            fi
+          done
+
+          return 1
+        }
+
+        BUILD_DIR="$GITHUB_WORKSPACE/build/${{ inputs.build-preset }}"
+        COVERAGE_DIR="$BUILD_DIR/coverage/${{ inputs.test-preset }}"
+        PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
+        LLVM_COV_BIN=$(resolve_llvm_tool llvm-cov)
+
         set +e
-        cmake --build --preset "${{ inputs.build-preset }}" --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
+        cmake \
+          "-DCOVERAGE_DIR=$COVERAGE_DIR" \
+          "-DPROFDATA_FILE=$PROFDATA_FILE" \
+          "-DCTEST_PRESET=${{ inputs.test-preset }}" \
+          "-DLLVM_COV=$LLVM_COV_BIN" \
+          "-DPROJECT_SOURCE_DIR=$GITHUB_WORKSPACE" \
+          "-DREPORT_MODE=shieldsio" \
+          -P "$GITHUB_WORKSPACE/cmake/coverage/target_coverage_report.cmake" 2>&1 | tee coverage_shieldsio_summary.txt
         COV_EXIT_CODE=${PIPESTATUS[0]}
         set -e
 

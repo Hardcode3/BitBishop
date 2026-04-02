@@ -62,6 +62,42 @@ runs:
         path: build/${{ inputs.build-preset }}
         key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build-preset }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', '**/*.cmake', '.github/actions/_setup_configure_build_linux/action.yaml') }}
 
+    - name: Setup LLVM tool aliases
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # GitHub's Ubuntu runners sometimes expose versioned LLVM binaries
+        # (for example `llvm-cov-18`) without the unversioned names that our
+        # existing CMake lookup expects. Adding a lightweight workspace-local
+        # aliases here instead of reinstalling LLVM packages on every run.
+
+        TOOL_BIN_DIR="$GITHUB_WORKSPACE/.local/bin"
+        mkdir -p "$TOOL_BIN_DIR"
+
+        ensure_llvm_tool() {
+          local tool="$1"
+
+          if command -v "$tool" >/dev/null 2>&1; then
+            return 0
+          fi
+
+          for suffix in 20 19 18 17 16; do
+            if candidate=$(command -v "${tool}-${suffix}" 2>/dev/null); then
+              ln -sf "$candidate" "$TOOL_BIN_DIR/$tool"
+              return 0
+            fi
+          done
+
+          echo "::warning::Could not find $tool or a versioned variant in PATH."
+          return 0
+        }
+
+        ensure_llvm_tool llvm-cov
+        ensure_llvm_tool llvm-profdata
+
+        echo "$TOOL_BIN_DIR" >> "$GITHUB_PATH"
+
     - name: Configure (${{ inputs.configure-preset }})
       uses: ./.github/actions/_log_to_gh_summary_bash
       with:
