@@ -1,15 +1,14 @@
 name: Linux Build Test
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main ] # triggers coverage badges generation after merge on main
+    branches: [ main ]
   pull_request:
-    branches: [ main ] # triggers debug builds on push and release builds on pr labelling
-    types: [labeled, synchronize]
+    branches: [ main ]
+    types: [opened, reopened, synchronize, labeled]
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}-linux-build
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -17,50 +16,69 @@ permissions:
   packages: read
 
 jobs:
-  setup-matrix:
-    runs-on: ubuntu-slim
+  plan-linux-build:
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      should_run: ${{ steps.set-matrix.outputs.should_run }}
+
     steps:
       - id: set-matrix
         env:
-          IS_PR:            ${{ github.event_name == 'pull_request' }}
-          IS_DISPATCH:      ${{ github.event_name == 'workflow_dispatch' }}
-          HAS_LABEL:        ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          REF: ${{ github.ref }}
+          HAS_PREMERGE_LABEL: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') || false }}
+          ADDED_LABEL: ${{ github.event.action == 'labeled' && github.event.label.name || '' }}
         run: |
-          if [[ "$IS_DISPATCH" == "true" ]] || \
-             [[ "$IS_PR" == "true" && "$HAS_LABEL" == "true" ]]; then
-            MATRIX_NAME="release"
+          if [[ "$EVENT_NAME" == "push" && "$REF" == "refs/heads/main" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":true}
+            ]}'
+          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" == "labeled" && "$ADDED_LABEL" == "run-pre-merge-checks" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false}
+            ]}'
+          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" != "labeled" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":false},
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","name":"clang_release","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release","publish_coverage":false}
+            ]}'
+          elif [[ "$EVENT_NAME" == "pull_request" && "$EVENT_ACTION" != "labeled" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","name":"clang_debug","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug","publish_coverage":false}
+            ]}'
           else
-            MATRIX_NAME="debug"
+            MATRIX='{"include":[]}'
           fi
 
-          if [[ "$MATRIX_NAME" == "release" ]]; then
-            MATRIX='{"include":[
-              {"runner":"ubuntu-24.04",     "arch":"x64",   "name":"clang_release", "configure_preset":"clang_release", "build_preset":"clang_release", "test_preset":"quick-validation-clang-release"},
-              {"runner":"ubuntu-24.04-arm", "arch":"arm64", "name":"clang_release", "configure_preset":"clang_release", "build_preset":"clang_release", "test_preset":"quick-validation-clang-release"}
-            ]}'
+          if [[ "$MATRIX" == '{"include":[]}' ]]; then
+            SHOULD_RUN=false
           else
-            MATRIX='{"include":[
-              {"runner":"ubuntu-24.04",     "arch":"x64",   "name":"clang_debug", "configure_preset":"clang_debug", "build_preset":"clang_debug", "test_preset":"quick-validation-clang-debug"},
-              {"runner":"ubuntu-24.04-arm", "arch":"arm64", "name":"clang_debug", "configure_preset":"clang_debug", "build_preset":"clang_debug", "test_preset":"quick-validation-clang-debug"}
-            ]}'
+            SHOULD_RUN=true
           fi
 
           EOF_MARKER=$(openssl rand -hex 8)
-          { echo "matrix<<$EOF_MARKER"; echo "$MATRIX"; echo "$EOF_MARKER"; } >> $GITHUB_OUTPUT
+          {
+            echo "matrix<<$EOF_MARKER"
+            echo "$MATRIX"
+            echo "$EOF_MARKER"
+            echo "should_run=$SHOULD_RUN"
+          } >> "$GITHUB_OUTPUT"
 
   linux-build:
-    needs: setup-matrix
+    needs: plan-linux-build
+    if: needs.plan-linux-build.outputs.should_run == 'true'
     strategy:
-      matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
-
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan-linux-build.outputs.matrix) }}
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     permissions:
-      # coverage artefacts export requires write priviledges
-      # (html report and shields.io badge)
+      # The main-branch coverage lane publishes to gh-pages.
       contents: write
 
     steps:
@@ -127,19 +145,15 @@ jobs:
           command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
 
       - name: Generate markdown coverage report (${{ matrix.test_preset }})
-        if: matrix.name == 'clang_debug'
+        if: matrix.publish_coverage
         shell: bash
         run: |
           set +e
           cmake --build --preset ${{ matrix.build_preset }} --target coverage-markdown 2>&1 | tee coverage_gh_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          COV_EXIT_CODE=${PIPESTATUS[0]}
           set -e
 
           COVERAGE_FILE=$(grep -Po "GitHub Markdown summary written to: \K.*" coverage_gh_summary.txt)
-          # -P: Uses Perl-style regex.
-          # -o: Only outputs the matched part (not the whole line).
-          # \K: Tells the engine to match the string but ignore it in the final output.
-          # .*: Matches the rest of the line (the path)
 
           if [ $COV_EXIT_CODE -eq 0 ]; then
             echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
@@ -155,13 +169,13 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate html coverage report (${{ matrix.test_preset }})
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
+        if: matrix.publish_coverage
         id: htmlcov
         shell: bash
         run: |
           set +e
           cmake --build --preset ${{ matrix.build_preset }} --target coverage-html 2>&1 | tee coverage_html_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          COV_EXIT_CODE=${PIPESTATUS[0]}
           set -e
 
           HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
@@ -170,13 +184,13 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Generate shields.io badge (${{ matrix.test_preset }})
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
+        if: matrix.publish_coverage
         id: shieldsio
         shell: bash
         run: |
           set +e
           cmake --build --preset ${{ matrix.build_preset }} --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          COV_EXIT_CODE=${PIPESTATUS[0]}
           set -e
 
           SHIELDSIO_REGION_COV_BADGE_FILE=$(grep -Po "Shields.io Region Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
@@ -192,7 +206,7 @@ jobs:
           exit $COV_EXIT_CODE
 
       - name: Prepare files
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
+        if: matrix.publish_coverage
         shell: bash
         run: |
           mkdir -p out/coverage/badges
@@ -203,7 +217,7 @@ jobs:
           cp "${{ steps.shieldsio.outputs.SHIELDSIO_BRANCH_COV_BADGE_FILE }}" out/coverage/badges
 
       - name: Publish coverage badge and report to gh-pages
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
+        if: matrix.publish_coverage
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
