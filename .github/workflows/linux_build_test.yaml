@@ -52,7 +52,7 @@ jobs:
   linux-build:
     needs: setup-matrix
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
 
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
