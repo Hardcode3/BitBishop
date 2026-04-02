@@ -40,8 +40,8 @@ if (ENABLE_COVERAGE)
         message(STATUS "LLVM coverage setup failed. Coverage targets will not be created.")
     else()
         message(STATUS "Enabling LLVM coverage tools")
-
         message(STATUS "Coverage Build: Downgrading CX macros to runtime for tests instrumentation.")
+
         add_compile_definitions(COVERAGE_BUILD) # see include/bitbishop/config.hpp
 
         add_compile_options(
