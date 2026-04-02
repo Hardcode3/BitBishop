@@ -2,8 +2,8 @@ name: Clang Tidy Linting
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-clang-tidy-linting
@@ -15,15 +15,17 @@ permissions:
 
 jobs:
   clang-tidy-linting:
-    runs-on: ubuntu-latest
-    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.name }}
 
     strategy:
       matrix:
         include:
-          - name: linting-clang-release
-            configure_preset: clang_release
-            build_preset: clang_release
+          - runner: ubuntu-latest
+            arch: x64
+            name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
 
     steps:
       - uses: actions/checkout@v4
@@ -73,24 +75,7 @@ jobs:
         run: cmake --preset ${{ matrix.configure_preset }}
 
       - name: Run clang-tidy
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy 2>&1 | tee clang_tidy_output.txt
-          CLANG_TIDY_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Clang Tidy Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Clang Tidy Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat clang_tidy_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $CLANG_TIDY_EXIT_CODE
+        uses: ./.github/actions/_log_to_gh_summary
+        with:
+          step-name: Run clang-tidy (${{ matrix.configure_preset }})
+          command: "cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy"
