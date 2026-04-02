@@ -17,6 +17,7 @@ jobs:
   plan-linux-build:
     runs-on: ubuntu-slim
     name: Plan Linux Build
+
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       should_run: ${{ steps.set-matrix.outputs.should_run }}
@@ -27,6 +28,7 @@ jobs:
           EVENT_ACTION: ${{ github.event.action }}
           HAS_PREMERGE_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
         run: |
+          SHOULD_RUN=true
           if [[ "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
               {"runner":"ubuntu-24.04","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
@@ -39,12 +41,7 @@ jobs:
             ]}'
           else
             MATRIX='{"include":[]}'
-          fi
-
-          if [[ "$MATRIX" == '{"include":[]}' ]]; then
             SHOULD_RUN=false
-          else
-            SHOULD_RUN=true
           fi
 
           EOF_MARKER=$(openssl rand -hex 8)
