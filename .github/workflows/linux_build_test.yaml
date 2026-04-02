@@ -45,9 +45,8 @@ jobs:
             ]}'
           fi
 
-          echo "matrix<<EOF" >> $GITHUB_OUTPUT
-          echo "$MATRIX" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          EOF_MARKER=$(openssl rand -hex 8)
+          { echo "matrix<<$EOF_MARKER"; echo "$MATRIX"; echo "$EOF_MARKER"; } >> $GITHUB_OUTPUT
 
   linux-build:
     needs: setup-matrix

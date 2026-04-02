@@ -11,37 +11,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup-matrix:
-    runs-on: ubuntu-slim
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - id: set-matrix
-        env:
-          IS_PR:       ${{ github.event_name == 'pull_request' }}
-          IS_DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
-          HAS_LABEL:   ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
-        run: |
-          if [[ "$IS_DISPATCH" == "true" ]] || \
-             [[ "$IS_PR" == "true" && "$HAS_LABEL" == "true" ]]; then
-            MATRIX='{"include":[
-              {"runner":"macos-26",       "arch":"arm64", "name":"clang_release", "configure_preset": "clang_release", "build_preset": "clang_release", "test_preset": "quick-validation-clang-release"}
-              {"runner":"macos-26-intel", "arch":"intel", "name":"clang_release", "configure_preset": "clang_release", "build_preset": "clang_release", "test_preset": "quick-validation-clang-release"},
-            ]}'
-          else
-            MATRIX='{"include":[]}'
-          fi
-
-          EOF_MARKER=$(openssl rand -hex 8)
-          { echo "matrix<<$EOF_MARKER"; echo "$MATRIX"; echo "$EOF_MARKER"; } >> $GITHUB_OUTPUT
-
   macos-build:
-    needs: setup-matrix
-    if: ${{ needs.setup-matrix.outputs.matrix != '{"include":[]}' }}
-    strategy:
-      matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
+    if: |
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+      )
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+
+    strategy:
+      matrix:
+        include:
+          - runner: macos-26-intel
+            arch: intel
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
+
+          - runner: macos-26
+            arch: arm64
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
