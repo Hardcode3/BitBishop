@@ -18,12 +18,21 @@ jobs:
 
     strategy:
       matrix:
-        runner: [macos-13, macos-26]
         include:
-          - name: clang_debug
+          - runner: macos-13
+            arch: intel
+            name: clang_debug
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
+
+          - runner: macos-26
+            arch: arm
+            name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
+            test_preset: quick-validation-clang-debug
+
           # - name: clang_release
           #   configure_preset: clang_release
           #   build_preset: clang_release
@@ -49,7 +58,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
           restore-keys: ${{ runner.os }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
