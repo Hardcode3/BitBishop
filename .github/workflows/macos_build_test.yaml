@@ -3,7 +3,7 @@ name: MacOS Build Test
 on:
   pull_request:
     branches: [ main ]
-    types: [labeled, synchronize, reopened]
+    types: [ labeled, synchronize, reopened ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
