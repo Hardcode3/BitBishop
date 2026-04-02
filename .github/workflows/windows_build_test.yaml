@@ -11,22 +11,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  preflight-skipped:
-    if: "!( github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') )"
-    runs-on: ubuntu-slim
-    name: Inform
-    steps:
-      - run: echo "Workflow not triggered — add label `run-pre-merge-checks` to this PR to run it." >> $GITHUB_STEP_SUMMARY
-
-  preflight:
-    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
-    runs-on: ubuntu-slim
-    name: Preflight check
-    steps:
-      - run: echo "::notice::Label 'run-pre-merge-checks' has been detected, triggering complementary checks."
-
   windows-build:
-    needs: preflight
+    if: |
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+      )
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
