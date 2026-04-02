@@ -23,18 +23,26 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
-          # - name: clang_release
-          #   configure_preset: clang_release
-          #   build_preset: clang_release
-          #   test_preset: quick-validation-clang-release
+          - name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Pre-installed vcpkg
+      - name: Setup pre-installed VCPKG
         run: |
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
-          which vcpkg
+
+      - name: Cache VCPKG
+        run: |
+          # Use the GitHub Actions cache as a binary source
+          echo "VCPKG_BINARY_SOURCES=clear;x-gha,readwrite" >> $GITHUB_ENV
+        env:
+          # These variables are required for the 'x-gha' provider to talk to GitHub's cache API
+          ACTIONS_CACHE_URL: ${{ secrets.ACTIONS_CACHE_URL }}
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.ACTIONS_RUNTIME_TOKEN }}
 
       - name: Configure (${{ matrix.configure_preset }})
         shell: bash
