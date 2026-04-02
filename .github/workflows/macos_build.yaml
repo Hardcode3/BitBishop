@@ -31,20 +31,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Configure (${{ matrix.configure_preset }})
+        shell: bash
         run: |
-          brew --version
-          brew list
+          set +e
+          cmake --preset ${{ matrix.configure_preset }} 2>&1 | tee configure_output.txt
+          CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
+          set -e
 
-          clang++ --version
+          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
+            echo "<details><summary>🟢 Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔴 Configure Results" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat configure_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          fi
 
-          cmake --version || true
-          ninja --version || true
-          vcpkg --version || true
-
-      - name: Setup vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
-          /tmp/vcpkg/bootstrap-vcpkg.sh
-          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
-          echo "/tmp/vcpkg" >> $GITHUB_PATH
+          exit $CONFIGURE_EXIT_CODE
