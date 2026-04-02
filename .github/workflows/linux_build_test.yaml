@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   setup-matrix:
-    runs-on: ubuntu-small
+    runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
