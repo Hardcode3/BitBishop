@@ -2,8 +2,9 @@ name: MacOS ARM Build Test
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [labeled, synchronize]
+  push:
+  # pull_request:
+  #   types: [labeled, synchronize]
 
 jobs:
   macos-arm-build:

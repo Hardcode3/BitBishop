@@ -2,8 +2,8 @@ name: Windows Build Test
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [labeled, synchronize]
+  # pull_request:
+  #   types: [labeled, synchronize]
 
 jobs:
   windows-build:
