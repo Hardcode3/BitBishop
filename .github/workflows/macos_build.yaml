@@ -1,0 +1,41 @@
+name: MacOS ARM Build Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  macos-arm-build:
+    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+    runs-on: macos-26
+    name: ${{ matrix.test_preset }}
+
+    concurrency:
+      group: pr-${{ github.event.pull_request.number }}-macos-arm-build
+      cancel-in-progress: true
+
+    strategy:
+      matrix:
+        include:
+          - name: clang_debug
+            configure_preset: clang_debug
+            build_preset: clang_debug
+            test_preset: quick-validation-clang-debug
+          # - name: clang_release
+          #   configure_preset: clang_release
+          #   build_preset: clang_release
+          #   test_preset: quick-validation-clang-release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew --version
+          brew list
+          clang++ --version
+          clang-tidy --version
+          clang-format --version
+          cmake --version
+          ninja --version
