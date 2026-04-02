@@ -31,6 +31,7 @@ jobs:
           if [[ "$EVENT_ACTION" == "labeled" && "$ADDED_LABEL" == "run-pre-merge-checks" ]] || \
              [[ "$EVENT_ACTION" != "labeled" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
               {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
               {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
             ]}'
