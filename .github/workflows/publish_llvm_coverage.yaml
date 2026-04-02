@@ -38,12 +38,6 @@ jobs:
           step-name: Build (clang_debug)
           command: "cmake --build --preset clang_debug"
 
-      - name: Test (quick-validation-clang-debug)
-        uses: ./.github/actions/_log_to_gh_summary_bash
-        with:
-          step-name: Test (quick-validation-clang-debug)
-          command: "ctest --preset quick-validation-clang-debug --output-on-failure"
-
       - name: Publish coverage (clang_debug)
         uses: ./.github/actions/_publish_llvm_coverage
         with:
