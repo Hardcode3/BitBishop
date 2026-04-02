@@ -1,0 +1,45 @@
+name: CMake Bash Step With Summary
+description: Runs a CMake command and logs output to GitHub Step Summary (Linux, MacOS)
+
+inputs:
+  step-name:
+    description: Display name (e.g. Build, Configure)
+    required: true
+  command:
+    description: The full cmake command to run
+    required: true
+  output-file:
+    description: Temporary text file to store command output
+    default: tmp_step_output.txt
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set +e
+        eval "${{ inputs.command }} 2>&1 | tee ${{ inputs.tmp_step_output.txt }}"
+        EXIT_CODE=${PIPESTATUS[0]}
+        set -e
+
+        LOG_SIZE=$(wc -c < ${{ inputs.tmp_step_output.txt }})
+
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "<details><summary>🟢 ${{ inputs.step-name }} Successful</summary>" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "## 🔴 ${{ inputs.step-name }} Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        echo '' >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+
+        # Guard against 1MB GitHub Step Summary limit: only show the last 500 lines if it's huge
+        tail -n 500 ${{ inputs.tmp_step_output }} >> $GITHUB_STEP_SUMMARY
+
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        exit $EXIT_CODE
