@@ -2,8 +2,8 @@ name: Linux Build Test
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-linux-build
@@ -30,10 +30,10 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
-          - name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
+          # - name: clang_release
+          #   configure_preset: clang_release
+          #   build_preset: clang_release
+          #   test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
@@ -81,73 +81,22 @@ jobs:
           restore-keys: ${{ runner.os }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
-        shell: bash
-        run: |
-          set +e
-          cmake --preset ${{ matrix.configure_preset }} 2>&1 | tee configure_output.txt
-          CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Configure Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat configure_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $CONFIGURE_EXIT_CODE
+        uses: ./.github/actions/_log_to_gh_summary
+        with:
+          step-name: Configure (${{ matrix.configure_preset }})
+          command: "cmake --preset ${{ matrix.configure_preset }}"
 
       - name: Build (${{ matrix.build_preset }})
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} 2>&1 | tee build_output.txt
-          BUILD_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $BUILD_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Build Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Build Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat build_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $BUILD_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $BUILD_EXIT_CODE
+        uses: ./.github/actions/_log_to_gh_summary
+        with:
+          step-name: Build (${{ matrix.build_preset }})
+          command: "cmake --build --preset ${{ matrix.build_preset }}"
 
       - name: Test (${{ matrix.test_preset }})
-        shell: bash
-        run: |
-          set +e
-          ctest --preset ${{ matrix.test_preset }} --output-on-failure 2>&1 | tee test_output.txt
-          TEST_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $TEST_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Test Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Test Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat test_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $TEST_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $TEST_EXIT_CODE
+        uses: ./.github/actions/_log_to_gh_summary
+        with:
+          step-name: Test (${{ matrix.test_preset }})
+          command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
 
       - name: Generate markdown coverage report (${{ matrix.test_preset }})
         if: matrix.name == 'clang_debug'

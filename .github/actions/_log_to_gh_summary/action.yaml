@@ -12,6 +12,14 @@ inputs:
     description: Temporary text file to store command output
     required: false
     default: tmp_step_output.txt
+  summary-mode:
+    description: log (wraps output in code block) or file (cats a file found in output)
+    required: false
+    default: log
+  summary-extract-regexp:
+    description: Regex to find a file path in the logs to append to the summary
+    required: false
+    default: ''
 
 runs:
   using: composite
