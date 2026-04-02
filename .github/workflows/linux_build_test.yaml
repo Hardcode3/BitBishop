@@ -41,7 +41,7 @@ jobs:
           fi
 
   linux-build:
-    needs: setup
+    needs: setup-matrix
     if: |
       github.event_name == 'workflow_dispatch' ||
       (
