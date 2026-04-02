@@ -2,8 +2,9 @@ name: Linux Build Test
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
+  push:
+  # pull_request:
+  #   branches: [ main ]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-linux-build
@@ -15,8 +16,8 @@ permissions:
 
 jobs:
   linux-build:
-    runs-on: ubuntu-latest
-    name: ${{ matrix.test_preset }}
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     permissions:
       # coverage artefacts export requires write priviledges
@@ -26,14 +27,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: clang_debug
+          - runner: ubuntu-latest
+            arch: x64
+            name: clang_debug
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
-          # - name: clang_release
-          #   configure_preset: clang_release
-          #   build_preset: clang_release
-          #   test_preset: quick-validation-clang-release
+
+          - runner: ubuntu-latest
+            arch: x64
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang_release
 
     steps:
       - uses: actions/checkout@v4
@@ -70,15 +76,15 @@ jobs:
             /tmp/vcpkg/downloads
             /tmp/vcpkg/installed
             ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-vcpkg-
+          key: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-vcpkg-
 
       - name: Cache build
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
+          key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
         uses: ./.github/actions/_log_to_gh_summary
