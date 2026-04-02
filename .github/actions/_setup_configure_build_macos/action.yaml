@@ -55,9 +55,8 @@ runs:
     - name: Cache build
       uses: actions/cache@v4
       with:
-        path: build
-        key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build-preset }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-        restore-keys: ${{ runner.os }}-${{ inputs.arch }}-cmake-
+        path: build/${{ inputs.build-preset }}
+        key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build-preset }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', '**/*.cmake', '.github/actions/_setup_configure_build_macos/action.yaml') }}
 
     - name: Configure (${{ inputs.configure-preset }})
       uses: ./.github/actions/_log_to_gh_summary_bash
