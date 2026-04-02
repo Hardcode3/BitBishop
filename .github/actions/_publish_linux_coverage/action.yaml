@@ -1,0 +1,97 @@
+name: Publish Linux Coverage
+description: Generates coverage summaries and publishes the HTML report and badges to GitHub Pages
+
+inputs:
+  build-preset:
+    description: CMake build preset used to generate coverage artifacts
+    required: true
+  github-token:
+    description: GitHub token used to publish the generated site
+    required: true
+  publish-branch:
+    description: Git branch used by GitHub Pages
+    required: false
+    default: gh-pages
+  publish-dir:
+    description: Directory prepared locally before publication
+    required: false
+    default: out
+
+runs:
+  using: composite
+  steps:
+    - name: Generate markdown coverage report
+      shell: bash
+      run: |
+        set +e
+        cmake --build --preset "${{ inputs.build-preset }}" --target coverage-markdown 2>&1 | tee coverage_gh_summary.txt
+        COV_EXIT_CODE=${PIPESTATUS[0]}
+        set -e
+
+        COVERAGE_FILE=$(grep -Po "GitHub Markdown summary written to: \K.*" coverage_gh_summary.txt)
+
+        if [ $COV_EXIT_CODE -eq 0 ]; then
+          echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "## 🔴 Coverage Results" >> "$GITHUB_STEP_SUMMARY"
+        fi
+        echo '' >> "$GITHUB_STEP_SUMMARY"
+        cat "$COVERAGE_FILE" >> "$GITHUB_STEP_SUMMARY"
+        if [ $COV_EXIT_CODE -eq 0 ]; then
+          echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+        exit $COV_EXIT_CODE
+
+    - name: Generate html coverage report
+      id: htmlcov
+      shell: bash
+      run: |
+        set +e
+        cmake --build --preset "${{ inputs.build-preset }}" --target coverage-html 2>&1 | tee coverage_html_summary.txt
+        COV_EXIT_CODE=${PIPESTATUS[0]}
+        set -e
+
+        HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
+        echo "HTML_COV_DIR=$HTML_COV_DIR" >> "$GITHUB_OUTPUT"
+
+        exit $COV_EXIT_CODE
+
+    - name: Generate shields.io badge
+      id: shieldsio
+      shell: bash
+      run: |
+        set +e
+        cmake --build --preset "${{ inputs.build-preset }}" --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
+        COV_EXIT_CODE=${PIPESTATUS[0]}
+        set -e
+
+        SHIELDSIO_REGION_COV_BADGE_FILE=$(grep -Po "Shields.io Region Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+        SHIELDSIO_FUNCTION_COV_BADGE_FILE=$(grep -Po "Shields.io Function Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+        SHIELDSIO_LINE_COV_BADGE_FILE=$(grep -Po "Shields.io Line Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+        SHIELDSIO_BRANCH_COV_BADGE_FILE=$(grep -Po "Shields.io Branch Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
+
+        echo "SHIELDSIO_REGION_COV_BADGE_FILE=$SHIELDSIO_REGION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+        echo "SHIELDSIO_FUNCTION_COV_BADGE_FILE=$SHIELDSIO_FUNCTION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+        echo "SHIELDSIO_LINE_COV_BADGE_FILE=$SHIELDSIO_LINE_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+        echo "SHIELDSIO_BRANCH_COV_BADGE_FILE=$SHIELDSIO_BRANCH_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
+
+        exit $COV_EXIT_CODE
+
+    - name: Prepare files
+      shell: bash
+      run: |
+        mkdir -p "${{ inputs.publish-dir }}/coverage/badges"
+        cp -r "${{ steps.htmlcov.outputs.HTML_COV_DIR }}" "${{ inputs.publish-dir }}/coverage/"
+        cp "${{ steps.shieldsio.outputs.SHIELDSIO_REGION_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+        cp "${{ steps.shieldsio.outputs.SHIELDSIO_FUNCTION_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+        cp "${{ steps.shieldsio.outputs.SHIELDSIO_LINE_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+        cp "${{ steps.shieldsio.outputs.SHIELDSIO_BRANCH_COV_BADGE_FILE }}" "${{ inputs.publish-dir }}/coverage/badges"
+
+    - name: Publish coverage badge and report to gh-pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ inputs.github-token }}
+        publish_branch: ${{ inputs.publish-branch }}
+        publish_dir: ${{ inputs.publish-dir }}
+        keep_files: true

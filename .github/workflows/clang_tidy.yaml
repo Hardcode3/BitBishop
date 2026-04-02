@@ -2,12 +2,12 @@ name: Clang Tidy Linting
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches: [ main ]
-  #   types: [ synchronize ]
+  pull_request:
+    branches: [ main ]
+    types: [ synchronize ]
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}-clang-tidy-linting
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -20,9 +20,10 @@ jobs:
     name: ${{ matrix.runner }} - ${{ matrix.name }}
 
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-latest
+          - runner: ubuntu-24.04
             arch: x64
             name: clang_debug
             configure_preset: clang_debug
@@ -31,49 +32,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            clang \
-            clang-tidy \
-            gcc \
-            g++ \
-            git \
-            curl \
-            zip \
-            unzip \
-            pkg-config \
-            ninja-build \
-            cmake
-
-      - name: Setup vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
-          /tmp/vcpkg/bootstrap-vcpkg.sh
-          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
-          echo "/tmp/vcpkg" >> $GITHUB_PATH
-
-      - name: Cache VCPKG
-        uses: actions/cache@v4
+      - name: Setup Linux CI
+        uses: ./.github/actions/_setup_linux_ci
         with:
-          path: |
-            /tmp/vcpkg/downloads
-            /tmp/vcpkg/installed
-            ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-vcpkg-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
+          arch: ${{ matrix.arch }}
+          cache-name: ${{ matrix.name }}
 
       - name: Configure (${{ matrix.configure_preset }})
-        run: cmake --preset ${{ matrix.configure_preset }}
+        uses: ./.github/actions/_log_to_gh_summary_bash
+        with:
+          step-name: Configure (${{ matrix.configure_preset }})
+          command: "cmake --preset ${{ matrix.configure_preset }}"
 
       - name: Run clang-tidy
         uses: ./.github/actions/_log_to_gh_summary_bash
