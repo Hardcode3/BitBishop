@@ -11,141 +11,165 @@
 # - https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
 # - https://llvm.org/docs/CommandGuide/llvm-cov.html
 
-if (ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(STATUS "Enabling LLVM coverage tools")
+if (ENABLE_COVERAGE)
+    set(_CAN_ENABLE_COVERAGE TRUE)
 
-    message(STATUS "Coverage Build: Downgrading CX macros to runtime for tests instrumentation.")
-    add_compile_definitions(COVERAGE_BUILD) # see include/bitbishop/config.hpp
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        message(WARNING "Coverage requested, but compiler is ${CMAKE_CXX_COMPILER_ID}. LLVM coverage requires Clang.")
+        set(_CAN_ENABLE_COVERAGE FALSE)
+    endif()
 
-    find_program(LLVM_PROFDATA llvm-profdata REQUIRED)
-    find_program(LLVM_COV llvm-cov REQUIRED)
+    if (_CAN_ENABLE_COVERAGE)
+        find_program(LLVM_PROFDATA llvm-profdata)
+        find_program(LLVM_COV llvm-cov)
 
-    add_compile_options(
-        -fprofile-instr-generate
-        -fcoverage-mapping
-    )
-    add_link_options(
-        -fprofile-instr-generate
-    )
+        if (NOT LLVM_PROFDATA)
+            message(WARNING "Required tool 'llvm-profdata' not found in PATH.")
+            set(_CAN_ENABLE_COVERAGE FALSE)
+        endif()
 
-    # Coverage tier selection
-    # Must match the tier used by the CTest preset
-    set(CTEST_PRESET "quick-validation-clang-debug"
-        CACHE STRING "Coverage tier (quick-validation-clang-debug, intermediate-validation-clang-debug, deep-validation-clang-debug, full-suite-clang-debug)")
+        if (NOT LLVM_COV)
+            message(WARNING "Required tool 'llvm-cov' not found in PATH.")
+            set(_CAN_ENABLE_COVERAGE FALSE)
+        endif()
+    endif()
 
-    set(COVERAGE_BASE_DIR "${CMAKE_BINARY_DIR}/coverage")
-    set(COVERAGE_DIR "${COVERAGE_BASE_DIR}/${CTEST_PRESET}")
-    set(PROFDATA_FILE "${COVERAGE_DIR}/coverage.profdata")
-    set(TESTS_BIN_DIR "${CMAKE_BINARY_DIR}/tests")
+    if (NOT _CAN_ENABLE_COVERAGE)
+        # Force the option to OFF in the cache so subsequent runs/scripts know it failed
+        set(ENABLE_COVERAGE OFF CACHE BOOL "Enable LLVM coverage tools" FORCE)
+        message(STATUS "LLVM coverage setup failed. Coverage targets will not be created.")
+    else()
+        message(STATUS "Enabling LLVM coverage tools")
 
-    # Internal target to run tests for the specified ctest preset
-    # This target is then used as a dependency for subsequent custom targets
-    add_custom_target(_coverage-run-tests
-        COMMAND ${CMAKE_CTEST_COMMAND} --preset ${CTEST_PRESET} --output-on-failure
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Running tests for preset ${CTEST_PRESET}"
-        USES_TERMINAL
-    )
+        message(STATUS "Coverage Build: Downgrading CX macros to runtime for tests instrumentation.")
+        add_compile_definitions(COVERAGE_BUILD) # see include/bitbishop/config.hpp
 
-    # Internal target to merge raw coverage profiles
-    # Triggers automatically the tests before running
-    # Creates the coverage directory if non-existing (indempotent)
-    add_custom_target(_coverage-merge
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${COVERAGE_DIR}"
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DLLVM_PROFDATA=${LLVM_PROFDATA}"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_merge.cmake"
-        BYPRODUCTS "${PROFDATA_FILE}"
-        COMMENT "Merging LLVM coverage profiles for ${CTEST_PRESET}"
-        VERBATIM
-    )
-    add_dependencies(_coverage-merge _coverage-run-tests)
+        add_compile_options(
+            -fprofile-instr-generate
+            -fcoverage-mapping
+        )
+        add_link_options(
+            -fprofile-instr-generate
+        )
 
-    # Public target allowing to generate html (css, js) coverage report
-    # Triggers automatically the tests and coverage merge before running
-    add_custom_target(coverage-html
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
-            "-DCTEST_PRESET=${CTEST_PRESET}"
-            "-DLLVM_COV=${LLVM_COV}"
-            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
-            "-DREPORT_MODE=html"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
-        COMMENT "Generating LLVM HTML coverage report (${CTEST_PRESET})"
-        VERBATIM
-    )
-    add_dependencies(coverage-html _coverage-merge)
+        # Coverage tier selection
+        # Must match the tier used by the CTest preset
+        set(CTEST_PRESET "quick-validation-clang-debug"
+            CACHE STRING "Coverage tier (quick-validation-clang-debug, intermediate-validation-clang-debug, deep-validation-clang-debug, full-suite-clang-debug)")
 
-    # Public target allowing to generate stdout console coverage report
-    # Triggers automatically the tests and coverage merge before running
-    add_custom_target(coverage-summary
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
-            "-DCTEST_PRESET=${CTEST_PRESET}"
-            "-DLLVM_COV=${LLVM_COV}"
-            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
-            "-DREPORT_MODE=console"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
-        COMMENT "Generating LLVM coverage summary (${CTEST_PRESET})"
-        VERBATIM
-    )
-    add_dependencies(coverage-summary _coverage-merge)
+        set(COVERAGE_BASE_DIR "${CMAKE_BINARY_DIR}/coverage")
+        set(COVERAGE_DIR "${COVERAGE_BASE_DIR}/${CTEST_PRESET}")
+        set(PROFDATA_FILE "${COVERAGE_DIR}/coverage.profdata")
+        set(TESTS_BIN_DIR "${CMAKE_BINARY_DIR}/tests")
 
-    # Public target allowing to generate json coverage report
-    # Triggers automatically the tests and coverage merge before running
-    add_custom_target(coverage-json
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
-            "-DCTEST_PRESET=${CTEST_PRESET}"
-            "-DLLVM_COV=${LLVM_COV}"
-            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
-            "-DREPORT_MODE=json"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
-        COMMENT "Exporting LLVM coverage as JSON (${CTEST_PRESET})"
-        VERBATIM
-    )
-    add_dependencies(coverage-json _coverage-merge)
+        # Internal target to run tests for the specified ctest preset
+        # This target is then used as a dependency for subsequent custom targets
+        add_custom_target(_coverage-run-tests
+            COMMAND ${CMAKE_CTEST_COMMAND} --preset ${CTEST_PRESET} --output-on-failure
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Running tests for preset ${CTEST_PRESET}"
+            USES_TERMINAL
+        )
 
-    # Public target allowing to generate markdown coverage report
-    # Triggers automatically the tests and coverage merge before running
-    add_custom_target(coverage-markdown
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
-            "-DCTEST_PRESET=${CTEST_PRESET}"
-            "-DLLVM_COV=${LLVM_COV}"
-            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
-            "-DREPORT_MODE=markdown"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
-        COMMENT "Generating GitHub Actions coverage summary (${CTEST_PRESET})"
-        VERBATIM
-    )
-    add_dependencies(coverage-markdown _coverage-merge)
+        # Internal target to merge raw coverage profiles
+        # Triggers automatically the tests before running
+        # Creates the coverage directory if non-existing (indempotent)
+        add_custom_target(_coverage-merge
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${COVERAGE_DIR}"
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DLLVM_PROFDATA=${LLVM_PROFDATA}"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_merge.cmake"
+            BYPRODUCTS "${PROFDATA_FILE}"
+            COMMENT "Merging LLVM coverage profiles for ${CTEST_PRESET}"
+            VERBATIM
+        )
+        add_dependencies(_coverage-merge _coverage-run-tests)
 
-    # Public target allowing to generate a shields.io coverage badge
-    # Triggers automatically the tests and coverage merge before running
-    add_custom_target(coverage-shieldsio
-        COMMAND ${CMAKE_COMMAND}
-            "-DCOVERAGE_DIR=${COVERAGE_DIR}"
-            "-DPROFDATA_FILE=${PROFDATA_FILE}"
-            "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
-            "-DCTEST_PRESET=${CTEST_PRESET}"
-            "-DLLVM_COV=${LLVM_COV}"
-            "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
-            "-DREPORT_MODE=shieldsio"
-            -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
-        COMMENT "Generating Shields.io coverage badge (${CTEST_PRESET})"
-        VERBATIM
-    )
-    add_dependencies(coverage-shieldsio _coverage-merge)
+        # Public target allowing to generate html (css, js) coverage report
+        # Triggers automatically the tests and coverage merge before running
+        add_custom_target(coverage-html
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+                "-DCTEST_PRESET=${CTEST_PRESET}"
+                "-DLLVM_COV=${LLVM_COV}"
+                "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+                "-DREPORT_MODE=html"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+            COMMENT "Generating LLVM HTML coverage report (${CTEST_PRESET})"
+            VERBATIM
+        )
+        add_dependencies(coverage-html _coverage-merge)
 
-endif()
+        # Public target allowing to generate stdout console coverage report
+        # Triggers automatically the tests and coverage merge before running
+        add_custom_target(coverage-summary
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+                "-DCTEST_PRESET=${CTEST_PRESET}"
+                "-DLLVM_COV=${LLVM_COV}"
+                "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+                "-DREPORT_MODE=console"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+            COMMENT "Generating LLVM coverage summary (${CTEST_PRESET})"
+            VERBATIM
+        )
+        add_dependencies(coverage-summary _coverage-merge)
+
+        # Public target allowing to generate json coverage report
+        # Triggers automatically the tests and coverage merge before running
+        add_custom_target(coverage-json
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+                "-DCTEST_PRESET=${CTEST_PRESET}"
+                "-DLLVM_COV=${LLVM_COV}"
+                "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+                "-DREPORT_MODE=json"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+            COMMENT "Exporting LLVM coverage as JSON (${CTEST_PRESET})"
+            VERBATIM
+        )
+        add_dependencies(coverage-json _coverage-merge)
+
+        # Public target allowing to generate markdown coverage report
+        # Triggers automatically the tests and coverage merge before running
+        add_custom_target(coverage-markdown
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+                "-DCTEST_PRESET=${CTEST_PRESET}"
+                "-DLLVM_COV=${LLVM_COV}"
+                "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+                "-DREPORT_MODE=markdown"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+            COMMENT "Generating GitHub Actions coverage summary (${CTEST_PRESET})"
+            VERBATIM
+        )
+        add_dependencies(coverage-markdown _coverage-merge)
+
+        # Public target allowing to generate a shields.io coverage badge
+        # Triggers automatically the tests and coverage merge before running
+        add_custom_target(coverage-shieldsio
+            COMMAND ${CMAKE_COMMAND}
+                "-DCOVERAGE_DIR=${COVERAGE_DIR}"
+                "-DPROFDATA_FILE=${PROFDATA_FILE}"
+                "-DTESTS_BIN_DIR=${TESTS_BIN_DIR}"
+                "-DCTEST_PRESET=${CTEST_PRESET}"
+                "-DLLVM_COV=${LLVM_COV}"
+                "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+                "-DREPORT_MODE=shieldsio"
+                -P "${CMAKE_SOURCE_DIR}/cmake/coverage/target_coverage_report.cmake"
+            COMMENT "Generating Shields.io coverage badge (${CTEST_PRESET})"
+            VERBATIM
+        )
+        add_dependencies(coverage-shieldsio _coverage-merge)
+    endif ()
+endif ()
