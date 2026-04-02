@@ -76,7 +76,7 @@ jobs:
         run: cmake --preset ${{ matrix.configure_preset }}
 
       - name: Run clang-tidy
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Run clang-tidy (${{ matrix.configure_preset }})
           command: "cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy"

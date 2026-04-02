@@ -128,19 +128,19 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Configure (${{ matrix.configure_preset }})
           command: "cmake --preset ${{ matrix.configure_preset }}"
 
       - name: Build (${{ matrix.build_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Build (${{ matrix.build_preset }})
           command: "cmake --build --preset ${{ matrix.build_preset }}"
 
       - name: Test (${{ matrix.test_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Test (${{ matrix.test_preset }})
           command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"

@@ -53,19 +53,19 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ inputs.arch }}-cmake-
 
       - name: Configure (${{ inputs.configure_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Configure (${{ inputs.configure_preset }})
           command: "cmake --preset ${{ inputs.configure_preset }}"
 
       - name: Build (${{ inputs.build_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Build (${{ inputs.build_preset }})
           command: "cmake --build --preset ${{ inputs.build_preset }}"
 
       - name: Test (${{ inputs.test_preset }})
-        uses: ./.github/actions/_log_to_gh_summary
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Test (${{ inputs.test_preset }})
           command: "ctest --preset ${{ inputs.test_preset }} --output-on-failure"
