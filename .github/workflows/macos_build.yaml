@@ -35,9 +35,16 @@ jobs:
         run: |
           brew --version
           brew list
+
           clang++ --version
-          clang-tidy --version
-          clang-format --version
-          cmake --version
-          ninja --version
-          vcpkg --version
+
+          cmake --version || true
+          ninja --version || true
+          vcpkg --version || true
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
+          /tmp/vcpkg/bootstrap-vcpkg.sh
+          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
+          echo "/tmp/vcpkg" >> $GITHUB_PATH
