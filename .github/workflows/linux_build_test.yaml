@@ -5,13 +5,13 @@ on:
   # pull_request:
   #   branches: [ main ]
 
-permissions:
-  contents: read
-  packages: read
-
 concurrency:
   group: pr-${{ github.event.pull_request.number }}-linux-build
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   linux-build:

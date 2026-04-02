@@ -5,15 +5,15 @@ on:
   # pull_request:
   #   types: [labeled, synchronize]
 
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-windows-build
+  cancel-in-progress: true
+
 jobs:
   windows-build:
     if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     runs-on: windows-2022
     name: ${{ matrix.test_preset }}
-
-    concurrency:
-      group: pr-${{ github.event.pull_request.number }}-windows-build
-      cancel-in-progress: true
 
     strategy:
       matrix:
