@@ -11,10 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  macos-arm-build:
+  macos-build:
     # if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
     runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.name }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     strategy:
       matrix:
@@ -27,16 +27,25 @@ jobs:
             test_preset: quick-validation-clang-debug
 
           - runner: macos-26
-            arch: arm
+            arch: arm64
             name: clang_debug
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
 
-          # - name: clang_release
-          #   configure_preset: clang_release
-          #   build_preset: clang_release
-          #   test_preset: quick-validation-clang-release
+          - runner: macos-26-intel
+            arch: intel
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang_release
+
+          - runner: macos-26
+            arch: arm64
+            name: clang_release
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang_release
 
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +68,7 @@ jobs:
         with:
           path: build
           key: ${{ runner.os }}-${{ matrix.arch }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-cmake-
 
       - name: Configure (${{ matrix.configure_preset }})
         uses: ./.github/actions/_log_to_gh_summary
