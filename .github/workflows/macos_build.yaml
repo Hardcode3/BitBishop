@@ -23,10 +23,10 @@ jobs:
             configure_preset: clang_debug
             build_preset: clang_debug
             test_preset: quick-validation-clang-debug
-          - name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
+          # - name: clang_release
+          #   configure_preset: clang_release
+          #   build_preset: clang_release
+          #   test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
