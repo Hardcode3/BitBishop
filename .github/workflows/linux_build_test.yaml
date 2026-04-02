@@ -17,7 +17,7 @@ permissions:
 jobs:
   linux-build:
     if: |
-      matrix.run_condition == 'always' ||
+      ${{matrix.run_condition}} == 'always' ||
       (
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
