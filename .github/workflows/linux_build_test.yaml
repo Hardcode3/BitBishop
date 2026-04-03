@@ -26,16 +26,22 @@ jobs:
       - id: set-matrix
         env:
           EVENT_ACTION: ${{ github.event.action }}
+          EVENT_LABEL: ${{ github.event.label.name || '' }}
           HAS_PREMERGE_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
         run: |
           SHOULD_RUN=true
-          if [[ "$HAS_PREMERGE_LABEL" == "true" ]]; then
+          if [[ "$EVENT_ACTION" == "labeled" && "$EVENT_LABEL" == "run-pre-merge-checks" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
+            ]}'
+          elif [[ "$EVENT_ACTION" == "synchronize" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
             MATRIX='{"include":[
               {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
               {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
               {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
             ]}'
-          elif [[ "$EVENT_ACTION" != "labeled" ]]; then
+          elif [[ "$EVENT_ACTION" == "opened" || "$EVENT_ACTION" == "reopened" || "$EVENT_ACTION" == "synchronize" ]]; then
             MATRIX='{"include":[
               {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
             ]}'

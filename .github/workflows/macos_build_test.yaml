@@ -3,7 +3,7 @@ name: MacOS Build Test
 on:
   pull_request:
     branches: [ main ]
-    types: [ labeled, synchronize, reopened ]
+    types: [ labeled, synchronize ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,7 +14,9 @@ permissions:
 
 jobs:
   macos-build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks')
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == 'run-pre-merge-checks') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks'))
     strategy:
       fail-fast: false
       matrix:
