@@ -3,7 +3,7 @@ name: Linux Build Test
 on:
   pull_request:
     branches: [ main ]
-    types: [opened, reopened, synchronize, labeled]
+    types: [ opened, reopened, synchronize, labeled ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
