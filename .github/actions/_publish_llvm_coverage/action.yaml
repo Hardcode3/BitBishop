@@ -28,7 +28,6 @@ runs:
       uses: ./.github/actions/_generate_llvm_html_coverage
       with:
         build-preset: ${{ inputs.build-preset }}
-        test-preset: ${{ inputs.test-preset }}
 
     - name: Generate shields.io badge
       id: shieldsio
