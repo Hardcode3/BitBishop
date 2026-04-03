@@ -1,236 +1,101 @@
 name: Linux Build Test
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: [ main ]
-  merge_group:
+    types: [ opened, reopened, synchronize, labeled ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
   packages: read
 
-concurrency:
-  group: pr-${{ github.event.pull_request.number }}-linux-build
-  cancel-in-progress: true
-
 jobs:
-  linux-build:
-    runs-on: ubuntu-latest
-    name: ${{ matrix.test_preset }}
+  plan-linux-build:
+    runs-on: ubuntu-slim
+    name: Plan Linux Build
 
-    permissions:
-      # coverage artefacts export requires write priviledges
-      # (html report and shields.io badge)
-      contents: write
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      should_run: ${{ steps.set-matrix.outputs.should_run }}
+
+    steps:
+      - id: set-matrix
+        env:
+          EVENT_ACTION: ${{ github.event.action }}
+          EVENT_LABEL: ${{ github.event.label.name || '' }}
+          HAS_PREMERGE_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks') }}
+        run: |
+          SHOULD_RUN=true
+          if [[ "$EVENT_ACTION" == "labeled" && "$EVENT_LABEL" == "run-pre-merge-checks" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
+            ]}'
+          elif [[ "$EVENT_ACTION" == "synchronize" && "$HAS_PREMERGE_LABEL" == "true" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"},
+              {"runner":"ubuntu-24.04","arch":"x64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"},
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_release","build_preset":"clang_release","test_preset":"quick-validation-clang-release"}
+            ]}'
+          elif [[ "$EVENT_ACTION" == "opened" || "$EVENT_ACTION" == "reopened" || "$EVENT_ACTION" == "synchronize" ]]; then
+            MATRIX='{"include":[
+              {"runner":"ubuntu-24.04-arm","arch":"arm64","configure_preset":"clang_debug","build_preset":"clang_debug","test_preset":"quick-validation-clang-debug"}
+            ]}'
+          else
+            MATRIX='{"include":[]}'
+            SHOULD_RUN=false
+          fi
+
+          EOF_MARKER=$(openssl rand -hex 8)
+          {
+            echo "matrix<<$EOF_MARKER"
+            echo "$MATRIX"
+            echo "$EOF_MARKER"
+            echo "should_run=$SHOULD_RUN"
+          } >> "$GITHUB_OUTPUT"
+
+  linux-build:
+    needs: plan-linux-build
+    if: needs.plan-linux-build.outputs.should_run == 'true'
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     strategy:
-      matrix:
-        include:
-          - name: clang_debug
-            configure_preset: clang_debug
-            build_preset: clang_debug
-            test_preset: quick-validation-clang-debug
-          - name: clang_release
-            configure_preset: clang_release
-            build_preset: clang_release
-            test_preset: quick-validation-clang-release
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan-linux-build.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            clang \
-            clang-tidy \
-            llvm \
-            gcc \
-            g++ \
-            git \
-            curl \
-            zip \
-            unzip \
-            pkg-config \
-            ninja-build \
-            cmake
-
-      - name: Setup vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
-          /tmp/vcpkg/bootstrap-vcpkg.sh
-          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
-          echo "/tmp/vcpkg" >> $GITHUB_PATH
-
-      - name: Cache VCPKG
-        uses: actions/cache@v4
+      - name: Setup, configure, and build Linux CI
+        uses: ./.github/actions/_setup_configure_build_linux
         with:
-          path: |
-            /tmp/vcpkg/downloads
-            /tmp/vcpkg/installed
-            ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-vcpkg-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
-
-      - name: Configure (${{ matrix.configure_preset }})
-        shell: bash
-        run: |
-          set +e
-          cmake --preset ${{ matrix.configure_preset }} 2>&1 | tee configure_output.txt
-          CONFIGURE_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Configure Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Configure Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat configure_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $CONFIGURE_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $CONFIGURE_EXIT_CODE
-
-      - name: Build (${{ matrix.build_preset }})
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} 2>&1 | tee build_output.txt
-          BUILD_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $BUILD_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Build Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Build Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat build_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $BUILD_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $BUILD_EXIT_CODE
+          arch: ${{ matrix.arch }}
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
 
       - name: Test (${{ matrix.test_preset }})
-        shell: bash
-        run: |
-          set +e
-          ctest --preset ${{ matrix.test_preset }} --output-on-failure 2>&1 | tee test_output.txt
-          TEST_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $TEST_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Test Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Test Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat test_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $TEST_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $TEST_EXIT_CODE
-
-      - name: Generate markdown coverage report (${{ matrix.test_preset }})
-        if: matrix.name == 'clang_debug'
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target coverage-markdown 2>&1 | tee coverage_gh_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          COVERAGE_FILE=$(grep -Po "GitHub Markdown summary written to: \K.*" coverage_gh_summary.txt)
-          # -P: Uses Perl-style regex.
-          # -o: Only outputs the matched part (not the whole line).
-          # \K: Tells the engine to match the string but ignore it in the final output.
-          # .*: Matches the rest of the line (the path)
-
-          if [ $COV_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Coverage Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Coverage Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          cat $COVERAGE_FILE >> $GITHUB_STEP_SUMMARY
-          if [ $COV_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $COV_EXIT_CODE
-
-      - name: Generate html coverage report (${{ matrix.test_preset }})
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
-        id: htmlcov
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target coverage-html 2>&1 | tee coverage_html_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
-          echo "HTML_COV_DIR=$HTML_COV_DIR" >> "$GITHUB_OUTPUT"
-
-          exit $COV_EXIT_CODE
-
-      - name: Generate shields.io badge (${{ matrix.test_preset }})
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
-        id: shieldsio
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          SHIELDSIO_REGION_COV_BADGE_FILE=$(grep -Po "Shields.io Region Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
-          SHIELDSIO_FUNCTION_COV_BADGE_FILE=$(grep -Po "Shields.io Function Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
-          SHIELDSIO_LINE_COV_BADGE_FILE=$(grep -Po "Shields.io Line Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
-          SHIELDSIO_BRANCH_COV_BADGE_FILE=$(grep -Po "Shields.io Branch Coverage badge written to: \K.*" coverage_shieldsio_summary.txt)
-
-          echo "SHIELDSIO_REGION_COV_BADGE_FILE=$SHIELDSIO_REGION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
-          echo "SHIELDSIO_FUNCTION_COV_BADGE_FILE=$SHIELDSIO_FUNCTION_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
-          echo "SHIELDSIO_LINE_COV_BADGE_FILE=$SHIELDSIO_LINE_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
-          echo "SHIELDSIO_BRANCH_COV_BADGE_FILE=$SHIELDSIO_BRANCH_COV_BADGE_FILE" >> "$GITHUB_OUTPUT"
-
-          exit $COV_EXIT_CODE
-
-      - name: Prepare files
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
-        shell: bash
-        run: |
-          mkdir -p out/coverage/badges
-          cp -r "${{ steps.htmlcov.outputs.HTML_COV_DIR }}" out/coverage/
-          cp "${{ steps.shieldsio.outputs.SHIELDSIO_REGION_COV_BADGE_FILE }}" out/coverage/badges
-          cp "${{ steps.shieldsio.outputs.SHIELDSIO_FUNCTION_COV_BADGE_FILE }}" out/coverage/badges
-          cp "${{ steps.shieldsio.outputs.SHIELDSIO_LINE_COV_BADGE_FILE }}" out/coverage/badges
-          cp "${{ steps.shieldsio.outputs.SHIELDSIO_BRANCH_COV_BADGE_FILE }}" out/coverage/badges
-
-      - name: Publish coverage badge and report to gh-pages
-        if: github.ref_name == 'main' && matrix.name == 'clang_debug'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: out
-          keep_files: true
+          step-name: Test (${{ matrix.test_preset }})
+          command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"
+
+      - name: Generate coverage HTML (${{ matrix.build_preset }})
+        if: matrix.build_preset == 'clang_debug'
+        id: htmlcov
+        uses: ./.github/actions/_generate_llvm_html_coverage
+        with:
+          build-preset: ${{ matrix.build_preset }}
+          test-preset: ${{ matrix.test_preset }}
+
+      - name: Upload coverage artifact (${{ matrix.build_preset }})
+        if: matrix.build_preset == 'clang_debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: llvm-html-coverage-${{ matrix.runner }}-${{ matrix.build_preset }}
+          path: ${{ steps.htmlcov.outputs.html-cov-dir }}
+          if-no-files-found: error

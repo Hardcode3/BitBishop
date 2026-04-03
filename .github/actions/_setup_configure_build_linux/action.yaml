@@ -1,0 +1,115 @@
+name: Setup, Configure, and Build Linux CI
+description: Configures the Linux CI environment, restores caches, and runs CMake configure/build
+
+inputs:
+  arch:
+    description: Architecture label used in cache keys
+    required: true
+  configure-preset:
+    description: CMake configure preset to use
+    required: true
+  build-preset:
+    description: CMake build preset to use
+    required: true
+  build-target:
+    description: Optional CMake build target
+    required: false
+    default: ""
+  build-step-name:
+    description: Display label used in the GitHub summary for the build step
+    required: false
+    default: Build
+
+runs:
+  using: composite
+  steps:
+    - name: Setup VCPKG environment
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [[ -z "${VCPKG_INSTALLATION_ROOT:-}" ]]; then
+          echo "::error::No pre-installed vcpkg root was found on this runner."
+          exit 1
+        fi
+
+        mkdir -p \
+          "$GITHUB_WORKSPACE/.cache/vcpkg/downloads" \
+          "$GITHUB_WORKSPACE/.cache/vcpkg/archives"
+
+        {
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT"
+          echo "VCPKG_DOWNLOADS=$GITHUB_WORKSPACE/.cache/vcpkg/downloads"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$GITHUB_WORKSPACE/.cache/vcpkg/archives"
+        } >> "$GITHUB_ENV"
+
+    - name: Cache VCPKG assets
+      uses: actions/cache@v4
+      with:
+        path: |
+          .cache/vcpkg/downloads
+          .cache/vcpkg/archives
+        key: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-${{ inputs.build-preset }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-
+
+    - name: Cache build
+      uses: actions/cache@v4
+      with:
+        path: build/${{ inputs.build-preset }}
+        key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build-preset }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', '**/*.cmake', '.github/actions/_setup_configure_build_linux/action.yaml') }}
+
+    - name: Setup LLVM tool aliases
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # GitHub's Ubuntu runners sometimes expose versioned LLVM binaries
+        # (for example `llvm-cov-18`) without the unversioned names that our
+        # existing CMake lookup expects. Adding a lightweight workspace-local
+        # aliases here instead of reinstalling LLVM packages on every run.
+
+        TOOL_BIN_DIR="$GITHUB_WORKSPACE/.local/bin"
+        mkdir -p "$TOOL_BIN_DIR"
+
+        ensure_llvm_tool() {
+          local tool="$1"
+
+          if command -v "$tool" >/dev/null 2>&1; then
+            return 0
+          fi
+
+          for suffix in 20 19 18 17 16; do
+            if candidate=$(command -v "${tool}-${suffix}" 2>/dev/null); then
+              ln -sf "$candidate" "$TOOL_BIN_DIR/$tool"
+              return 0
+            fi
+          done
+
+          echo "::warning::Could not find $tool or a versioned variant in PATH."
+          return 0
+        }
+
+        ensure_llvm_tool llvm-cov
+        ensure_llvm_tool llvm-profdata
+
+        echo "$TOOL_BIN_DIR" >> "$GITHUB_PATH"
+
+    - name: Configure (${{ inputs.configure-preset }})
+      uses: ./.github/actions/_log_to_gh_summary_bash
+      with:
+        step-name: Configure (${{ inputs.configure-preset }})
+        command: "cmake --preset ${{ inputs.configure-preset }}"
+
+    - name: Build (${{ inputs.build-preset }})
+      if: ${{ inputs.build-target == '' }}
+      uses: ./.github/actions/_log_to_gh_summary_bash
+      with:
+        step-name: ${{ inputs.build-step-name }} (${{ inputs.build-preset }})
+        command: "cmake --build --preset ${{ inputs.build-preset }}"
+
+    - name: Build target (${{ inputs.build-target }})
+      if: ${{ inputs.build-target != '' }}
+      uses: ./.github/actions/_log_to_gh_summary_bash
+      with:
+        step-name: ${{ inputs.build-step-name }} (${{ inputs.build-preset }})
+        command: "cmake --build --preset ${{ inputs.build-preset }} --target ${{ inputs.build-target }}"

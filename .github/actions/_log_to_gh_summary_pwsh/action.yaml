@@ -1,0 +1,43 @@
+name: CMake PowerShell Step With Summary
+description: Runs a command and logs output to GitHub Step Summary on Windows runners
+
+inputs:
+  step-name:
+    description: Display name (e.g. Build, Configure)
+    required: true
+  command:
+    description: The full command to run
+    required: true
+  output-file:
+    description: Temporary text file to store command output
+    required: false
+    default: tmp_step_output.txt
+
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: |
+        $command = "${{ inputs.command }}"
+        $outputFile = "${{ inputs.output-file }}"
+
+        $global:LASTEXITCODE = 0
+        Invoke-Expression "$command 2>&1" | Tee-Object -FilePath $outputFile
+        $exitCode = if ($null -ne $LASTEXITCODE) { $LASTEXITCODE } else { 0 }
+
+        if ($exitCode -eq 0) {
+          Add-Content $env:GITHUB_STEP_SUMMARY "<details><summary>🟢 ${{ inputs.step-name }} Successful</summary>"
+        } else {
+          Add-Content $env:GITHUB_STEP_SUMMARY "## 🔴 ${{ inputs.step-name }} Failed"
+        }
+
+        Add-Content $env:GITHUB_STEP_SUMMARY ""
+        Add-Content $env:GITHUB_STEP_SUMMARY '```text'
+        Get-Content $outputFile -Tail 500 | Add-Content $env:GITHUB_STEP_SUMMARY
+        Add-Content $env:GITHUB_STEP_SUMMARY '```'
+
+        if ($exitCode -eq 0) {
+          Add-Content $env:GITHUB_STEP_SUMMARY "</details>"
+        }
+
+        exit $exitCode

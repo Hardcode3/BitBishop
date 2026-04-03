@@ -1,0 +1,78 @@
+name: Setup, Configure, and Build Windows CI
+description: Configures the Windows CI environment, restores caches, and runs CMake configure/build
+
+inputs:
+  arch:
+    description: Architecture label used in cache keys
+    required: true
+  configure-preset:
+    description: CMake configure preset to use
+    required: true
+  build-preset:
+    description: CMake build preset to use
+    required: true
+  build-target:
+    description: Optional CMake build target
+    required: false
+    default: ""
+  build-step-name:
+    description: Display label used in the GitHub summary for the build step
+    required: false
+    default: Build
+
+runs:
+  using: composite
+  steps:
+    - name: Setup VCPKG environment
+      shell: pwsh
+      run: |
+        $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
+        if (-not $vcpkgRoot -or -not (Test-Path $vcpkgRoot)) {
+          throw 'No pre-installed vcpkg root was found on this runner.'
+        }
+
+        $downloadsDir = Join-Path $env:GITHUB_WORKSPACE '.cache\vcpkg\downloads'
+        $binaryCacheDir = Join-Path $env:GITHUB_WORKSPACE '.cache\vcpkg\archives'
+
+        New-Item -ItemType Directory -Force -Path $downloadsDir, $binaryCacheDir | Out-Null
+
+        @(
+          "VCPKG_ROOT=$vcpkgRoot"
+          "VCPKG_DOWNLOADS=$downloadsDir"
+          "VCPKG_DEFAULT_BINARY_CACHE=$binaryCacheDir"
+        ) | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Cache VCPKG assets
+      uses: actions/cache@v4
+      with:
+        path: |
+          .cache/vcpkg/downloads
+          .cache/vcpkg/archives
+        key: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-${{ inputs.build-preset }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: ${{ runner.os }}-${{ inputs.arch }}-vcpkg-
+
+    - name: Cache build
+      uses: actions/cache@v4
+      with:
+        path: build/${{ inputs.build-preset }}
+        key: ${{ runner.os }}-${{ inputs.arch }}-cmake-${{ inputs.build-preset }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', '**/*.cmake', '.github/actions/_setup_configure_build_windows/action.yaml') }}
+
+    - name: Configure (${{ inputs.configure-preset }})
+      uses: ./.github/actions/_log_to_gh_summary_pwsh
+      with:
+        step-name: Configure (${{ inputs.configure-preset }})
+        command: "cmake --preset ${{ inputs.configure-preset }}"
+
+    - name: Build (${{ inputs.build-preset }})
+      if: ${{ inputs.build-target == '' }}
+      uses: ./.github/actions/_log_to_gh_summary_pwsh
+      with:
+        step-name: ${{ inputs.build-step-name }} (${{ inputs.build-preset }})
+        command: "cmake --build --preset ${{ inputs.build-preset }}"
+
+    - name: Build target (${{ inputs.build-target }})
+      if: ${{ inputs.build-target != '' }}
+      uses: ./.github/actions/_log_to_gh_summary_pwsh
+      with:
+        step-name: ${{ inputs.build-step-name }} (${{ inputs.build-preset }})
+        command: "cmake --build --preset ${{ inputs.build-preset }} --target ${{ inputs.build-target }}"

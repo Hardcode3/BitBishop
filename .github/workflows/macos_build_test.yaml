@@ -1,4 +1,4 @@
-name: Windows Build Test
+name: MacOS Build Test
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  windows-build:
+  macos-build:
     if: |
       (github.event.action == 'labeled' && github.event.label.name == 'run-pre-merge-checks') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks'))
@@ -24,34 +24,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: windows-2022
-            arch: x64
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
-          - runner: windows-2025
-            arch: x64
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
-          - runner: windows-11-arm
+          - runner: macos-26-intel
+            arch: intel
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
+          - runner: macos-26
             arch: arm64
-            configure_preset: msvc_release_arm64
-            build_preset: msvc_release_arm64
-            test_preset: quick-validation-msvc-release-arm64
+            configure_preset: clang_release
+            build_preset: clang_release
+            test_preset: quick-validation-clang-release
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup, configure, and build Windows CI
-        uses: ./.github/actions/_setup_configure_build_windows
+      - name: Setup, configure, and build macOS CI
+        uses: ./.github/actions/_setup_configure_build_macos
         with:
           arch: ${{ matrix.arch }}
           configure-preset: ${{ matrix.configure_preset }}
           build-preset: ${{ matrix.build_preset }}
 
       - name: Test (${{ matrix.test_preset }})
-        uses: ./.github/actions/_log_to_gh_summary_pwsh
+        uses: ./.github/actions/_log_to_gh_summary_bash
         with:
           step-name: Test (${{ matrix.test_preset }})
           command: "ctest --preset ${{ matrix.test_preset }} --output-on-failure"

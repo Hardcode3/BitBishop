@@ -1,0 +1,35 @@
+name: Publish LLVM Coverage
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  linux-coverage-publish:
+    runs-on: ubuntu-24.04
+    name: ubuntu-24.04 - quick-validation-clang-debug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup, configure, and build Linux CI
+        uses: ./.github/actions/_setup_configure_build_linux
+        with:
+          arch: x64
+          configure-preset: clang_debug
+          build-preset: clang_debug
+
+      - name: Publish coverage (clang_debug)
+        uses: ./.github/actions/_publish_llvm_coverage
+        with:
+          build-preset: clang_debug
+          test-preset: quick-validation-clang-debug
+          github-token: ${{ secrets.GITHUB_TOKEN }}

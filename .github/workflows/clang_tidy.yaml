@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [ main ]
-  merge_group:
+    types: [ synchronize ]
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}-clang-tidy-linting
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -16,82 +16,26 @@ permissions:
 
 jobs:
   clang-tidy-linting:
-    runs-on: ubuntu-latest
-    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.build_preset }}
 
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - name: linting-clang-release
-            configure_preset: clang_release
-            build_preset: clang_release
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            configure_preset: clang_debug
+            build_preset: clang_debug
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            clang \
-            clang-tidy \
-            gcc \
-            g++ \
-            git \
-            curl \
-            zip \
-            unzip \
-            pkg-config \
-            ninja-build \
-            cmake
-
-      - name: Setup vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git /tmp/vcpkg
-          /tmp/vcpkg/bootstrap-vcpkg.sh
-          echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
-          echo "/tmp/vcpkg" >> $GITHUB_PATH
-
-      - name: Cache VCPKG
-        uses: actions/cache@v4
+      - name: Setup, configure, and run clang-tidy
+        uses: ./.github/actions/_setup_configure_build_linux
         with:
-          path: |
-            /tmp/vcpkg/downloads
-            /tmp/vcpkg/installed
-            ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: ${{ runner.os }}-vcpkg-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build
-          key: ${{ runner.os }}-cmake-${{ matrix.name }}-${{ hashFiles('CMakeLists.txt', '**/*.cmake') }}
-          restore-keys: ${{ runner.os }}-cmake-
-
-      - name: Configure (${{ matrix.configure_preset }})
-        run: cmake --preset ${{ matrix.configure_preset }}
-
-      - name: Run clang-tidy
-        shell: bash
-        run: |
-          set +e
-          cmake --build --preset ${{ matrix.build_preset }} --target clang-tidy 2>&1 | tee clang_tidy_output.txt
-          CLANG_TIDY_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
-          set -e
-
-          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
-            echo "<details><summary>🟢 Clang Tidy Results (click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## 🔴 Clang Tidy Results" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat clang_tidy_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          if [ $CLANG_TIDY_EXIT_CODE -eq 0 ]; then
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          exit $CLANG_TIDY_EXIT_CODE
+          arch: ${{ matrix.arch }}
+          configure-preset: ${{ matrix.configure_preset }}
+          build-preset: ${{ matrix.build_preset }}
+          build-target: clang-tidy
+          build-step-name: Run clang-tidy
