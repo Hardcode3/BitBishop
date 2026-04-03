@@ -11,6 +11,50 @@
 # - https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
 # - https://llvm.org/docs/CommandGuide/llvm-cov.html
 
+function(_find_preferred_llvm_tool OUT_PATH_VAR OUT_NAME_VAR TOOL_BASENAME)
+    # Reads the active compiler's major version from CMAKE_CXX_COMPILER_VERSION.
+    # Look in the compiler's own directory first to locate a matching llvm tool.
+    # Fallback to the unversioned base tool name in the PATH if the binary was not found in compiler's directory.
+
+    set(_search_hints "")
+
+    if (CMAKE_CXX_COMPILER)
+        get_filename_component(_compiler_bin_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
+        list(APPEND _search_hints "${_compiler_bin_dir}")
+    endif ()
+
+    set(_candidate_names "${TOOL_BASENAME}")
+
+    if (CMAKE_CXX_COMPILER_VERSION)
+        string(REGEX MATCH "^[0-9]+" _compiler_major_version "${CMAKE_CXX_COMPILER_VERSION}")
+        if (_compiler_major_version)
+            list(INSERT _candidate_names 0 "${TOOL_BASENAME}-${_compiler_major_version}")
+        endif ()
+    endif ()
+
+    # Build a "safe" dynamic cache filename for storing the tool's location in a CMake cache variable.
+    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" _tool_cache_suffix "${TOOL_BASENAME}")
+    set(_tool_cache_var "_llvm_tool_${_tool_cache_suffix}")
+    unset(${_tool_cache_var} CACHE)
+    unset(${_tool_cache_var})
+
+    find_program(${_tool_cache_var}
+        NAMES ${_candidate_names}
+        HINTS ${_search_hints}
+    )
+
+    set(_selected_tool "${${_tool_cache_var}}")
+    if (_selected_tool)
+        get_filename_component(_selected_tool_name "${_selected_tool}" NAME)
+        set(${OUT_PATH_VAR} "${_selected_tool}" PARENT_SCOPE)
+        set(${OUT_NAME_VAR} "${_selected_tool_name}" PARENT_SCOPE)
+    else ()
+        set(${OUT_PATH_VAR} "" PARENT_SCOPE)
+        set(${OUT_NAME_VAR} "" PARENT_SCOPE)
+    endif ()
+endfunction()
+
+
 if (ENABLE_COVERAGE)
     set(_CAN_ENABLE_COVERAGE TRUE)
 
@@ -20,17 +64,35 @@ if (ENABLE_COVERAGE)
     endif()
 
     if (_CAN_ENABLE_COVERAGE)
-        find_program(LLVM_PROFDATA llvm-profdata)
-        find_program(LLVM_COV llvm-cov)
+        if (CMAKE_CXX_COMPILER_VERSION)
+            string(REGEX MATCH "^[0-9]+" LLVM_TOOLCHAIN_MAJOR_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
+        else ()
+            set(LLVM_TOOLCHAIN_MAJOR_VERSION "")
+        endif ()
+
+        _find_preferred_llvm_tool(LLVM_PROFDATA LLVM_PROFDATA_NAME llvm-profdata)
+        _find_preferred_llvm_tool(LLVM_COV LLVM_COV_NAME llvm-cov)
 
         if (NOT LLVM_PROFDATA)
             message(WARNING "Required tool 'llvm-profdata' not found in PATH.")
             set(_CAN_ENABLE_COVERAGE FALSE)
+        else ()
+            if (LLVM_TOOLCHAIN_MAJOR_VERSION AND LLVM_PROFDATA_NAME STREQUAL "llvm-profdata-${LLVM_TOOLCHAIN_MAJOR_VERSION}")
+                message(STATUS "Using compiler-matched llvm-profdata tool: ${LLVM_PROFDATA_NAME} (${LLVM_PROFDATA})")
+            else ()
+                message(STATUS "Using fallback llvm-profdata tool: ${LLVM_PROFDATA_NAME} (${LLVM_PROFDATA})")
+            endif ()
         endif()
 
         if (NOT LLVM_COV)
             message(WARNING "Required tool 'llvm-cov' not found in PATH.")
             set(_CAN_ENABLE_COVERAGE FALSE)
+        else ()
+            if (LLVM_TOOLCHAIN_MAJOR_VERSION AND LLVM_COV_NAME STREQUAL "llvm-cov-${LLVM_TOOLCHAIN_MAJOR_VERSION}")
+                message(STATUS "Using compiler-matched llvm-cov tool: ${LLVM_COV_NAME} (${LLVM_COV})")
+            else ()
+                message(STATUS "Using fallback llvm-cov tool: ${LLVM_COV_NAME} (${LLVM_COV})")
+            endif ()
         endif()
     endif()
 
