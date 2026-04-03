@@ -34,7 +34,7 @@ runs:
       shell: bash
       run: |
         set +e
-        cmake --build --preset ${{ matrix.build_preset }} --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
+        cmake --build --preset ${{ inputs.build-preset }} --target coverage-shieldsio 2>&1 | tee coverage_shieldsio_summary.txt
         COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
         set -e
 
