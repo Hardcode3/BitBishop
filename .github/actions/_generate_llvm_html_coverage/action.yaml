@@ -20,52 +20,9 @@ runs:
     - id: htmlcov
       shell: bash
       run: |
-        resolve_llvm_tool() {
-          local tool="$1"
-          local candidate=""
-
-          if candidate=$(command -v "$tool" 2>/dev/null); then
-            printf '%s\n' "$candidate"
-            return 0
-          fi
-
-          for suffix in 20 19 18 17 16; do
-            if candidate=$(command -v "${tool}-${suffix}" 2>/dev/null); then
-              printf '%s\n' "$candidate"
-              return 0
-            fi
-          done
-
-          return 1
-        }
-
-        BUILD_DIR="$GITHUB_WORKSPACE/build/${{ inputs.build-preset }}"
-        COVERAGE_DIR="$BUILD_DIR/coverage/${{ inputs.test-preset }}"
-        PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
-        LLVM_PROFDATA_BIN=$(resolve_llvm_tool llvm-profdata)
-        LLVM_COV_BIN=$(resolve_llvm_tool llvm-cov)
-
         set +e
-        cmake -E make_directory "$COVERAGE_DIR"
-        cmake \
-          "-DCOVERAGE_DIR=$COVERAGE_DIR" \
-          "-DPROFDATA_FILE=$PROFDATA_FILE" \
-          "-DLLVM_PROFDATA=$LLVM_PROFDATA_BIN" \
-          -P "$GITHUB_WORKSPACE/cmake/coverage/target_coverage_merge.cmake" 2>&1 | tee coverage_html_summary.txt
-        COV_EXIT_CODE=${PIPESTATUS[0]}
-
-        if [ "$COV_EXIT_CODE" -eq 0 ]; then
-          cmake \
-            "-DCOVERAGE_DIR=$COVERAGE_DIR" \
-            "-DPROFDATA_FILE=$PROFDATA_FILE" \
-            "-DCTEST_PRESET=${{ inputs.test-preset }}" \
-            "-DLLVM_COV=$LLVM_COV_BIN" \
-            "-DPROJECT_SOURCE_DIR=$GITHUB_WORKSPACE" \
-            "-DREPORT_MODE=html" \
-            -P "$GITHUB_WORKSPACE/cmake/coverage/target_coverage_report.cmake" 2>&1 | tee -a coverage_html_summary.txt
-          COV_EXIT_CODE=${PIPESTATUS[0]}
-        fi
-
+        cmake --build --preset ${{ matrix.build_preset }} --target coverage-html 2>&1 | tee coverage_html_summary.txt
+        COV_EXIT_CODE=${PIPESTATUS[0]}  # Capture CMake exit code, not tee
         set -e
 
         HTML_COV_DIR=$(grep -Po "HTML coverage directory: \K.*" coverage_html_summary.txt)
