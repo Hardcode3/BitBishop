@@ -14,8 +14,8 @@ permissions:
 
 jobs:
   linux-coverage-publish:
-    runs-on: ubuntu-24.04
-    name: ubuntu-24.04 - quick-validation-clang-debug
+    runs-on: ubuntu-24.04-arm
+    name: ubuntu-24.04-arm - quick-validation-clang-debug
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
       - name: Setup, configure, and build Linux CI
         uses: ./.github/actions/_setup_configure_build_linux
         with:
-          arch: x64
+          arch: arm64
           configure-preset: clang_debug
           build-preset: clang_debug
 
