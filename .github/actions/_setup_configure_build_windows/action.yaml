@@ -27,10 +27,6 @@ runs:
       shell: pwsh
       run: |
         $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
-        if (-not $vcpkgRoot -and (Test-Path 'C:\vcpkg')) {
-          $vcpkgRoot = 'C:\vcpkg'
-        }
-
         if (-not $vcpkgRoot -or -not (Test-Path $vcpkgRoot)) {
           throw 'No pre-installed vcpkg root was found on this runner.'
         }

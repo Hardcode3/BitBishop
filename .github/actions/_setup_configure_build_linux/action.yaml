@@ -28,11 +28,7 @@ runs:
       run: |
         set -euo pipefail
 
-        if [[ -n "${VCPKG_INSTALLATION_ROOT:-}" ]]; then
-          VCPKG_ROOT="$VCPKG_INSTALLATION_ROOT"
-        elif [[ -d /usr/local/share/vcpkg ]]; then
-          VCPKG_ROOT=/usr/local/share/vcpkg
-        else
+        if [[ -z "${VCPKG_INSTALLATION_ROOT:-}" ]]; then
           echo "::error::No pre-installed vcpkg root was found on this runner."
           exit 1
         fi
@@ -42,7 +38,7 @@ runs:
           "$GITHUB_WORKSPACE/.cache/vcpkg/archives"
 
         {
-          echo "VCPKG_ROOT=$VCPKG_ROOT"
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_DOWNLOADS=$GITHUB_WORKSPACE/.cache/vcpkg/downloads"
           echo "VCPKG_DEFAULT_BINARY_CACHE=$GITHUB_WORKSPACE/.cache/vcpkg/archives"
         } >> "$GITHUB_ENV"
