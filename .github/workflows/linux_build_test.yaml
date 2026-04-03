@@ -61,11 +61,12 @@ jobs:
   linux-build:
     needs: plan-linux-build
     if: needs.plan-linux-build.outputs.should_run == 'true'
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.plan-linux-build.outputs.matrix) }}
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     steps:
       - uses: actions/checkout@v4

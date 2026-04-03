@@ -17,6 +17,9 @@ jobs:
     if: |
       (github.event.action == 'labeled' && github.event.label.name == 'run-pre-merge-checks') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks'))
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -31,8 +34,6 @@ jobs:
             configure_preset: clang_release
             build_preset: clang_release
             test_preset: quick-validation-clang-release
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     steps:
       - uses: actions/checkout@v4

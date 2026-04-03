@@ -17,6 +17,9 @@ jobs:
     if: |
       (github.event.action == 'labeled' && github.event.label.name == 'run-pre-merge-checks') ||
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'run-pre-merge-checks'))
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -36,8 +39,6 @@ jobs:
             configure_preset: msvc_release_arm64
             build_preset: msvc_release_arm64
             test_preset: quick-validation-msvc-release-arm64
-    runs-on: ${{ matrix.runner }}
-    name: ${{ matrix.runner }} - ${{ matrix.test_preset }}
 
     steps:
       - uses: actions/checkout@v4
