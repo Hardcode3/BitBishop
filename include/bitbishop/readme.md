@@ -100,10 +100,12 @@ flowchart TD
     Attacks --> LookupTables
 
     MoveGen --> Attacks
+    MoveGen --> LookupTables
 
     Moves --> MoveGen
 
     Engine --> Moves
+    Engine --> MoveGen
 
     Interface --> Engine
 

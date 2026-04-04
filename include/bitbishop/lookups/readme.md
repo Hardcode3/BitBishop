@@ -64,9 +64,3 @@ flowchart TD
 - Empty-board movement patterns
 - Unblocked sliding rays
 - Square-to-square geometric relations used by `attacks/` and `movegen/`
-
-## Out of scope
-
-- Reading `Board` state or current occupancy
-- Computing exact attacks in a live position
-- Enforcing chess rules, choosing moves, or speaking a protocol

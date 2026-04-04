@@ -67,9 +67,3 @@ flowchart TD
 - Exact attack bitboards for sliding pieces
 - Checker sets and attacked-square maps
 - Occupancy-aware answers consumed by `movegen/`
-
-## Out of scope
-
-- Compile-time tables or empty-board geometry
-- Legal move filtering based on checks, pins, or side to move
-- Search, evaluation, or UCI/session code
