@@ -77,6 +77,23 @@ Depending on the kind of change, you may also want to run deeper validation:
 - `deep-validation-*` for exhaustive validation
 - `full-suite-*` when you want the broadest confidence
 
+## CI Validation
+
+Pull requests targeting `main` run a baseline CI set on GitHub Actions:
+
+- Linux `clang_debug` build with `quick-validation-clang-debug` on `ubuntu-24.04-arm`
+- `clang-tidy` linting on `ubuntu-24.04-arm` when the PR is updated
+
+When you are close to merge, add the label `run-pre-merge-checks` to the pull
+request to trigger the full cross-platform suite (Linux, macOS, and Windows
+release builds). The label stays active, so new pushes will re-run the full
+matrix until it is removed.
+
+After the PR is merged, pushes to `main` publish coverage to GitHub Pages and
+refresh the README badges.
+
+For the full matrix and workflow definitions, see [docs/ci.md](./docs/ci.md).
+
 ### What to Test
 
 - Changes in `attacks/`, `lookups/`, `movegen/`, or `moves/` should usually
