@@ -94,6 +94,10 @@ flowchart TD
         -
         inlcude/bitbishop/tools/*.hpp
     `")
+    OutsideWorld("`
+        Outside world
+        CLI, GUI, Tests...
+    `")
 
     LookupTables --> TopLevelHeaders
 
@@ -111,6 +115,8 @@ flowchart TD
 
     Tools --> Moves
     Tools --> MoveGen
+
+    OutsideWorld --> Interface
 ```
 
 ## Dependency rule of thumb

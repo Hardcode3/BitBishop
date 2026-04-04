@@ -1,55 +1,56 @@
 # About the `interface/` directory
 
-## The core rule
+## Purpose
 
-Interface = communication with the outside world
+`interface/` is the **boundary between BitBishop and the outside world**.
 
-This layer translates between the engine and humans or GUIs.
+In the current codebase this directory is **primarily the UCI layer**. It parses
+commands, owns the session loop, translates time controls into search limits,
+and reports results back to the caller.
 
-## What exactly goes into interface/
+## Place in the architecture
 
-### Definition
+```mermaid
+flowchart TD
 
-interface/ contains logic that:
+    OutsideWorld("`
+        Outside world
+        CLI, GUI, Tests...
+    `")
+    Other("`...`")
+    Engine("`
+        **Search Engine**
+        Evaluation and search
+        -
+        inlcude/bitbishop/engine/*.hpp
+    `")
+    Interface("`
+        **Interface**
+        UCI protocol and search orchestration
+        -
+        inlcude/bitbishop/interface/*.hpp
+    `")
 
-- parses input commands
-- formats output
-- manages clocks and sessions
-- interacts with GUIs or users
+    OutsideWorld --> Interface
 
-This layer may:
+    Interface --> Engine
 
-- call engine entry points
-- read/write text or UI events
-
-This layer must not:
-
-- implement search logic
-- implement chess rules
-- manipulate bitboards directly
-
-Typical responsibilities
-
-- UCI / CECP protocol handling
-- GUI hooks
-- command parsing
-- time control management
-- logging
-
-### Examples (good)
-
-```cpp
-// interface/uci.cpp
-void uci_loop();
-
-// interface/cli.cpp
-void run_cli();
+    Engine --> Other
 ```
 
-### Examples (bad — belongs elsewhere)
+## Responsibilities
 
-```cpp
-Bitboard attackers_to(...); // ❌ attacks
-int alpha_beta(...); // ❌ engine
-generate_legal_moves(...); // ❌ movegen
-```
+- **Parse external commands** and inputs
+- **Translate protocol concepts into engine calls**
+- **Manage search sessions**, clocks, and stop requests
+- **Emit protocol-compliant responses**
+
+## Inputs
+
+- `engine/` for search entry points
+- `moves/` and `Board` for the current game state
+- streams, strings, and threading primitives from the standard library
+
+## Outputs
+
+- Stable UCI protocol-compliant responses
