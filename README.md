@@ -153,11 +153,20 @@ For a more detailed view of the engine layers, see
 This is primarily a personal learning project, but suggestions and constructive
 feedback are welcome.
 
+Before opening a pull request, please read:
+
+- [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- [SECURITY.md](./SECURITY.md)
+
 Feel free to:
 
 - Open issues for bugs or suggestions
 - Submit pull requests with improvements
 - Share your own learning experiences
+
+> [!NOTE]
+> This is a personal project for now. Community documentation has been written in case one day, someone wants to contribute.
 
 ## Status
 
