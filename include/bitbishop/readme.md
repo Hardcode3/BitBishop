@@ -109,7 +109,8 @@ flowchart TD
 
     Interface --> Engine
 
-    Tools --> Engine
+    Tools --> Moves
+    Tools --> MoveGen
 ```
 
 ## Dependency rule of thumb
