@@ -1,58 +1,69 @@
 # About the `engine/` directory
 
-## The core rule
+## Purpose
 
-Engine = decision making
+`engine/` **explores and ranks best moves** once legal moves already exist.
 
-This layer decides which move to play, not which moves are legal.
+This layer **evaluates positions**, **searches the game tree**, and **returns the best
+move it can find**.
 
-## What exactly goes into `engine/`
+## Place in the architecture
 
-### Definition
+```mermaid
+flowchart TD
 
-engine/ contains logic that:
+    Other1("`...`")
+    Other2("`...`")
+    MoveGen("`
+        **Move Generation**
+        Legal move generation and king safety
+        -
+        inlcude/bitbishop/movegen/*.hpp
+    `")
+    Moves("`
+        **Move Execution**
+        Reversible move execution and move history
+        -
+        inlcude/bitbishop/moves/*.hpp
+    `")
+    Engine("`
+        **Search Engine**
+        Evaluation and search
+        -
+        inlcude/bitbishop/engine/*.hpp
+    `")
+    Interface("`
+        **Interface**
+        UCI protocol and search orchestration
+        -
+        inlcude/bitbishop/interface/*.hpp
+    `")
 
-- searches the game tree
-- evaluates positions
-- selects the best move
+    MoveGen --> Other1
 
-This layer may:
+    Moves --> MoveGen
 
-- call generate_legal_moves()
-- make/unmake moves on the Board
-- maintain search state
+    Engine --> Moves
+    Engine --> MoveGen
 
-This layer must not:
+    Interface --> Engine
 
-- implement chess rules
-- generate attacks directly
-- contain UI or protocol code
-
-Typical responsibilities
-
-- search algorithms:
-- Minimax
-- Alpha-Beta
-- MCTS
-- evaluation functions
-- move ordering
-- transposition tables
-- time management (search side)
-
-### Examples (good)
-
-```cpp
-// engine/search.cpp
-Move search_best_move(Board&, SearchLimits);
-
-// engine/eval.cpp
-int evaluate(const Board&);
+    Other2 --> Interface
 ```
 
-### Examples (bad — belongs elsewhere)
+## Responsibilities
 
-```cpp
-void generate_legal_rook_moves(...); // ❌ movegen
-constexpr Bitboard ROOK_RAYS[64][4]; // ❌ lookups
-void uci_loop(); // ❌ interface
-```
+- **Evaluate positions**
+- **Search the game tree**
+- **Choose the best move available within the current limits**
+
+## Inputs
+
+- `movegen/` for legal moves
+- `moves/` for apply/revert history during search
+- `Board` and evaluation data from the core headers
+
+## Outputs
+
+- Best-move decisions
+- Scores used by the protocol layer or analysis tools

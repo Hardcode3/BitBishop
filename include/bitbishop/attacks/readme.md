@@ -1,34 +1,69 @@
 # About the `attacks/` directory
 
-## The core rule
+## Purpose
 
-Lookups = immutable, compile-time geometry
+`attacks/` contains **occupancy-aware attack queries**.
 
-Attacks = runtime logic that depends on board state
+This layer **starts from a current position** or an `occupied` bitboard and answers
+questions such as:
 
-## What exactly goes into `attacks/`
+- **what squares does this slider attack?**
+- **which enemy pieces are currently checking the king?**
+- **which squares are attacked by one side in the current position?**
 
-### Definition
+## Place in the architecture
 
-attacks/ contains functions that:
+```mermaid
+flowchart TD
+    Other("`...`")
+    TopLevelHeaders("`
+        **Top Level Headers**
+        -
+        inlcude/bitbishop/*.hpp
+    `")
+    LookupTables("`
+        **Lookup Tables**
+        Compile-time geometry and precomputed tables
+        -
+        inlcude/bitbishop/lookups/*.hpp
+    `")
+    Attacks("`
+        **Attacks**
+        Occupancy-aware attack queries
+        -
+        inlcude/bitbishop/attacks/*.hpp
+    `")
+    MoveGen("`
+        **Move Generation**
+        Legal move generation and king safety
+        -
+        inlcude/bitbishop/movegen/*.hpp
+    `")
 
-- consume lookup tables
-- take runtime state (occupied)
-- compute attack bitboards dynamically
+    LookupTables --> TopLevelHeaders
 
-### Examples (good)
+    Attacks --> LookupTables
 
-```cpp
-// attacks/bishop_attacks.cpp
-Bitboard bishop_attacks(Square from, Bitboard occupied);
-
-// attacks/attackers_to.cpp
-Bitboard attackers_to(Square sq, const Board&, Color);
+    MoveGen --> Attacks
+    MoveGen --> LookupTables
+    Other --> MoveGen
 ```
 
-### Examples (bad — belongs elsewhere)
+## Responsibilities
 
-```cpp
-constexpr Bitboard KING_ATTACKS[64]; // ❌ data only
-generate_legal_moves(...) // ❌ rules layer
-```
+- Combine **geometric patterns with runtime occupancy**
+- Compute **exact slider attacks in the current position**
+- Detect **checking pieces** and aggregate attacked squares
+- Provide **precise attack** information to the rules layer
+
+## Inputs
+
+- Immutable geometry from `lookups/`
+- Runtime occupancy from `Board`
+- Core types such as `Bitboard`, `Square`, and `Color`
+
+## Outputs
+
+- Exact attack bitboards for sliding pieces
+- Checker sets and attacked-square maps
+- Occupancy-aware answers consumed by `movegen/`

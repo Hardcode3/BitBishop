@@ -1,38 +1,66 @@
 # About the `lookups/` directory
 
-## The core rule
+## Purpose
 
-Lookups = immutable, compile-time geometry
+`lookups/` contains **compile-time geometry** and **precomputed tables**.
 
-Attacks = runtime logic that depends on board state
+Code in this layer describes how pieces move on an empty board or how squares relate to one another **independently of a specific position**.
 
-## What exactly goes into `lookups/`
+> [!NOTE]
+> Some headers expose `constexpr` helper functions that build tables; that still belongs here because the results remain purely geometric and position-independent.
 
-### Definition
+## Place in the architecture
 
-lookups/ contains only data:
+```mermaid
+flowchart TD
+    Other("`...`")
+    TopLevelHeaders("`
+        **Top Level Headers**
+        -
+        inlcude/bitbishop/*.hpp
+    `")
+    LookupTables("`
+        **Lookup Tables**
+        Compile-time geometry and precomputed tables
+        -
+        inlcude/bitbishop/lookups/*.hpp
+    `")
+    Attacks("`
+        **Attacks**
+        Occupancy-aware attack queries
+        -
+        inlcude/bitbishop/attacks/*.hpp
+    `")
+    MoveGen("`
+        **Move Generation**
+        Legal move generation and king safety
+        -
+        inlcude/bitbishop/movegen/*.hpp
+    `")
 
-- constexpr
-- no branching on board state
-- no Board, no occupied
-- no game rules
+    LookupTables --> TopLevelHeaders
 
-### Examples (good)
+    Attacks --> LookupTables
 
-```cpp
-// lookups/king_attacks.hpp
-constexpr Bitboard KING_ATTACKS[64];
+    MoveGen --> LookupTables
 
-// lookups/rook_rays.hpp
-constexpr Bitboard ROOK_RAYS[64][4];
-
-// lookups/between_squares.hpp
-constexpr Bitboard BETWEEN[64][64];
+    Other --> Attacks
+    Other --> MoveGen
 ```
 
-### Examples (bad — belongs elsewhere)
+## Responsibilities
 
-```cpp
-Bitboard bishop_attacks(Square, Bitboard); // ❌ logic
-if (occupied & mask) { ... } // ❌ runtime state
-```
+- Describe **immutable board geometry**
+- Precompute **local attack patterns, rays, and square relationships**
+- Provide **fast, reusable primitives** for higher layers
+
+## Inputs
+
+- Top-level value types such as `Square`, `Bitboard`, `Color`, and board constants
+- `Compile-time helpers used to build immutable tables
+
+## Outputs
+
+- Empty-board movement patterns
+- Unblocked sliding rays
+- Square-to-square geometric relations used by `attacks/` and `movegen/`

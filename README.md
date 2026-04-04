@@ -12,93 +12,168 @@
 
 # BitBishop
 
-A modern chess engine written in C++23, designed for learning low-level programming techniques and chess engine development.
+A modern chess engine written in C++23, built as a learning project around
+bitboards, move generation, search, and engine architecture.
 
-## About
+## Overview
 
-BitBishop is a personal project created to explore low-level manipulations in modern C++.
-While primarily a learning endeavor, the codebase is structured and documented to benefit anyone interested in chess engine development or modern C++ practices.
+BitBishop is a personal project focused on learning by building a real engine.
+The codebase is organized as a layered architecture with dedicated modules for
+compile-time geometry, occupancy-aware attacks, legal move generation,
+reversible move execution, evaluation, search, and a UCI-facing interface.
 
-This project is currently 🚧 **under active development** 🚧 and aims to implement the [Universal Chess Interface (UCI) protocol](https://www.chessprogramming.org/UCI), making it compatible with popular chess GUIs and analysis tools.
+The goal is not just to "have a chess engine," but to keep the code readable,
+testable, and well documented for anyone curious about chess programming or
+modern C++.
 
-## Project Goals
+## Current State
 
-- 🎯 **Educational**: Learn and demonstrate low-level C++ techniques
-- 📚 **Well-documented**: Extensive inline documentation and guides for educational purposes
-- 🏗️ **Clean architecture**: Clear, structured codebase following modern C++ best practices
-- 🧪 **Well-tested**: Extensive testing using Google Tests
-- ♟️ **UCI compliance**: Full implementation of the UCI protocol for chess engines
-- 🔧 **Modern tooling**: Built with C++23, CMake, and vcpkg
+- UCI executable via `bitbishop` with `uci`, `isready`, `ucinewgame`, `position`, `go`, `stop`, and `quit`
+- FEN parsing and UCI move parsing
+- Legal move generation with checks, pins, castling, en passant, and promotions
+- Reversible move execution with position history and Zobrist hashing
+- Basic evaluation using material and piece-square tables
+- Negamax search with alpha-beta pruning and quiescence search
+- Perft tooling and a tiered GoogleTest suite
+- CMake Presets, vcpkg integration, linting hooks, and coverage targets
 
-## Features
+BitBishop is already usable for development and basic UCI-driven experiments,
+but it is still under active development. The UCI layer exists today, though
+protocol coverage and search strength are not yet "finished engine" level.
 
-### Current
+## Short-Term Focus
 
-- Modern C++23 implementation
-- CMake build system with vcpkg dependency management
-- FEN notation support for position representation
-- Structured documentation and guides
-
-### Planned
-
-- Complete UCI protocol implementation
-- Move generation and validation
-- Position evaluation
-- Search algorithms (minimax, alpha-beta pruning)
-- Opening book support
-- Endgame tablebases
+- stronger search features and move ordering
+- richer UCI support and time-control handling
+- continued validation with perft and targeted tests
+- ongoing documentation improvements across the codebase
 
 ## Getting Started
 
 ### Prerequisites
 
-- C++23 compatible compiler (GCC 12+, Clang 16+, or MSVC 2022+)
-- CMake 3.20 or higher
-- vcpkg package manager
-- [clang format]
-- [clang tidy]
+- CMake 3.27 or newer
+- Clang on Unix-like systems, or MSVC 2022 on Windows
+- vcpkg with `VCPKG_ROOT` configured
+- Ninja on Unix-like systems, or Visual Studio 2022 on Windows
 
-### Building
+Optional developer tools:
 
-- [CMake Guide](./docs/cmake.md) - Build system configuration and usage
+- `clang-format` (code formatting)
+- `clang-tidy` (code linting)
+- `llvm-cov` (code coverage)
+- `llvm-profdata` (code coverage)
+
+### Build and Test
+
+Typical Unix-like workflow:
+
+```bash
+cmake --preset clang_debug
+cmake --build --preset clang_debug
+ctest --preset quick-validation-clang-debug
+```
+
+Typical Windows workflow:
+
+```powershell
+cmake --preset msvc_debug
+cmake --build --preset msvc_debug
+ctest --preset quick-validation-msvc-debug
+```
+
+The project uses CMake Presets for configure, build, and test workflows. For
+the full preset matrix, coverage targets, and packaging notes, see the
+[CMake guide](./docs/cmake.md).
+
+### Run the Engine
+
+On Unix-like systems, the executable is typically produced under the selected
+build preset directory:
+
+```bash
+./build/clang_debug/main/bitbishop
+```
+
+Minimal UCI smoke test:
+
+```text
+uci
+isready
+position startpos moves e2e4 e7e5
+go depth 4
+quit
+```
 
 ## Documentation
 
-The project includes comprehensive documentation to support learning.
-These docs are a summary of what i learned while going through the chess world during engine's implementation.
+### Project Docs
 
-### Internal refs
+- [CMake guide](./docs/cmake.md)
+- [CI guide](./docs/ci.md)
+- [Internal architecture](./include/bitbishop/readme.md)
+- [UCI protocol memo](./docs/uci_protocol.md)
+- [FEN notation memo](./docs/fen_notation.md)
+- [Debugging with perft](./docs/debug_perft.md)
 
-- [UCI Protocol memo](./docs/uci_protocol.md) - Universal Chess Interface specification
-- [FEN Notation memo](./docs/fen_notation.md) - Forsyth–Edwards Notation for position representation
-- [Debugging with Perft](./docs/debug_perft.md) - Step by step example on how to debug with perft
-
-### External refs
+### External References
 
 - [Andrew Healey - Building My Own Chess Engine](https://healeycodes.com/building-my-own-chess-engine)
 - [Chess Programming Wiki](https://www.chessprogramming.org/Getting_Started)
+- [UCI overview on Chessprogramming](https://www.chessprogramming.org/UCI)
 
 ## Project Structure
 
 ```text
-ChessEngine/
+BitBishop/
 ├── build/                       # Build artifacts
-├── cmake/                       # Cmake scripts
+├── cmake/                       # CMake helper scripts
 ├── docs/                        # Documentation and guides
-├── src/bitbishop/               # Sources (cpp)
-├── include/bitbishop/           # Headers (hpp)
-├── tests/bitbishop              # Unit tests
+├── include/bitbishop/           # Public headers and architecture docs
+├── main/                        # Executable entrypoints
+├── src/bitbishop/               # Library sources
+├── tests/bitbishop/             # Unit and validation tests
 ├── CMakeLists.txt               # Build configuration
+├── CMakePresets.json            # Preset-based workflows
+├── vcpkg.json                   # Dependency manifest
 └── ...
 ```
 
+For a more detailed view of the engine layers, see
+[include/bitbishop/readme.md](./include/bitbishop/readme.md).
+
+## Design Goals
+
+- Learn and demonstrate low-level C++ techniques through a real project
+- Keep the architecture explicit and easy to navigate
+- Maintain strong test feedback with tiered validation
+- Document the reasoning behind the implementation, not just the APIs
+
 ## Contributing
 
-While this is primarily a personal learning project, suggestions and constructive feedback are welcome! Feel free to:
+This is primarily a personal learning project, but suggestions and constructive
+feedback are welcome.
+
+Before opening a pull request, please read:
+
+- [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- [SECURITY.md](./SECURITY.md)
+
+Feel free to:
 
 - Open issues for bugs or suggestions
 - Submit pull requests with improvements
 - Share your own learning experiences
+
+> [!NOTE]
+> This is a personal project for now. Community documentation has been written in case one day, someone wants to contribute.
+
+## Status
+
+BitBishop is functional enough for development, experimentation, and basic
+UCI-based testing, but it is still an in-progress engine rather than a polished
+competitive one.
 
 ## License
 
@@ -106,12 +181,9 @@ While this is primarily a personal learning project, suggestions and constructiv
 
 ## Acknowledgments
 
-This project draws inspiration from the chess programming community and various resources on chess engine development.
-
-## Status
-
-🚧 **In Development** - This engine is not yet functional for actual play. Stay tuned for updates!
+This project draws heavily from the chess programming community and the many
+people who document engine design in public.
 
 ---
 
-**Repository**: [github.com/Hardcode3/ChessEngine](https://github.com/Hardcode3/ChessEngine)
+**Repository**: [github.com/Hardcode3/BitBishop](https://github.com/Hardcode3/BitBishop)
