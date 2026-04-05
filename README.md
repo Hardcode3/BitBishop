@@ -7,6 +7,12 @@
 </div>
 
 <div align=center>
+    <a href="https://isocpp.org"><img src="https://img.shields.io/badge/C++-%2300599C.svg?&logo=c%2B%2B&logoColor=white"></a>
+    <a href=https://cmake.org><img src="https://img.shields.io/badge/CMake-%23008FBA.svg?&logo=cmake&logoColor=white"></a>
+    <a href="https://vcpkg.io"><img src="https://img.shields.io/badge/vcpkg-fab529"></a>
+</div>
+
+<div align=center>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/linux_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/linux_build_test.yaml?label=Ubuntu&logo=ubuntu&labelColor=E95420&logoColor=white" alt="Ubuntu Build & Test"></a>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/windows_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/windows_build_test.yaml?label=Windows&logo=windows11&labelColor=0078D4&logoColor=white" alt="Windows Build & Test"></a>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/macos_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/macos_build_test.yaml?label=MacOS&logo=apple&labelColor=pink&logoColor=black" alt="MacOS Build & Test"></a>
