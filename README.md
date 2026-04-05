@@ -1,12 +1,25 @@
+<p align="center">
+  <img src="./assets/bitbishop_logo_fullsize.png" width="15%">
+</p>
+
 <div align=center>
     <a href="LICENSE"><img src="https://img.shields.io/github/license/Hardcode3/BitBishop?labelColor=333333&color=00AAEE&logo=opensourceinitiative&logoColor=white" alt="License"></a>
+</div>
+
+<div align=center>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/linux_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/linux_build_test.yaml?label=Ubuntu&logo=ubuntu&labelColor=E95420&logoColor=white" alt="Ubuntu Build & Test"></a>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/windows_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/windows_build_test.yaml?label=Windows&logo=windows11&labelColor=0078D4&logoColor=white" alt="Windows Build & Test"></a>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/macos_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/macos_build_test.yaml?label=MacOS&logo=apple&labelColor=pink&logoColor=black" alt="MacOS Build & Test"></a>
+</div>
+
+<div align=center>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/linux_build_test.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/linux_build_test.yaml?label=Tests&logo=githubactions&labelColor=222222&logoColor=white" alt="Tests"></a>
     <a href="https://github.com/Hardcode3/BitBishop/actions/workflows/clang_tidy.yaml"><img src="https://img.shields.io/github/actions/workflow/status/Hardcode3/BitBishop/clang_tidy.yaml?label=Linting&logo=llvm&labelColor=593D9C&logoColor=white" alt="Linting"></a>
-    <a href="https://Hardcode3.github.io/BitBishop/coverage/html/index.html"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/coverage/badges/shieldsio_region_coverage_badge.json&logo=codecov&logoColor=white" alt="Region Coverage"></a>
+</div>
+
+<div align=center>
     <a href="https://Hardcode3.github.io/BitBishop/coverage/html/index.html"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/coverage/badges/shieldsio_function_coverage_badge.json&logo=codecov&logoColor=white" alt="Function Coverage"></a>
+    <a href="https://Hardcode3.github.io/BitBishop/coverage/html/index.html"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/coverage/badges/shieldsio_region_coverage_badge.json&logo=codecov&logoColor=white" alt="Region Coverage"></a>
     <a href="https://Hardcode3.github.io/BitBishop/coverage/html/index.html"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/coverage/badges/shieldsio_line_coverage_badge.json&logo=codecov&logoColor=white" alt="Line Coverage"></a>
     <a href="https://Hardcode3.github.io/BitBishop/coverage/html/index.html"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Hardcode3/BitBishop/gh-pages/coverage/badges/shieldsio_branch_coverage_badge.json&logo=codecov&logoColor=white" alt="Branch Coverage"></a>
 </div>
