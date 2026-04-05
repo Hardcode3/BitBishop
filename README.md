@@ -131,6 +131,7 @@ quit
 
 - [CMake guide](./docs/cmake.md)
 - [CI guide](./docs/ci.md)
+- [Documentation build guide](./docs/documentation.md)
 - [Internal architecture](./include/bitbishop/readme.md)
 - [UCI protocol memo](./docs/uci_protocol.md)
 - [FEN notation memo](./docs/fen_notation.md)

@@ -1,0 +1,23 @@
+.wy-nav-content {
+    max-width: 1180px;
+}
+
+.wy-side-nav-search {
+    background: linear-gradient(180deg, #0f5b78 0%, #134e63 100%);
+}
+
+.rst-content dl:not(.docutils) > dt {
+    border-top: 3px solid #0f5b78;
+    background: #f5fbfd;
+}
+
+.guide-origin {
+    color: #4b5563;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.rst-content code.literal,
+.rst-content tt.literal {
+    color: #114b68;
+}

@@ -1,0 +1,84 @@
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "BitBishop"
+PROJECT_BRIEF          = "A UCI chess engine written in C++23."
+PROJECT_LOGO           = ../assets/bitbishop_logo_fullsize.png
+OUTPUT_DIRECTORY       = ../build/docs/doxygen
+CREATE_SUBDIRS         = NO
+ALLOW_UNICODE_NAMES    = NO
+OUTPUT_LANGUAGE        = English
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+TOC_INCLUDE_HEADINGS   = 3
+BUILTIN_STL_SUPPORT    = YES
+NUM_PROC_THREADS       = 1
+TIMESTAMP              = NO
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_ANON_NSPACES   = YES
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+HIDE_FRIEND_COMPOUNDS  = NO
+SHOW_INCLUDE_FILES     = YES
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_FORMAT            = "$file:$line: $text"
+
+INPUT                  = ../README.md \
+                         ../CONTRIBUTING.md \
+                         ../SECURITY.md \
+                         ../CODE_OF_CONDUCT.md \
+                         . \
+                         ../include/bitbishop \
+                         ../src/bitbishop \
+                         ../main
+FILE_PATTERNS          = *.md \
+                         *.hpp \
+                         *.cpp
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */build/* \
+                         */venv/* \
+                         */.git/* \
+                         */tests/* \
+                         */docs/sphinx/*
+EXCLUDE_SYMBOLS        = std
+USE_MDFILE_AS_MAINPAGE = ../README.md
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = ..
+
+SOURCE_BROWSER         = NO
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = NO
+REFERENCES_RELATION    = NO
+VERBATIM_HEADERS       = YES
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+SKIP_FUNCTION_MACROS   = YES
+PREDEFINED             = CX_FN=constexpr \
+                         CX_INLINE=constexpr \
+                         CX_CONST=constexpr \
+                         CX_EXEC=constexpr \
+                         CX_VALUE=constexpr \
+                         VALIDATE_CX(x)= \
+                         DEFINE_SQUARE(name)= \
+                         DEFINE_PIECE(name,ch)=
+
+GENERATE_HTML          = NO
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
+
+GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_DOCBOOK       = NO
+GENERATE_QHP           = NO
+GENERATE_ECLIPSEHELP   = NO
+SEARCHENGINE           = NO
