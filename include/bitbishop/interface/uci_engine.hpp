@@ -134,6 +134,16 @@ class UciEngine {
    * @brief Stops as soon as possible the search thread and resets it for later computations.
    */
   void reset_search_worker();
+
+  /**
+   * @brief Displays the current board state as well as usefull information.
+   *
+   * Other information includes:
+   *
+   * - FEN
+   * - Zobrist hash key
+   */
+  void handle_display();
 };
 
 }  // namespace Uci

@@ -47,6 +47,8 @@ void Uci::UciEngine::dispatch(std::vector<std::string> &line) {
     handle_stop();
   } else if (line.front() == "quit") {
     handle_quit();
+  } else if (line.front() == "d") {
+    handle_display();
   }
   // unknown lines are discarded silently following uci rules
 };
@@ -160,4 +162,12 @@ void Uci::UciEngine::reset_search_worker() {
     search_worker_ptr.reset();
   }
   assert(search_worker_ptr == nullptr);
+}
+
+void Uci::UciEngine::handle_display() {
+  out_stream << "\n";
+  out_stream << board << "\n";
+  out_stream << "FEN notation: " << board.get_fen() << "\n";
+  out_stream << "Zobrist hash: " << board.get_zobrist_hash() << "\n";
+  out_stream << std::flush;
 }
