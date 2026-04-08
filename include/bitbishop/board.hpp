@@ -131,7 +131,7 @@ class Board {
   void remove_piece(Square square);
 
   /**
-   * @brief Prints the board to the given output stream.
+   * @brief Prints the board to std::cout.
    *
    * Prints an ASCII board with ranks 8 → 1 and files A → H.
    * Example:
@@ -147,6 +147,8 @@ class Board {
    * @endcode
    */
   void print() const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Board& board);
 
   /**
    * @brief Returns a bitboard containing all white pieces.
@@ -335,6 +337,12 @@ class Board {
   [[nodiscard]] bool has_insufficient_material() const noexcept;
 
   [[nodiscard]] Zobrist::Key get_zobrist_hash() const noexcept { return m_zobrist_hash; }
+
+  /**
+   * @brief Retrieves Board's FEN.
+   * @return FEN built from to the internal board representation.
+   */
+  [[nodiscard]] std::string get_fen() const noexcept;
 
   Board& operator=(const Board& other) noexcept = default;
   Board& operator=(Board&& other) noexcept = default;

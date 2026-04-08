@@ -437,3 +437,34 @@ TEST_F(UciEngineTest, EngineStopsOnInputCloseEOF) {
 
   SUCCEED();
 }
+
+void assert_display_works(const std::stringstream& output) {
+  assert_output_contains(output, "+---+---+---+---+---+---+---+---+");
+  assert_output_contains(output, "  a   b   c   d   e   f   g   h  ");
+  assert_output_contains(output, "FEN notation");
+  assert_output_contains(output, "Zobrist hash");
+}
+
+TEST_F(UciEngineTest, DisplayWorksWithStartPos) {
+  input.write(
+      "position startpos\n"
+      "d\n");
+
+  assert_display_works(output);
+}
+
+TEST_F(UciEngineTest, DisplayWorksWithRandomPosition) {
+  input.write(
+      "position fen rk2n1qr/ppppp1pp/1bn2b2/2NQp2P/8/2B4B/PPPPPP1P/RK1N3R b - - 0 1\n"
+      "d\n");
+
+  assert_display_works(output);
+}
+
+TEST_F(UciEngineTest, DisplayWorksWithEmptyBoard) {
+  input.write(
+      "position fen 8/8/8/8/8/8/8/8 b - - 0 1\n"
+      "d\n");
+
+  assert_display_works(output);
+}

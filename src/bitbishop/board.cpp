@@ -73,6 +73,31 @@ Board::Board(const std::string& fen) {
   m_zobrist_hash = Zobrist::compute_hash(*this);
 }
 
+std::ostream& operator<<(std::ostream& out, const Board& board) {
+  using namespace Const;
+
+  const std::string separator = "+---+---+---+---+---+---+---+---+\n";
+  const std::string files = "  a   b   c   d   e   f   g   h  \n";
+
+  out << "   " << files;
+  out << "   " << separator;
+  for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
+    out << " " << (rank + 1) << " |";
+    for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
+      Square square(file, rank);
+      std::optional<Piece> opt_p = board.get_piece(square);
+
+      const char piece_char = opt_p ? opt_p->to_char() : ' ';
+      out << " " << piece_char << " |";
+    }
+
+    out << " " << (rank + 1) << "\n";
+    out << "   " << separator;
+  }
+  out << "   " << files;
+  return out;
+}
+
 Bitboard Board::white_pieces() const {
   Bitboard bitboard;
   bitboard |= m_w_pawns;
@@ -207,21 +232,7 @@ void Board::remove_piece(Square square) {
   m_b_king.clear(square);
 }
 
-void Board::print() const {
-  using namespace Const;
-
-  for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
-    std::cout << (rank + 1) << " ";  // rank numbers on the left
-    for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
-      Square square(file, rank);
-      std::optional<Piece> opt_p = get_piece(square);
-      char character = (opt_p.has_value()) ? opt_p.value().to_char() : '.';
-      std::cout << character << " ";
-    }
-    std::cout << "\n";
-  }
-  std::cout << "  a b c d e f g h\n";  // file labels
-}
+void Board::print() const { std::cout << *this; }
 
 bool Board::can_castle_kingside(Color side) const noexcept {
   if (!this->has_kingside_castling_rights(side)) {
@@ -310,6 +321,66 @@ bool Board::has_insufficient_material() const noexcept {
   }
 
   return false;
+}
+
+std::string Board::get_fen() const noexcept {
+  using namespace Const;
+
+  std::string fen;
+  fen.reserve(FEN_NOTATION_MAX_CHAR_COUNT);
+
+  // Board position
+  for (int rank = RANK_8_IND; rank >= RANK_1_IND; --rank) {
+    std::size_t empty = 0;
+
+    for (int file = FILE_A_IND; file <= FILE_H_IND; ++file) {
+      const auto opt_p = get_piece(Square(file, rank));
+      if (opt_p) {
+        if (empty > 0) {
+          fen += std::to_string(empty);
+          empty = 0;
+        }
+        fen += opt_p->to_char();
+      } else {
+        ++empty;
+      }
+    }
+    if (empty > 0) {
+      fen += std::to_string(empty);
+    }
+    if (rank != RANK_1_IND) {
+      fen += "/";
+    }
+  }
+  fen += " ";
+
+  // Side to move
+  fen += (m_state.m_is_white_turn ? "w" : "b");
+  fen += " ";
+
+  // Castling availability
+  bool has_castling = false;
+  // clang-format off
+  if (m_state.m_white_castle_kingside)  { fen += 'K'; has_castling = true; }
+  if (m_state.m_white_castle_queenside) { fen += 'Q'; has_castling = true; }
+  if (m_state.m_black_castle_kingside)  { fen += 'k'; has_castling = true; }
+  if (m_state.m_black_castle_queenside) { fen += 'q'; has_castling = true; }
+  if (!has_castling) { fen += '-'; }
+  // clang-format on
+  fen += " ";
+
+  // En passant target
+  fen += (m_state.m_en_passant_sq ? m_state.m_en_passant_sq->to_string() : "-");
+  fen += " ";
+
+  // Halfmove clock
+  fen += std::to_string(m_state.m_halfmove_clock);
+  fen += " ";
+
+  // Fullmove number
+  fen += std::to_string(m_state.m_fullmove_number);
+
+  return fen;
 }
 
 bool Board::operator==(const Board& other) const {
