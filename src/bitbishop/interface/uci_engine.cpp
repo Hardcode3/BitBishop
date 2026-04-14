@@ -179,13 +179,15 @@ void Uci::UciEngine::handle_display() {
 }
 
 void Uci::UciEngine::handle_help() {
+  // NOLINTBEGIN(modernize-avoid-c-arrays)
   static constexpr char HELP_MSG[] = BITBISHOP_PROJECT_NAME
       " "
-      R"(is a modern chess engine written in C++23, built as a personal learning project around bitboards, move generation, search, and engine architecture.
+      R"(is a chess engine written in C++23, built as a personal learning project around bitboards, move generation, search, and engine architecture.
 Its source code is published under the MIT license (see https://github.com/Hardcode3/BitBishop/blob/main/LICENSE).
 This chess engine can be used with a graphical user interface (GUI) and implements the Universal Chess Interface (UCI) protocol to communicate with a GUI or any kind of API.
 For any further information, visit its GitHub repository: https://github.com/Hardcode3/BitBishop.
 )";
+  // NOLINTEND(modernize-avoid-c-arrays)
   out_stream << HELP_MSG;
 }
 
