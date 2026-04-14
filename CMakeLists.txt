@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(
-    ChessEngine
-    VERSION 0.1.0
+    BitBishop
+    VERSION 0.1.2
     LANGUAGES CXX
-    DESCRIPTION "Basic C++ chess engine project."
-    HOMEPAGE_URL "https://github.com/Hardcode3/CppChessEngine"
+    DESCRIPTION "BitBishop is a modern chess engine written in C++23, built as a personal learning project around bitboards, move generation, search, and engine architecture."
+    HOMEPAGE_URL "https://github.com/Hardcode3/BitBishop"
 )
-configure_file(${PROJECT_SOURCE_DIR}/cmake/ChessEngine.h.in ${PROJECT_BINARY_DIR}/ChessEngine.h)
+configure_file(${PROJECT_SOURCE_DIR}/cmake/BitBishop.h.in ${PROJECT_SOURCE_DIR}/build/BitBishop.h)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 23)
