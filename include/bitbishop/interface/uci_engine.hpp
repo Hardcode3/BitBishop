@@ -144,6 +144,18 @@ class UciEngine {
    * - Zobrist hash key
    */
   void handle_display();
+
+  /**
+   * @brief Displays help to the user.
+   */
+  void handle_help();
+
+  /**
+   * @brief Displays the startup message with engine's version and contributor-s.
+   *
+   * Should be used before the UCI loop starts.
+   */
+  void send_startup_msg();
 };
 
 }  // namespace Uci

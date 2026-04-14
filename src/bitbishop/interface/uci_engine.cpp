@@ -1,3 +1,5 @@
+#include <BitBishop.h>
+
 #include <bitbishop/interface/uci_engine.hpp>
 #include <cassert>
 
@@ -20,6 +22,8 @@ Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
       search_worker_ptr(nullptr) {}
 
 void Uci::UciEngine::loop() {
+  send_startup_msg();
+
   std::string input_str;
   std::vector<std::string> line;
   while (is_running && std::getline(in_stream, input_str)) {
@@ -49,12 +53,14 @@ void Uci::UciEngine::dispatch(std::vector<std::string> &line) {
     handle_quit();
   } else if (line.front() == "d") {
     handle_display();
+  } else if (line.front() == "help") {
+    handle_help();
   }
   // unknown lines are discarded silently following uci rules
 };
 
 void Uci::UciEngine::handle_uci() {
-  out_stream << "id name BitBishop\n"
+  out_stream << "id name " << BITBISHOP_PROJECT_NAME << "\n"
              << "id author Hardcode (Baptiste Penot)\n"
              << "uciok\n"
              << std::flush;
@@ -170,4 +176,19 @@ void Uci::UciEngine::handle_display() {
   out_stream << "FEN notation: " << board.get_fen() << "\n";
   out_stream << "Zobrist hash: " << board.get_zobrist_hash() << "\n";
   out_stream << std::flush;
+}
+
+void Uci::UciEngine::handle_help() {
+  static constexpr char HELP_MSG[] = BITBISHOP_PROJECT_NAME
+      " "
+      R"(is a modern chess engine written in C++23, built as a personal learning project around bitboards, move generation, search, and engine architecture.
+Its source code is published under the MIT license (see https://github.com/Hardcode3/BitBishop/blob/main/LICENSE).
+This chess engine can be used with a graphical user interface (GUI) and implements the Universal Chess Interface (UCI) protocol to communicate with a GUI or any kind of API.
+For any further information, visit its GitHub repository: https://github.com/Hardcode3/BitBishop.
+)";
+  out_stream << HELP_MSG;
+}
+
+void Uci::UciEngine::send_startup_msg() {
+  out_stream << BITBISHOP_PROJECT_NAME << " " << BITBISHOP_VERSION << " " << "by Hardcode3 (Baptiste Penot).\n";
 }
