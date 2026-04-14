@@ -125,16 +125,24 @@ go depth 4
 quit
 ```
 
+For more information about available commands, see [this doc](./docs/commands.md).
+
 ## Documentation
 
 ### Project Docs
 
-- [CMake guide](./docs/cmake.md)
-- [CI guide](./docs/ci.md)
+#### Guides
+
+- [Engine commands (UCI and extensions)](./docs/commands.md)
+- [Build the project with CMake](./docs/cmake.md)
+- [Run CI on GitHub](./docs/ci.md)
 - [Internal architecture](./include/bitbishop/readme.md)
-- [UCI protocol memo](./docs/uci_protocol.md)
+- [Debug with perft](./docs/debug_perft.md)
+
+#### Memos
+
 - [FEN notation memo](./docs/fen_notation.md)
-- [Debugging with perft](./docs/debug_perft.md)
+- [UCI protocol memo](./docs/uci_protocol.md)
 
 ### External References
 
