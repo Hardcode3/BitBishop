@@ -25,13 +25,13 @@ set(COMPILE_TESTS "Compile tests or discard them" ON)
 # Optionally enable packaging and install/export configuration
 set(COMPILE_PACKAGE "Packages and exports library and binaries" ON)
 
+include(cmake/logging.cmake)
 include(cmake/clang_format.cmake)
 include(cmake/clang_tidy.cmake)
 include(cmake/compile_options.cmake)
 include(cmake/coverage/define_coverage_targets.cmake)
 
 find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(src)
 
