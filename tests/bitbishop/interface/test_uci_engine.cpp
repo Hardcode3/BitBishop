@@ -1,3 +1,4 @@
+#include <BitBishop.h>
 #include <gtest/gtest.h>
 
 #include <bitbishop/helpers/blocking_stream.hpp>
@@ -194,7 +195,7 @@ TEST_F(UciEngineTest, IsReadyBeforeUciStillWorks) {
 }
 
 TEST_F(UciEngineTest, PositionCommandWithOneArgDoesNothing) {
-  input.write("position");
+  input.write("position\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
@@ -203,7 +204,7 @@ TEST_F(UciEngineTest, PositionCommandWithOneArgDoesNothing) {
 
 TEST_F(UciEngineTest, PositionCommandWithMissingFenArgDoesNothing) {
   // Invalid fen: missing color to play (FEN has 5 components instead of 6)
-  input.write("position fen rnkqnbbr/pppppppp/8/8/8/8/PPPPPPPP/RNKQNBBR - - 0 1");
+  input.write("position fen rnkqnbbr/pppppppp/8/8/8/8/PPPPPPPP/RNKQNBBR - - 0 1\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
@@ -212,7 +213,7 @@ TEST_F(UciEngineTest, PositionCommandWithMissingFenArgDoesNothing) {
 
 TEST_F(UciEngineTest, PositionCommandWithInvalidSecondaryKeyworkDoesNothing) {
   // Invalid command: fren instead of fen
-  input.write("position fren ...");
+  input.write("position fren ...\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
@@ -263,7 +264,7 @@ TEST_F(UciEngineTest, PositionStartposWithEmptyMovesDoesNothing) {
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
 
-TEST_F(UciEngineTest, PositionWithoutNewlineDoesNotApply) {
+TEST_F(UciEngineTest, CommandWithoutNewlineDoesNotApply) {
   input.write("position startpos moves e2e4");  // no '\n'
 
   std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -321,6 +322,11 @@ TEST_F(UciEngineTest, GoWithoutPositionProducesBestMove) {
 }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
+  // Clear the output containing the startup message.
+  assert_output_contains(output, " by ");
+  output.str(std::string());
+  output.clear();
+
   input.write("this_is_not_a_uci_command\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -380,7 +386,7 @@ TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
 }
 
 TEST_F(UciEngineTest, GoWithoutDepthIsInfinite) {
-  input.write("go");
+  input.write("go\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -397,6 +403,11 @@ TEST_F(UciEngineTest, GoStopGoDoesNotCrash) {
 }
 
 TEST_F(UciEngineTest, StopWithoutGoDoesNothing) {
+  // Clear the output containing the startup message.
+  assert_output_contains(output, " by ");
+  output.str(std::string());
+  output.clear();
+
   input.write("stop\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -467,4 +478,18 @@ TEST_F(UciEngineTest, DisplayWorksWithEmptyBoard) {
       "d\n");
 
   assert_display_works(output);
+}
+
+TEST_F(UciEngineTest, StartupMsgIsDisplayed) {
+  assert_output_contains(output, BITBISHOP_PROJECT_NAME);
+  assert_output_contains(output, BITBISHOP_VERSION);
+  assert_output_contains(output, " by ");
+}
+
+TEST_F(UciEngineTest, HelpMessageIsDisplayed) {
+  input.write("help\n");
+
+  assert_output_contains(output, " is a chess engine ");
+  assert_output_contains(output, " published under ");
+  assert_output_contains(output, "For any further information, ");
 }

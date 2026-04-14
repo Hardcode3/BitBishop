@@ -27,11 +27,11 @@ set_target_properties(${target_name} PROPERTIES
 
 # Define version and source root macros for use in the library code
 target_compile_definitions(${target_name} PRIVATE
-    CHESS_ENGINE_VERSION="${CMAKE_PROJECT_VERSION}"
-    CHESS_ENGINE_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-    CHESS_ENGINE_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-    CHESS_ENGINE_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
-    CHESS_ENGINE_ROOT_DIR="${PROJECT_SOURCE_DIR}"
+    BITBISHOP_VERSION="${CMAKE_PROJECT_VERSION}"
+    BITBISHOP_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
+    BITBISHOP_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
+    BITBISHOP_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
+    BITBISHOP_ROOT_DIR="${PROJECT_SOURCE_DIR}"
 )
 
 # Add sources and headers to the target
@@ -50,6 +50,7 @@ target_link_libraries(${target_name} PRIVATE spdlog::spdlog fmt::fmt)
 target_include_directories(${target_name}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/build>
         $<INSTALL_INTERFACE:include>
 )
 
@@ -60,7 +61,7 @@ set_property(TARGET ${target_name} PROPERTY FOLDER Bitbishop)
 
 ## Install the static library to the lib folder and headers to the include folder
 install(TARGETS ${target_name}
-    EXPORT ChessEngineTargets
+    EXPORT BitBishopTargets
     ARCHIVE DESTINATION lib
     INCLUDES DESTINATION include
 )
@@ -71,30 +72,30 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/${target_folder_name}"
 )
 
 ## Export the target's configuration files for `find_package()`
-install(EXPORT ChessEngineTargets
-    FILE ChessEngineTargets.cmake
-    NAMESPACE ChessEngine::
-    DESTINATION lib/cmake/ChessEngine
+install(EXPORT BitBishopTargets
+    FILE BitBishopTargets.cmake
+    NAMESPACE BitBishop::
+    DESTINATION lib/cmake/BitBishop
 )
 
 ## Generate version information for the package config files
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/ChessEngineConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/BitBishopConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
 ## Generate the main package config file
 configure_package_config_file(
-    "${PROJECT_SOURCE_DIR}/cmake/ChessEngineConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/ChessEngineConfig.cmake"
-    INSTALL_DESTINATION lib/cmake/ChessEngine
+    "${PROJECT_SOURCE_DIR}/cmake/BitBishopConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/BitBishopConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/BitBishop
 )
 
 ## Install the generated config files for `find_package()`
 install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/ChessEngineConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/ChessEngineConfigVersion.cmake"
-    DESTINATION lib/cmake/ChessEngine
+    "${CMAKE_CURRENT_BINARY_DIR}/BitBishopConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/BitBishopConfigVersion.cmake"
+    DESTINATION lib/cmake/BitBishop
 )
