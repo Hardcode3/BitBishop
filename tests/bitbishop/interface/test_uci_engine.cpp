@@ -1,3 +1,4 @@
+#include <BitBishop.h>
 #include <gtest/gtest.h>
 
 #include <bitbishop/helpers/blocking_stream.hpp>
@@ -321,6 +322,11 @@ TEST_F(UciEngineTest, GoWithoutPositionProducesBestMove) {
 }
 
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
+  // Clear the output containing the startup message.
+  assert_output_contains(output, " by ");
+  output.str(std::string());
+  output.clear();
+
   input.write("this_is_not_a_uci_command\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -397,6 +403,11 @@ TEST_F(UciEngineTest, GoStopGoDoesNotCrash) {
 }
 
 TEST_F(UciEngineTest, StopWithoutGoDoesNothing) {
+  // Clear the output containing the startup message.
+  assert_output_contains(output, " by ");
+  output.str(std::string());
+  output.clear();
+
   input.write("stop\n");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -467,4 +478,10 @@ TEST_F(UciEngineTest, DisplayWorksWithEmptyBoard) {
       "d\n");
 
   assert_display_works(output);
+}
+
+TEST_F(UciEngineTest, StartupMsgIsDisplayed) {
+  assert_output_contains(output, BITBISHOP_PROJECT_NAME);
+  assert_output_contains(output, BITBISHOP_VERSION);
+  assert_output_contains(output, "by ");
 }
