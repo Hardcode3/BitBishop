@@ -1,20 +1,14 @@
 #pragma once
 
-#include <bitbishop/interface/reporter.hpp>
-#include <bitbishop/interface/search_controller.hpp>
+#include <bitbishop/interface/search_session.hpp>
+#include <bitbishop/interface/uci_command_channel.hpp>
+#include <bitbishop/interface/uci_command_registry.hpp>
 #include <bitbishop/moves/position.hpp>
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <deque>
 #include <exception>
 #include <iostream>
-#include <memory>
-#include <mutex>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <vector>
 
 namespace Uci {
@@ -36,18 +30,14 @@ namespace Uci {
  * game state management, and search control.
  */
 class UciEngine {
-  struct InputState;
-
   Board board;                  ///< Current chess board
   Position position;            ///< Game position associated to the current chess board
-  std::unique_ptr<SearchWorker> search_worker_ptr;  ///< Manages the search process
-  std::unique_ptr<SearchReporter> search_reporter_ptr;  ///< Formats search output on the control thread
-  std::thread input_thread;                        ///< Dedicated input reader thread
-  std::shared_ptr<InputState> input_state;        ///< Shared input queue state between control and reader threads
+  UciCommandChannel command_channel;  ///< Command listener (input thread + queue)
+  SearchSession search_session;       ///< Search lifecycle owner (worker + reporter)
+  UciCommandRegistry command_registry;  ///< UCI command -> handler registry
   bool is_running;
 
-  std::istream &in_stream;   ///< Input stream for UCI commands
-  std::ostream &out_stream;  ///< Output stream for UCI responses
+  std::ostream& out_stream;  ///< Output stream for UCI responses
 
  public:
   UciEngine() = delete;
@@ -98,6 +88,11 @@ class UciEngine {
   void dispatch(std::vector<std::string> &line);
 
   /**
+   * @brief Registers all built-in UCI command handlers.
+   */
+  void register_handlers();
+
+  /**
    * @brief Handles the "uci" command.
    *
    * Responds to the UCI command by identifying the engine and signaling readiness.
@@ -142,51 +137,6 @@ class UciEngine {
    * Terminates the best move search as soon as possible and exits the program by breaking the UCI loop.
    */
   void handle_quit();
-
-  /**
-   * @brief Stops as soon as possible the search thread and resets it for later computations.
-   */
-  void reset_search_worker();
-
-  /**
-   * @brief Requests a stop to the current search worker without waiting.
-   */
-  void request_stop_search_worker();
-
-  /**
-   * @brief Finalizes current search worker and reporter if the worker has finished.
-   */
-  void finalize_search_worker_if_done();
-
-  /**
-   * @brief Drains pending reports from the current worker and forwards them to the reporter.
-   */
-  void emit_search_reports();
-
-  /**
-   * @brief Pumps search reports and cleanup from the control loop.
-   */
-  void poll_search_worker();
-
-  /**
-   * @brief Reads commands from input stream in a dedicated thread.
-   */
-  static void input_reader_loop(std::istream& input_stream, std::shared_ptr<InputState> input_state);
-
-  /**
-   * @brief Starts the input reader thread.
-   */
-  void start_input_reader();
-
-  /**
-   * @brief Stops input reader resources at loop shutdown.
-   */
-  void stop_input_reader_loop();
-
-  /**
-   * @brief Pops one pending command or times out.
-   */
-  bool wait_and_pop_command(std::vector<std::string>& line, std::chrono::milliseconds timeout);
 
   /**
    * @brief Displays the current board state as well as usefull information.
