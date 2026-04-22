@@ -1,35 +1,41 @@
 #include <gtest/gtest.h>
 
 #include <bitbishop/interface/search_controller.hpp>
-#include <sstream>
+#include <algorithm>
+#include <chrono>
+#include <thread>
 
-TEST(SearchControllerTest, StartEmitsABestmoveWithDepth1) {
+TEST(SearchControllerTest, StartPublishesFinishReportWithDepth1) {
   Board board = Board::StartingPosition();
   Uci::SearchLimits limits;
   limits.depth = 1;
-  std::ostringstream out;
 
-  Uci::SearchWorker controller(board, limits, out);
+  Uci::SearchWorker controller(board, limits);
   controller.start();
   controller.wait();
 
-  const std::string res = out.str();
-  EXPECT_GT(res.size(), 0);
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
+  const auto reports = controller.drain_reports();
+  ASSERT_FALSE(reports.empty());
+  EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
+  EXPECT_TRUE(reports.back().best.move.has_value());
+  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(),
+                          [](const Uci::SearchReport& report) { return report.kind == Uci::SearchReportKind::Iteration; }));
 }
 
-TEST(SearchControllerTest, StartEmitsABestmoveWithInfiniteSearch) {
+TEST(SearchControllerTest, StartPublishesFinishReportWithInfiniteSearch) {
   Board board = Board::StartingPosition();
   Uci::SearchLimits limits;
   limits.infinite = true;
-  std::ostringstream out;
 
-  Uci::SearchWorker controller(board, limits, out);
+  Uci::SearchWorker controller(board, limits);
   controller.start();
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
   controller.stop();
 
-  const std::string res = out.str();
-  EXPECT_GT(res.size(), 0);
-  EXPECT_NE(res.find("bestmove "), std::string::npos);
+  const auto reports = controller.drain_reports();
+  ASSERT_FALSE(reports.empty());
+  EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
+  EXPECT_TRUE(reports.back().best.move.has_value());
+  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(),
+                          [](const Uci::SearchReport& report) { return report.kind == Uci::SearchReportKind::Iteration; }));
 }

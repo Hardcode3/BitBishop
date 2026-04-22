@@ -393,6 +393,16 @@ TEST_F(UciEngineTest, GoWithoutDepthIsInfinite) {
   ASSERT_TRUE(output.str().find("bestmove ") == std::string::npos);
 }
 
+TEST_F(UciEngineTest, GoDepthKeepsEngineResponsive) {
+  input.write(
+      "go depth 8\n"
+      "isready\n"
+      "stop\n");
+
+  assert_output_contains(output, "readyok");
+  assert_output_contains(output, "bestmove ");
+}
+
 TEST_F(UciEngineTest, GoStopGoDoesNotCrash) {
   input.write(
       "go infinite\n"
@@ -492,4 +502,18 @@ TEST_F(UciEngineTest, HelpMessageIsDisplayed) {
   assert_output_contains(output, " is a chess engine ");
   assert_output_contains(output, " published under ");
   assert_output_contains(output, "For any further information, ");
+}
+
+TEST_F(UciEngineTest, BenchProducesBenchReport) {
+  input.write("bench depth 2\n");
+
+  assert_output_contains(output, "bench nodes ");
+}
+
+TEST_F(UciEngineTest, BenchCanBeStopped) {
+  input.write(
+      "bench depth 8\n"
+      "stop\n");
+
+  assert_output_contains(output, "bench nodes ");
 }

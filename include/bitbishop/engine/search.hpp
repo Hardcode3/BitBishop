@@ -9,6 +9,14 @@ class Position;
 
 namespace Search {
 
+/**
+ * @brief Contains statistics about a best move search.
+ */
+struct SearchStats {
+  uint64_t negamax_nodes;     ///< Number of explored negamax nodes
+  uint64_t quiescence_nodes;  ///< Number of explored quiescence nodes
+};
+
 // We implement negamax with alpha-beta by flipping the window at each ply:
 //   score = -negamax(child, depth-1, -beta, -alpha, ...)
 // That requires negating `alpha`/`beta`. Negating `INT_MIN` is undefined behaviour in C++,
@@ -40,6 +48,7 @@ struct BestMove {
  * @param position Current position (board + history)
  * @param alpha Best score the current side can guarantee
  * @param beta Best score the opponent side can guarantee
+ * @param stats Statistics about the search process
  *
  * @return Score from the perspective of the side to move
  *
@@ -60,7 +69,8 @@ struct BestMove {
  * positions.
  * """
  */
-[[nodiscard]] int quiesce(Position& position, int alpha, int beta, std::atomic<bool>* stop_flag = nullptr);
+[[nodiscard]] int quiesce(Position& position, int alpha, int beta, SearchStats& stats,
+                          std::atomic<bool>* stop_flag = nullptr);
 
 /**
  * @brief Finds the best achievable move for the side to move assuming an optimal play on both sides.
@@ -70,6 +80,7 @@ struct BestMove {
  * @param alpha Lower bound, aka. minimum score we already guaranteed to get.
  * @param beta Upper bound, aka. maximum score the opponent is willing to let us have.
  * @param ply Number of half-moves from root used for mate distance
+ * @param stats Statistics about the search process
  *
  * @return Move and score in a BestMove object
  *
@@ -81,7 +92,7 @@ struct BestMove {
  * @see https://www.chessprogramming.org/Alpha-Beta
  * @see https://www.dogeystamp.com/chess2/
  */
-[[nodiscard]] BestMove negamax(Position& position, std::size_t depth, int alpha, int beta, int ply,
+[[nodiscard]] BestMove negamax(Position& position, std::size_t depth, int alpha, int beta, int ply, SearchStats& stats,
                                std::atomic<bool>* stop_flag = nullptr);
 
 }  // namespace Search

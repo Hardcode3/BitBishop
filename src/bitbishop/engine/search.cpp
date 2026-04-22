@@ -4,7 +4,9 @@
 #include <bitbishop/moves/position.hpp>
 
 // https://www.chessprogramming.org/Quiescence_Search
-int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* stop_flag) {
+int Search::quiesce(Position& position, int alpha, int beta, SearchStats& stats, std::atomic<bool>* stop_flag) {
+  stats.quiescence_nodes++;
+
   if (stop_flag != nullptr && stop_flag->load()) {
     return alpha;
   }
@@ -47,7 +49,7 @@ int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* 
 
     // Quiescence window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -quiesce(position, -beta, -alpha, stop_flag);
+    int score = -quiesce(position, -beta, -alpha, stats, stop_flag);
     position.revert_move();
 
     if (stop_flag != nullptr && stop_flag->load()) {
@@ -64,7 +66,9 @@ int Search::quiesce(Position& position, int alpha, int beta, std::atomic<bool>* 
 }
 
 Search::BestMove Search::negamax(Position& position, std::size_t depth, int alpha, int beta, int ply,
-                                 std::atomic<bool>* stop_flag) {
+                                 SearchStats& stats, std::atomic<bool>* stop_flag) {
+  stats.negamax_nodes++;
+
   const Board& board = position.get_board();
 
   BestMove best;
@@ -81,7 +85,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
   }
 
   if (depth == 0) {
-    best.score = quiesce(position, alpha, beta, stop_flag);
+    best.score = quiesce(position, alpha, beta, stats, stop_flag);
     return best;
   }
 
@@ -115,7 +119,7 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
     position.apply_move(move);
     // Negamax window flip: child is searched with (-beta, -alpha) and the returned score is negated.
     // This relies on `ALPHA_INIT` not being `INT_MIN` (see `include/bitbishop/engine/search.hpp`).
-    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stop_flag).score;
+    int score = -negamax(position, depth - 1, -beta, -alpha, ply + 1, stats, stop_flag).score;
     position.revert_move();
 
     if (stop_flag != nullptr && stop_flag->load()) {
