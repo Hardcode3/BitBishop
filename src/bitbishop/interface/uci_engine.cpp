@@ -54,7 +54,7 @@ void Uci::UciEngine::loop() {
 }
 
 void Uci::UciEngine::dispatch(const std::vector<std::string>& line) {
-  command_registry.dispatch(line);
+  std::ignore = command_registry.dispatch(line);
   // unknown lines are discarded silently following uci rules
 };
 

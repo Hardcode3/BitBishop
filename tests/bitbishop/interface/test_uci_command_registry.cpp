@@ -49,8 +49,9 @@ TEST(UciCommandRegistryTest, DispatchesCorreclyHandlerFunction) {
   EXPECT_EQ(counter, 0);
 
   const std::vector<std::string> test_command{test_command_name, "some", "arguments"};
-  cmd_registry.dispatch(test_command);
+  const bool dispatch_result = cmd_registry.dispatch(test_command);
 
+  EXPECT_TRUE(dispatch_result);
   EXPECT_EQ(counter, 1);
 }
 
@@ -67,7 +68,8 @@ TEST(UciCommandRegistryTest, DispatchesDoesNothingWithNonExistingCommand) {
   EXPECT_EQ(counter, 0);
 
   const std::vector<std::string> test_command{"unknown", "some", "arguments"};
-  cmd_registry.dispatch(test_command);
+  const bool dispatch_result = cmd_registry.dispatch(test_command);
 
+  EXPECT_FALSE(dispatch_result);
   EXPECT_EQ(counter, 0);
 }
