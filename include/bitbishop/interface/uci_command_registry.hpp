@@ -28,7 +28,14 @@ class UciCommandRegistry {
    *
    * @return true when a handler was found and executed, false otherwise.
    */
-  bool dispatch(const std::vector<std::string>& line) const;
+  [[nodiscard]] bool dispatch(const std::vector<std::string>& line) const;
+
+  /**
+   * @brief Retrieves the number of handlers currently registered.
+   *
+   * @return Number of handlers registered in the UciCommandRegistry.
+   */
+  [[nodiscard]] std::size_t get_handlers_count() const noexcept { return handlers.size(); }
 };
 
 }  // namespace Uci
