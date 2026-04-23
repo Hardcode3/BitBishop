@@ -18,9 +18,6 @@ struct SearchReporter {
   /**
    * @brief Called after each completed search iteration.
    *
-   * This is typically invoked during iterative deepening to report
-   * intermediate results.
-   *
    * @param best  Current best move found so far.
    * @param depth Depth reached in the current iteration.
    * @param stats Accumulated search statistics.
@@ -82,7 +79,7 @@ struct BenchReporter : SearchReporter {
 
  public:
   /** Injectable time source. Mainly for testing.
-   * Must be declared *before* start si
+   * Must be declared *before* start.
    */
   std::function<Clock::time_point()> now;
 
@@ -106,8 +103,7 @@ struct BenchReporter : SearchReporter {
    * @brief Outputs benchmark statistics upon search completion.
    *
    * Computes total nodes searched (negamax + quiescence), elapsed time,
-   * and nodes per second (NPS), then prints a summary line:
-   *   "bench nodes <total> time <seconds>s nps <nps>"
+   * and nodes per second (NPS), then prints a summary line (see implementation for details).
    *
    * @param best  Final best move found by the search (unused).
    * @param stats Final search statistics.
