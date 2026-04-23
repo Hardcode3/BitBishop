@@ -37,7 +37,7 @@ struct SearchLimits {
  *
  * Search workers only publish data. Reporting/printing is done by the UCI control thread.
  */
-enum class SearchReportKind {
+enum class SearchReportKind : std::uint8_t {
   Iteration,
   Finish,
 };

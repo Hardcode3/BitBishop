@@ -43,7 +43,7 @@ Uci::SearchWorker::~SearchWorker() { stop(); }
 
 void Uci::SearchWorker::push_report(SearchReport report) {
   std::lock_guard<std::mutex> lock(reports_mutex);
-  reports.push_back(std::move(report));
+  reports.push_back(report);
 }
 
 void Uci::SearchWorker::run() {

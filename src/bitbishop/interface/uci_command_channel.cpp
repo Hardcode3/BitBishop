@@ -1,10 +1,10 @@
 #include <bitbishop/interface/uci_command_channel.hpp>
 
-Uci::UciCommandChannel::UciCommandChannel(std::istream& input_stream)
-    : input_stream(input_stream), reader_thread(), state(nullptr) {}
+Uci::UciCommandChannel::UciCommandChannel(std::istream& input_stream) : input_stream(input_stream), state(nullptr) {}
 
 Uci::UciCommandChannel::~UciCommandChannel() { stop(); }
 
+// NOLINTNEXTLINE(performance-unnecessary-value-param)
 void Uci::UciCommandChannel::reader_loop(std::istream& input_stream, std::shared_ptr<State> state) {
   std::string line;
   while (!state->stop_requested.load() && std::getline(input_stream, line)) {

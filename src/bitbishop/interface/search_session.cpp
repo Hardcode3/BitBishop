@@ -20,7 +20,7 @@ void Uci::SearchSession::start_bench(Board board, SearchLimits limits) {
   stop_and_join();
 
   if (limits.infinite) {
-    limits.depth = 10;
+    limits.depth = 10;  // NOLINT(readability-magic-numbers)
     limits.infinite = false;
   }
 

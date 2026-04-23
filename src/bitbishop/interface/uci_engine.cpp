@@ -24,6 +24,8 @@ Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
 }
 
 void Uci::UciEngine::loop() {
+  constexpr const std::chrono::milliseconds LINE_POLL_INTERVAL_MS(5);
+
   send_startup_msg();
   command_channel.start();
 
@@ -31,7 +33,8 @@ void Uci::UciEngine::loop() {
     search_session.poll();
 
     std::string raw_line;
-    if (command_channel.wait_and_pop_line(raw_line, std::chrono::milliseconds(5))) {
+    const bool line_was_popped = command_channel.wait_and_pop_line(raw_line, LINE_POLL_INTERVAL_MS);
+    if (line_was_popped) {
       std::vector<std::string> line = split(raw_line);
       dispatch(line);
       continue;
