@@ -1,4 +1,5 @@
 #include <bitbishop/interface/uci_command_channel.hpp>
+#include <utility>
 
 Uci::UciCommandChannel::UciCommandChannel(std::istream& input_stream) : input_stream(input_stream), state(nullptr) {}
 
@@ -22,8 +23,14 @@ void Uci::UciCommandChannel::reader_loop(std::istream& input_stream, std::shared
 void Uci::UciCommandChannel::start() {
   stop();
 
-  state = std::make_shared<State>();
-  reader_thread = std::thread(&UciCommandChannel::reader_loop, std::ref(input_stream), state);
+  auto new_state = std::make_shared<State>();
+  std::thread new_reader(&UciCommandChannel::reader_loop, std::ref(input_stream), new_state);
+
+  // Move values after being sure that thread construction is successfull
+  // avoiding successfully built state and failed thread.
+  // Either state and thread are created successfully, or neither of them is.
+  state = std::move(new_state);
+  reader_thread = std::move(new_reader);
 }
 
 void Uci::UciCommandChannel::stop() {
@@ -34,15 +41,12 @@ void Uci::UciCommandChannel::stop() {
   state->stop_requested.store(true);
   state->lines_cv.notify_all();
 
-  if (!reader_thread.joinable()) {
-    state.reset();
-    return;
-  }
-
-  if (state->eof_reached.load()) {
-    reader_thread.join();
-  } else {
-    reader_thread.detach();
+  if (reader_thread.joinable()) {
+    if (state->eof_reached.load()) {
+      reader_thread.join();
+    } else {
+      reader_thread.detach();
+    }
   }
 
   state.reset();
