@@ -1,7 +1,7 @@
 #pragma once
 
-#include <bitbishop/interface/search_controller.hpp>
 #include <bitbishop/interface/search_reporter.hpp>
+#include <bitbishop/interface/search_worker.hpp>
 #include <memory>
 #include <ostream>
 

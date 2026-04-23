@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <bitbishop/interface/search_controller.hpp>
+#include <bitbishop/interface/search_worker.hpp>
 
 TEST(SearchLimitsTest, DefaultsAreEmptyAndNotInfinite) {
   Uci::SearchLimits limits;

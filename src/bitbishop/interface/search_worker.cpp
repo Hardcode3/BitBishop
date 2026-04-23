@@ -1,4 +1,4 @@
-#include <bitbishop/interface/search_controller.hpp>
+#include <bitbishop/interface/search_worker.hpp>
 
 Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(std::vector<std::string>& line) {
   SearchLimits limits;

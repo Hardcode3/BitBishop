@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <bitbishop/interface/search_controller.hpp>
 #include <algorithm>
+#include <bitbishop/interface/search_worker.hpp>
 #include <chrono>
 #include <thread>
 
@@ -18,8 +18,9 @@ TEST(SearchControllerTest, StartPublishesFinishReportWithDepth1) {
   ASSERT_FALSE(reports.empty());
   EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
   EXPECT_TRUE(reports.back().best.move.has_value());
-  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(),
-                          [](const Uci::SearchReport& report) { return report.kind == Uci::SearchReportKind::Iteration; }));
+  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(), [](const Uci::SearchReport& report) {
+    return report.kind == Uci::SearchReportKind::Iteration;
+  }));
 }
 
 TEST(SearchControllerTest, StartPublishesFinishReportWithInfiniteSearch) {
@@ -36,6 +37,7 @@ TEST(SearchControllerTest, StartPublishesFinishReportWithInfiniteSearch) {
   ASSERT_FALSE(reports.empty());
   EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
   EXPECT_TRUE(reports.back().best.move.has_value());
-  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(),
-                          [](const Uci::SearchReport& report) { return report.kind == Uci::SearchReportKind::Iteration; }));
+  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(), [](const Uci::SearchReport& report) {
+    return report.kind == Uci::SearchReportKind::Iteration;
+  }));
 }
