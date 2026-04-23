@@ -2,6 +2,7 @@
 
 #include <bitbishop/engine/search.hpp>
 #include <chrono>
+#include <functional>
 
 /**
  * @brief Interface for reporting progress and results of a search.
@@ -45,9 +46,11 @@ struct SearchReporter {
  * with chess GUIs or other UCI-compatible tools.
  */
 struct UciReporter : SearchReporter {
+ private:
   /** Output stream used for writing UCI messages. */
   std::ostream& out_stream;
 
+ public:
   /**
    * @brief Constructs a UciReporter.
    *
@@ -75,18 +78,29 @@ struct UciReporter : SearchReporter {
  * and reports total nodes searched along with nodes-per-second (NPS).
  */
 struct BenchReporter : SearchReporter {
+  using Clock = std::chrono::steady_clock;
+
+ public:
+  /** Injectable time source. Mainly for testing.
+   * Must be declared *before* start si
+   */
+  std::function<Clock::time_point()> now;
+
+ private:
   /** Output stream used for writing benchmark results. */
   std::ostream& out_stream;
 
   /** Start time of the benchmark measurement. */
-  std::chrono::steady_clock::time_point start;
+  Clock::time_point start;
 
+ public:
   /**
    * @brief Constructs a BenchReporter and records the start time.
    *
    * @param out Output stream where benchmark results will be written.
    */
   BenchReporter(std::ostream& out);
+  BenchReporter(std::ostream& out, std::function<Clock::time_point()> now_fn);
 
   /**
    * @brief Outputs benchmark statistics upon search completion.
