@@ -1,6 +1,8 @@
 #pragma once
 
-#include <bitbishop/interface/search_controller.hpp>
+#include <bitbishop/interface/search_session.hpp>
+#include <bitbishop/interface/uci_command_channel.hpp>
+#include <bitbishop/interface/uci_command_registry.hpp>
 #include <bitbishop/moves/position.hpp>
 #include <exception>
 #include <iostream>
@@ -30,11 +32,12 @@ namespace Uci {
 class UciEngine {
   Board board;                  ///< Current chess board
   Position position;            ///< Game position associated to the current chess board
-  std::unique_ptr<SearchWorker> search_worker_ptr;  ///< Manages the search process
+  UciCommandChannel command_channel;  ///< Command listener (input thread + queue)
+  SearchSession search_session;       ///< Search lifecycle owner (worker + reporter)
+  UciCommandRegistry command_registry;  ///< UCI command -> handler registry
   bool is_running;
 
-  std::istream &in_stream;   ///< Input stream for UCI commands
-  std::ostream &out_stream;  ///< Output stream for UCI responses
+  std::ostream& out_stream;  ///< Output stream for UCI responses
 
  public:
   UciEngine() = delete;
@@ -82,7 +85,12 @@ class UciEngine {
    *
    * @param line The input command tokens to process
    */
-  void dispatch(std::vector<std::string> &line);
+  void dispatch(const std::vector<std::string> &line);
+
+  /**
+   * @brief Registers all built-in UCI command handlers.
+   */
+  void register_handlers();
 
   /**
    * @brief Handles the "uci" command.
@@ -105,7 +113,7 @@ class UciEngine {
    *
    * @param line The input command tokens containing the position information
    */
-  void handle_position(std::vector<std::string> &line);
+  void handle_position(const std::vector<std::string> &line);
 
   /**
    * @brief Parses and handles "go" commands.
@@ -114,7 +122,7 @@ class UciEngine {
    *
    * @param line The input command tokens containing the search parameters
    */
-  void handle_go(std::vector<std::string> &line);
+  void handle_go(const std::vector<std::string> &line);
 
   /**
    * @brief Handles the "stop" command.
@@ -129,11 +137,6 @@ class UciEngine {
    * Terminates the best move search as soon as possible and exits the program by breaking the UCI loop.
    */
   void handle_quit();
-
-  /**
-   * @brief Stops as soon as possible the search thread and resets it for later computations.
-   */
-  void reset_search_worker();
 
   /**
    * @brief Displays the current board state as well as usefull information.
@@ -156,6 +159,13 @@ class UciEngine {
    * Should be used before the UCI loop starts.
    */
   void send_startup_msg();
+
+  /**
+   * @brief Runs a benchmark.
+   *
+   * @param line The input command tokens containing the benchmark information
+   */
+  void handle_bench(const std::vector<std::string> &line);
 };
 
 }  // namespace Uci

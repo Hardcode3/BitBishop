@@ -1,7 +1,6 @@
 #include <BitBishop.h>
 
 #include <bitbishop/interface/uci_engine.hpp>
-#include <cassert>
 
 [[nodiscard]] std::vector<std::string> Uci::split(const std::string &str) {
   std::vector<std::string> tokens;
@@ -14,50 +13,85 @@
 }
 
 Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
-    : is_running(true),
-      board(Board::StartingPosition()),
+    : board(Board::StartingPosition()),
       position(Position(this->board)),
-      in_stream(input),
-      out_stream(output),
-      search_worker_ptr(nullptr) {}
+      command_channel(input),
+      search_session(output),
+      command_registry(),
+      is_running(true),
+      out_stream(output) {
+  register_handlers();
+}
 
 void Uci::UciEngine::loop() {
+  constexpr const std::chrono::milliseconds LINE_POLL_INTERVAL_MS(5);
+
   send_startup_msg();
+  command_channel.start();
 
-  std::string input_str;
-  std::vector<std::string> line;
-  while (is_running && std::getline(in_stream, input_str)) {
-    line = split(input_str);
-    dispatch(line);
-  }
-};
+  while (is_running) {
+    search_session.poll();
 
-void Uci::UciEngine::dispatch(std::vector<std::string> &line) {
-  if (line.empty()) {
-    return;
+    std::string raw_line;
+    const bool line_was_popped = command_channel.wait_and_pop_line(raw_line, LINE_POLL_INTERVAL_MS);
+    if (line_was_popped) {
+      std::vector<std::string> line = split(raw_line);
+      dispatch(line);
+      continue;
+    }
+
+    if (command_channel.eof()) {
+      search_session.request_stop();
+      search_session.poll();
+      if (search_session.is_idle()) {
+        is_running = false;
+      }
+    }
   }
 
-  if (line.front() == "uci") {
-    handle_uci();
-  } else if (line.front() == "isready") {
-    out_stream << "readyok\n" << std::flush;
-  } else if (line.front() == "ucinewgame") {
-    handle_new_game();
-  } else if (line.front() == "position") {
-    handle_position(line);
-  } else if (line.front() == "go") {
-    handle_go(line);
-  } else if (line.front() == "stop") {
-    handle_stop();
-  } else if (line.front() == "quit") {
-    handle_quit();
-  } else if (line.front() == "d") {
-    handle_display();
-  } else if (line.front() == "help") {
-    handle_help();
-  }
+  search_session.stop_and_join();
+  command_channel.stop();
+}
+
+void Uci::UciEngine::dispatch(const std::vector<std::string>& line) {
+  std::ignore = command_registry.dispatch(line);
   // unknown lines are discarded silently following uci rules
 };
+
+void Uci::UciEngine::register_handlers() {
+  command_registry.register_handler("uci", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_uci();
+  });
+  command_registry.register_handler("isready", [this](const std::vector<std::string>& line) {
+    (void)line;
+    out_stream << "readyok\n" << std::flush;
+  });
+  command_registry.register_handler("ucinewgame", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_new_game();
+  });
+  command_registry.register_handler("position",
+                                    [this](const std::vector<std::string>& line) { handle_position(line); });
+  command_registry.register_handler("go", [this](const std::vector<std::string>& line) { handle_go(line); });
+  command_registry.register_handler("stop", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_stop();
+  });
+  command_registry.register_handler("quit", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_quit();
+  });
+  command_registry.register_handler("d", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_display();
+  });
+  command_registry.register_handler("help", [this](const std::vector<std::string>& line) {
+    (void)line;
+    handle_help();
+  });
+  command_registry.register_handler("bench", [this](const std::vector<std::string>& line) { handle_bench(line); });
+}
 
 void Uci::UciEngine::handle_uci() {
   out_stream << "id name " << BITBISHOP_PROJECT_NAME << "\n"
@@ -71,7 +105,7 @@ void Uci::UciEngine::handle_new_game() {
   position.reset();
 }
 
-void Uci::UciEngine::handle_position(std::vector<std::string> &line) {
+void Uci::UciEngine::handle_position(const std::vector<std::string>& line) {
   using namespace Const;
 
   if (line.size() < 2) {
@@ -115,59 +149,16 @@ void Uci::UciEngine::handle_position(std::vector<std::string> &line) {
   }
 }
 
-void Uci::UciEngine::handle_go(std::vector<std::string> &line) {
-  reset_search_worker();
-
-  SearchLimits limits;
-
-  for (std::size_t i = 1; i < line.size(); ++i) {
-    const auto &tok = line[i];
-
-    auto read = [&](std::optional<int> &target) {
-      if (i + 1 < line.size()) {
-        target = std::stoi(line[++i]);
-      }
-    };
-
-    if (tok == "depth") {
-      read(limits.depth);
-    } else if (tok == "movetime") {
-      read(limits.movetime);
-    } else if (tok == "wtime") {
-      read(limits.wtime);
-    } else if (tok == "btime") {
-      read(limits.btime);
-    } else if (tok == "winc") {
-      read(limits.winc);
-    } else if (tok == "binc") {
-      read(limits.binc);
-    } else if (tok == "infinite") {
-      limits.infinite = true;
-    }
-  }
-
-  if (!limits.depth) {
-    limits.infinite = true;  // Only depth and infinite limits are supported for now
-  }
-
-  search_worker_ptr = std::make_unique<SearchWorker>(board, limits, out_stream);
-  assert(search_worker_ptr != nullptr);
-  search_worker_ptr->start();
+void Uci::UciEngine::handle_go(const std::vector<std::string>& line) {
+  SearchLimits limits = SearchLimits::from_uci_cmd(line);
+  search_session.start_go(board, limits);
 }
 
-void Uci::UciEngine::handle_stop() { reset_search_worker(); }
+void Uci::UciEngine::handle_stop() { search_session.request_stop(); }
 
 void Uci::UciEngine::handle_quit() {
-  reset_search_worker();
+  search_session.request_stop();
   is_running = false;
-}
-
-void Uci::UciEngine::reset_search_worker() {
-  if (search_worker_ptr) {
-    search_worker_ptr->stop();
-    search_worker_ptr.reset();
-  }
-  assert(search_worker_ptr == nullptr);
 }
 
 void Uci::UciEngine::handle_display() {
@@ -193,4 +184,9 @@ For any further information, visit its GitHub repository: https://github.com/Har
 
 void Uci::UciEngine::send_startup_msg() {
   out_stream << BITBISHOP_PROJECT_NAME << " " << BITBISHOP_VERSION << " " << "by Hardcode3 (Baptiste Penot).\n";
+}
+
+void Uci::UciEngine::handle_bench(const std::vector<std::string>& line) {
+  SearchLimits limits = SearchLimits::from_uci_cmd(line);
+  search_session.start_bench(board, limits);
 }
