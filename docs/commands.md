@@ -191,6 +191,30 @@ help
 
 Response: multiline informational text.
 
+### `bench`
+
+Runs a benchmark search on the current position (non-UCI extension).
+
+Syntax:
+
+```text
+bench [depth <n>] [movetime <ms>] [wtime <ms>] [btime <ms>] [winc <ms>] [binc <ms>] [infinite]
+```
+
+Implemented behavior (current state):
+
+- Uses the same limit parser as `go`.
+- `depth <n>` runs a fixed-depth benchmark.
+- If `infinite` is provided, benchmark mode internally converts to `depth 10`.
+- A bare `bench` command (no limits) is parsed as `infinite`, then converted internally to `depth 10`.
+- `stop` can still interrupt a running benchmark early.
+
+Response when benchmark ends:
+
+```text
+bench nodes <total> negamax_nodes <negamax> quiescence_nodes <quiescence> time(s) <seconds>s nps <nps>
+```
+
 ## Options Support Status
 
 ### UCI `setoption`
