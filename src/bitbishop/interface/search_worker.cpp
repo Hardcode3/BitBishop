@@ -29,8 +29,9 @@ Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(const std::vector<std::string>
     }
   }
 
-  if (!limits.depth) {
-    limits.infinite = true;  // Only depth and infinite limits are supported for now
+  const bool has_time_control = limits.movetime || limits.wtime || limits.btime || limits.winc || limits.binc;
+  if (!limits.depth && !has_time_control && !limits.infinite) {
+    limits.infinite = true;
   }
 
   return limits;
