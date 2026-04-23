@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <bitbishop/helpers/async.hpp>
 #include <bitbishop/helpers/blocking_stream.hpp>
 #include <bitbishop/interface/uci_command_channel.hpp>
 #include <chrono>
@@ -8,22 +9,6 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-
-namespace {
-
-template <typename Predicate>
-bool wait_for(Predicate&& pred, std::chrono::milliseconds timeout = 300ms, std::chrono::milliseconds interval = 5ms) {
-  const auto start = std::chrono::steady_clock::now();
-  while (std::chrono::steady_clock::now() - start < timeout) {
-    if (pred()) {
-      return true;
-    }
-    std::this_thread::sleep_for(interval);
-  }
-  return pred();
-}
-
-}  // namespace
 
 TEST(UciCommandChannelTest, WaitAndPopReturnsFalseWhenNotStarted) {
   std::istringstream input("uci\n");
