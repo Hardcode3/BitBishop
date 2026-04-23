@@ -13,8 +13,8 @@ namespace Search {
  * @brief Contains statistics about a best move search.
  */
 struct SearchStats {
-  uint64_t negamax_nodes;     ///< Number of explored negamax nodes
-  uint64_t quiescence_nodes;  ///< Number of explored quiescence nodes
+  uint64_t negamax_nodes = 0;     ///< Number of explored negamax nodes
+  uint64_t quiescence_nodes = 0;  ///< Number of explored quiescence nodes
 };
 
 // We implement negamax with alpha-beta by flipping the window at each ply:
