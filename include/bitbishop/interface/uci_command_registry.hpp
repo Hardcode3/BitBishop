@@ -12,7 +12,7 @@ namespace Uci {
  */
 class UciCommandRegistry {
  public:
-  using Handler = std::function<void(std::vector<std::string>&)>;
+  using Handler = std::function<void(const std::vector<std::string>&)>;
 
  private:
   std::unordered_map<std::string, Handler> handlers;
@@ -28,7 +28,7 @@ class UciCommandRegistry {
    *
    * @return true when a handler was found and executed, false otherwise.
    */
-  bool dispatch(std::vector<std::string>& line) const;
+  bool dispatch(const std::vector<std::string>& line) const;
 };
 
 }  // namespace Uci

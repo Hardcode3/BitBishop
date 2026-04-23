@@ -1,6 +1,6 @@
 #include <bitbishop/interface/search_worker.hpp>
 
-Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(std::vector<std::string>& line) {
+Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(const std::vector<std::string>& line) {
   SearchLimits limits;
 
   for (std::size_t i = 1; i < line.size(); ++i) {

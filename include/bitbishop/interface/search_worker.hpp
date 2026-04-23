@@ -29,7 +29,7 @@ struct SearchLimits {
    *
    * @return The built SearchLimits object.
    */
-  static SearchLimits from_uci_cmd(std::vector<std::string>& line);
+  static SearchLimits from_uci_cmd(const std::vector<std::string>& line);
 };
 
 /**

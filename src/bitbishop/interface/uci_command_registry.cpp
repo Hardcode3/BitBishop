@@ -4,7 +4,7 @@ void Uci::UciCommandRegistry::register_handler(std::string command, Handler hand
   handlers.insert_or_assign(std::move(command), std::move(handler));
 }
 
-bool Uci::UciCommandRegistry::dispatch(std::vector<std::string>& line) const {
+bool Uci::UciCommandRegistry::dispatch(const std::vector<std::string>& line) const {
   if (line.empty()) {
     return false;
   }

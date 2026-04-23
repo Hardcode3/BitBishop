@@ -85,7 +85,7 @@ class UciEngine {
    *
    * @param line The input command tokens to process
    */
-  void dispatch(std::vector<std::string> &line);
+  void dispatch(const std::vector<std::string> &line);
 
   /**
    * @brief Registers all built-in UCI command handlers.
@@ -113,7 +113,7 @@ class UciEngine {
    *
    * @param line The input command tokens containing the position information
    */
-  void handle_position(std::vector<std::string> &line);
+  void handle_position(const std::vector<std::string> &line);
 
   /**
    * @brief Parses and handles "go" commands.
@@ -122,7 +122,7 @@ class UciEngine {
    *
    * @param line The input command tokens containing the search parameters
    */
-  void handle_go(std::vector<std::string> &line);
+  void handle_go(const std::vector<std::string> &line);
 
   /**
    * @brief Handles the "stop" command.
@@ -165,7 +165,7 @@ class UciEngine {
    *
    * @param line The input command tokens containing the benchmark information
    */
-  void handle_bench(std::vector<std::string> &line);
+  void handle_bench(const std::vector<std::string> &line);
 };
 
 }  // namespace Uci

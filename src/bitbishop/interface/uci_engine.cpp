@@ -53,43 +53,44 @@ void Uci::UciEngine::loop() {
   command_channel.stop();
 }
 
-void Uci::UciEngine::dispatch(std::vector<std::string> &line) {
+void Uci::UciEngine::dispatch(const std::vector<std::string>& line) {
   command_registry.dispatch(line);
   // unknown lines are discarded silently following uci rules
 };
 
 void Uci::UciEngine::register_handlers() {
-  command_registry.register_handler("uci", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("uci", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_uci();
   });
-  command_registry.register_handler("isready", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("isready", [this](const std::vector<std::string>& line) {
     (void)line;
     out_stream << "readyok\n" << std::flush;
   });
-  command_registry.register_handler("ucinewgame", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("ucinewgame", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_new_game();
   });
-  command_registry.register_handler("position", [this](std::vector<std::string>& line) { handle_position(line); });
-  command_registry.register_handler("go", [this](std::vector<std::string>& line) { handle_go(line); });
-  command_registry.register_handler("stop", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("position",
+                                    [this](const std::vector<std::string>& line) { handle_position(line); });
+  command_registry.register_handler("go", [this](const std::vector<std::string>& line) { handle_go(line); });
+  command_registry.register_handler("stop", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_stop();
   });
-  command_registry.register_handler("quit", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("quit", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_quit();
   });
-  command_registry.register_handler("d", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("d", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_display();
   });
-  command_registry.register_handler("help", [this](std::vector<std::string>& line) {
+  command_registry.register_handler("help", [this](const std::vector<std::string>& line) {
     (void)line;
     handle_help();
   });
-  command_registry.register_handler("bench", [this](std::vector<std::string>& line) { handle_bench(line); });
+  command_registry.register_handler("bench", [this](const std::vector<std::string>& line) { handle_bench(line); });
 }
 
 void Uci::UciEngine::handle_uci() {
@@ -104,7 +105,7 @@ void Uci::UciEngine::handle_new_game() {
   position.reset();
 }
 
-void Uci::UciEngine::handle_position(std::vector<std::string> &line) {
+void Uci::UciEngine::handle_position(const std::vector<std::string>& line) {
   using namespace Const;
 
   if (line.size() < 2) {
@@ -148,7 +149,7 @@ void Uci::UciEngine::handle_position(std::vector<std::string> &line) {
   }
 }
 
-void Uci::UciEngine::handle_go(std::vector<std::string> &line) {
+void Uci::UciEngine::handle_go(const std::vector<std::string>& line) {
   SearchLimits limits = SearchLimits::from_uci_cmd(line);
   search_session.start_go(board, limits);
 }
@@ -185,7 +186,7 @@ void Uci::UciEngine::send_startup_msg() {
   out_stream << BITBISHOP_PROJECT_NAME << " " << BITBISHOP_VERSION << " " << "by Hardcode3 (Baptiste Penot).\n";
 }
 
-void Uci::UciEngine::handle_bench(std::vector<std::string> &line) {
+void Uci::UciEngine::handle_bench(const std::vector<std::string>& line) {
   SearchLimits limits = SearchLimits::from_uci_cmd(line);
   search_session.start_bench(board, limits);
 }
