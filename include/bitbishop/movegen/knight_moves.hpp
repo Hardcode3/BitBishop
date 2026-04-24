@@ -10,7 +10,8 @@
 
 // pinned knights cannot move at all due to knight's l-shaped move geometry
 inline void generate_knight_legal_moves(std::vector<Move>& moves, const Board& board, Color us,
-                                        const Bitboard& check_mask, const PinResult& pins) {
+                                        const Bitboard& check_mask, const PinResult& pins,
+                                        const Bitboard& allowed_targets = Bitboard::Ones()) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
   Bitboard knights = board.knights(us);
@@ -23,6 +24,7 @@ inline void generate_knight_legal_moves(std::vector<Move>& moves, const Board& b
     Bitboard candidates = Lookups::KNIGHT_ATTACKS[from.value()];
     candidates &= ~own;
     candidates &= check_mask;
+    candidates &= allowed_targets;
 
     for (Square to : candidates) {
       const bool is_capture = enemy.test(to);

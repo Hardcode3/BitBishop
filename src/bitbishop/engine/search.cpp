@@ -34,16 +34,11 @@ int Search::quiesce(Position& position, int alpha, int beta, SearchStats& stats,
   }
 
   std::vector<Move> moves;
-  generate_legal_moves(moves, board);
-  // Optimization: implement generate_capture_moves(moves, board); instead
-  // To generate only capture moves and not all moves top discard some in the end
+  generate_legal_capture_moves(moves, board);
 
   for (const Move& move : moves) {
     if (stop_flag != nullptr && stop_flag->load()) {
       return alpha;
-    }
-    if (!move.is_capture) {
-      continue;
     }
     position.apply_move(move);
 
