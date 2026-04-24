@@ -117,18 +117,18 @@ sequenceDiagram
 
 BitBishop does not run every thread at 100% all the time. Some waits are expected and intentional.
 
-| Thread | Blocking call | Blocks when | Wakes up when |
-| --- | --- | --- | --- |
-| Command thread (`UciCommandChannel`) | `std::getline(input_stream, line)` | No full line is available (default runtime stream is `std::cin`) | Newline arrives or EOF is reached |
-| Main thread (`UciEngine::loop`) | `wait_and_pop_line(..., 5ms)` (`condition_variable::wait_for`) | Pending line queue is empty and EOF not reached | A line is pushed (`notify_one`), EOF is signaled (`notify_all`), or timeout elapses |
-| Worker thread (`SearchWorker`) | No intentional sleep in `run()` | It is actively searching (CPU-bound) | Search limit reached or `stop_flag` set |
+| Thread                               | Blocking call                                                  | Blocks when                                                      | Wakes up when                                                                       |
+| ------------------------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Command thread (`UciCommandChannel`) | `std::getline(input_stream, line)`                             | No full line is available (default runtime stream is `std::cin`) | Newline arrives or EOF is reached                                                   |
+| Main thread (`UciEngine::loop`)      | `wait_and_pop_line(..., 5ms)` (`condition_variable::wait_for`) | Pending line queue is empty and EOF not reached                  | A line is pushed (`notify_one`), EOF is signaled (`notify_all`), or timeout elapses |
+| Worker thread (`SearchWorker`)       | No intentional sleep in `run()`                                | It is actively searching (CPU-bound)                             | Search limit reached or `stop_flag` set                                             |
 
 #### `stop` vs `quit` semantics
 
-| Command | Effect on search | Effect on process |
-| --- | --- | --- |
-| `stop` | Requests search interruption (`stop_flag = true`) and keeps the UCI loop alive | Engine keeps running and can accept new commands |
-| `quit` | Requests search interruption (`stop_flag = true`) | Sets `is_running = false`, then exits loop and performs final cleanup (`stop_and_join()`, `command_channel.stop()`) |
+| Command | Effect on search                                                               | Effect on process                                                                                                   |
+| ------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `stop`  | Requests search interruption (`stop_flag = true`) and keeps the UCI loop alive | Engine keeps running and can accept new commands                                                                    |
+| `quit`  | Requests search interruption (`stop_flag = true`)                              | Sets `is_running = false`, then exits loop and performs final cleanup (`stop_and_join()`, `command_channel.stop()`) |
 
 > Note: the runtime default input is `std::cin`, but `UciEngine` accepts any `std::istream`. With pre-buffered streams (for example `std::istringstream` in tests), `std::getline` may return immediately.
 
