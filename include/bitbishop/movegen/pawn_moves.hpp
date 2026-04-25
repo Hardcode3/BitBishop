@@ -254,7 +254,8 @@ inline void generate_en_passant(std::vector<Move>& moves, Square from, Color us,
  * @param pins Pin result structure indicating which pieces are pinned
  */
 inline void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
-                                      const Bitboard& check_mask, const PinResult& pins) {
+                                      const Bitboard& check_mask, const PinResult& pins,
+                                      bool captures_only = false) {
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();
   Bitboard pawns = board.pawns(us);
@@ -264,8 +265,10 @@ inline void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& boa
     const bool is_pinned = pins.pinned.test(from);
     const Bitboard pin_mask = is_pinned ? pins.pin_ray[from.flat_index()] : Bitboard::Ones();
 
-    generate_single_push(moves, from, us, occupied, check_mask, pin_mask);
-    generate_double_push(moves, from, us, occupied, check_mask, pin_mask);
+    if (!captures_only) {
+      generate_single_push(moves, from, us, occupied, check_mask, pin_mask);
+      generate_double_push(moves, from, us, occupied, check_mask, pin_mask);
+    }
     generate_captures(moves, from, us, enemy, check_mask, pin_mask);
     generate_en_passant(moves, from, us, board, king_sq, check_mask, pin_mask);
   }

@@ -45,7 +45,8 @@
  *   computed for the current position.
  */
 inline void generate_bishop_legal_moves(std::vector<Move>& moves, const Board& board, Color us,
-                                        const Bitboard& check_mask, const PinResult& pins) {
+                                        const Bitboard& check_mask, const PinResult& pins,
+                                        const Bitboard& allowed_targets = Bitboard::Ones()) {
   const Bitboard own = board.friendly(us);
   const Bitboard enemy = board.enemy(us);
   const Bitboard occupied = board.occupied();
@@ -58,6 +59,7 @@ inline void generate_bishop_legal_moves(std::vector<Move>& moves, const Board& b
     Bitboard candidates = bishop_attacks(from, occupied);
     candidates &= ~own;
     candidates &= check_mask;
+    candidates &= allowed_targets;
     if (pins.pinned.test(from)) {
       candidates &= pins.pin_ray[from.value()];
     }

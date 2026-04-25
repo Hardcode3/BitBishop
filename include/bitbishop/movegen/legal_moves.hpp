@@ -18,29 +18,16 @@
 #include <bitbishop/movegen/rook_moves.hpp>
 #include <vector>
 
-/**
- * @brief Generates all legal moves for the given side in the current position.
- *
- * This function computes the full set of legal moves for @p us, taking into
- * account checks, pins, enemy attacks, and special rules such as castling
- * and en passant. Move legality is enforced during generation rather than
- * by post-filtering.
- *
- * The generation pipeline is:
- *  - Detect checkers and compute the check resolution mask
- *  - Compute pinned pieces and their allowed movement rays
- *  - Generate legal king moves (always allowed)
- *  - Generate legal castling moves (only when not in check)
- *  - If in double check, stop after king moves
- *  - Otherwise, generate legal moves for all remaining pieces
- *
- * @param moves Vector to append generated legal moves to
- * @param board Current board position
- *
- * @note The move list is appended to; it is not cleared by this function.
- * @note Assumes the board position is internally consistent and legal.
- */
-inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
+namespace MoveGen {
+enum class Scope {
+  AllMoves,
+  CapturesOnly,
+};
+}  // namespace MoveGen
+
+inline void generate_legal_moves_with_scope(std::vector<Move>& moves, const Board& board, MoveGen::Scope scope) {
+  const bool captures_only = scope == MoveGen::Scope::CapturesOnly;
+
   Color us = board.get_state().m_is_white_turn ? Color::WHITE : Color::BLACK;
   Color them = ColorUtil::opposite(us);
 
@@ -50,18 +37,39 @@ inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
   Bitboard check_mask = compute_check_mask(king_sq, checkers, board);
   PinResult pins = compute_pins(king_sq, board, us);
   Bitboard enemy_attacks = generate_attacks(board, them);
+  Bitboard enemy = board.enemy(us);
+  Bitboard allowed_targets = captures_only ? enemy : Bitboard::Ones();
 
-  generate_legal_king_moves(moves, board, us, king_sq, enemy_attacks);
+  generate_legal_king_moves(moves, board, us, king_sq, enemy_attacks, allowed_targets);
 
-  generate_castling_moves(moves, board, us, checkers, enemy_attacks);
+  if (!captures_only) {
+    generate_castling_moves(moves, board, us, checkers, enemy_attacks);
+  }
 
   if (checkers.count() > 1) {
     return;
   }
 
-  generate_knight_legal_moves(moves, board, us, check_mask, pins);
-  generate_bishop_legal_moves(moves, board, us, check_mask, pins);
-  generate_rook_legal_moves(moves, board, us, check_mask, pins);
-  generate_queen_legal_moves(moves, board, us, check_mask, pins);
-  generate_pawn_legal_moves(moves, board, us, king_sq, check_mask, pins);
+  generate_knight_legal_moves(moves, board, us, check_mask, pins, allowed_targets);
+  generate_bishop_legal_moves(moves, board, us, check_mask, pins, allowed_targets);
+  generate_rook_legal_moves(moves, board, us, check_mask, pins, allowed_targets);
+  generate_queen_legal_moves(moves, board, us, check_mask, pins, allowed_targets);
+  generate_pawn_legal_moves(moves, board, us, king_sq, check_mask, pins, captures_only);
+}
+
+/**
+ * @brief Generates all legal moves for the side to move.
+ */
+inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
+  generate_legal_moves_with_scope(moves, board, MoveGen::Scope::AllMoves);
+}
+
+/**
+ * @brief Generates only legal capture moves for the side to move.
+ *
+ * Includes king captures, piece captures, pawn captures and legal en passant.
+ * Excludes non-capture moves (quiet king moves, pawn pushes, castling, ...).
+ */
+inline void generate_legal_capture_moves(std::vector<Move>& moves, const Board& board) {
+  generate_legal_moves_with_scope(moves, board, MoveGen::Scope::CapturesOnly);
 }
