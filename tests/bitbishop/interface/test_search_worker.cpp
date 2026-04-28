@@ -41,3 +41,24 @@ TEST(SearchControllerTest, StartPublishesFinishReportWithInfiniteSearch) {
     return report.kind == Uci::SearchReportKind::Iteration;
   }));
 }
+
+TEST(SearchControllerTest, MovetimeStopsSearchAutomatically) {
+  Board board = Board::StartingPosition();
+  Uci::SearchLimits limits;
+  limits.movetime = 50;
+
+  Uci::SearchWorker controller(board, limits);
+  const auto start = std::chrono::steady_clock::now();
+  controller.start();
+  controller.wait();
+  const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+
+  const auto reports = controller.drain_reports();
+  ASSERT_FALSE(reports.empty());
+  EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
+  EXPECT_TRUE(reports.back().best.move.has_value());
+  EXPECT_LT(elapsed.count(), 1'000);
+  EXPECT_TRUE(std::any_of(reports.begin(), reports.end(), [](const Uci::SearchReport& report) {
+    return report.kind == Uci::SearchReportKind::Iteration;
+  }));
+}

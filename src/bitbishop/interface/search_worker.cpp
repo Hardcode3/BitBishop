@@ -1,4 +1,32 @@
 #include <bitbishop/interface/search_worker.hpp>
+#include <bitbishop/tools/stop_timer.hpp>
+
+#include <algorithm>
+#include <limits>
+
+namespace {
+
+constexpr int DEFAULT_MOVES_TO_GO = 20;
+constexpr int MIN_THINK_TIME_MS = 1;
+constexpr int SAFETY_BUFFER_MS = 50;
+
+[[nodiscard]] int estimate_clock_think_time_ms(int remaining_ms, int increment_ms) {
+  remaining_ms = std::max(remaining_ms, 0);
+  increment_ms = std::max(increment_ms, 0);
+
+  if (remaining_ms <= MIN_THINK_TIME_MS) {
+    return MIN_THINK_TIME_MS;
+  }
+
+  const int reserve_ms = std::min(remaining_ms - MIN_THINK_TIME_MS, std::max(SAFETY_BUFFER_MS, remaining_ms / 20));
+  const int spendable_ms = std::max(MIN_THINK_TIME_MS, remaining_ms - reserve_ms);
+  const int base_ms = spendable_ms / DEFAULT_MOVES_TO_GO;
+  const int increment_bonus_ms = (increment_ms * 3) / 4;
+
+  return std::clamp(base_ms + increment_bonus_ms, MIN_THINK_TIME_MS, spendable_ms);
+}
+
+}  // namespace
 
 Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(const std::vector<std::string>& line) {
   SearchLimits limits;
@@ -29,12 +57,29 @@ Uci::SearchLimits Uci::SearchLimits::from_uci_cmd(const std::vector<std::string>
     }
   }
 
-  const bool has_time_control = limits.movetime || limits.wtime || limits.btime || limits.winc || limits.binc;
-  if (!limits.depth && !has_time_control && !limits.infinite) {
+  if (!limits.depth && !limits.has_time_limit() && !limits.infinite) {
     limits.infinite = true;
   }
 
   return limits;
+}
+
+bool Uci::SearchLimits::has_time_limit() const {
+  return movetime.has_value() || wtime.has_value() || btime.has_value() || winc.has_value() || binc.has_value();
+}
+
+std::optional<int> Uci::SearchLimits::think_time_ms(Color side_to_move) const {
+  if (movetime.has_value()) {
+    return std::max(*movetime, MIN_THINK_TIME_MS);
+  }
+
+  const std::optional<int>& remaining_opt = (side_to_move == Color::WHITE) ? wtime : btime;
+  if (!remaining_opt.has_value()) {
+    return std::nullopt;
+  }
+
+  const std::optional<int>& increment_opt = (side_to_move == Color::WHITE) ? winc : binc;
+  return estimate_clock_think_time_ms(*remaining_opt, increment_opt.value_or(0));
 }
 
 Uci::SearchWorker::SearchWorker(Board board, SearchLimits limits)
@@ -57,37 +102,54 @@ void Uci::SearchWorker::run() {
   SearchStats stats{};
   BestMove best;
   BestMove last_best;
+  int last_completed_depth = 0;
+  int last_attempted_depth = 0;
+
+  const std::optional<int> think_time_ms =
+      limits.infinite ? std::nullopt : limits.think_time_ms(board.get_side_to_move());
+  std::optional<Tools::StopTimer> deadline;
+  if (think_time_ms.has_value()) {
+    deadline.emplace(stop_flag, std::chrono::milliseconds(*think_time_ms));
+  }
+
+  auto publish_iteration = [&](const BestMove& completed_best, int depth) {
+    last_best = completed_best;
+    last_completed_depth = depth;
+    push_report(SearchReport{
+        .kind = SearchReportKind::Iteration,
+        .best = last_best,
+        .depth = depth,
+        .stats = stats,
+    });
+  };
+
+  auto search_depth = [&](int depth) {
+    last_attempted_depth = depth;
+    best = negamax(position, depth, ALPHA_INIT, BETA_INIT, 0, stats, &stop_flag);
+    if (!stop_flag.load()) {
+      publish_iteration(best, depth);
+    }
+  };
 
   if (limits.infinite) {
     for (int current_depth = 1; !stop_flag.load(); ++current_depth) {
-      best = negamax(position, current_depth, ALPHA_INIT, BETA_INIT, 0, stats, &stop_flag);
-      if (!stop_flag.load()) {
-        last_best = best;
-        push_report(SearchReport{
-            .kind = SearchReportKind::Iteration,
-            .best = last_best,
-            .depth = current_depth,
-            .stats = stats,
-        });
-      }
+      search_depth(current_depth);
+    }
+  } else if (think_time_ms.has_value()) {
+    const int max_depth = limits.depth.value_or(std::numeric_limits<int>::max());
+    for (int current_depth = 1; current_depth <= max_depth && !stop_flag.load(); ++current_depth) {
+      search_depth(current_depth);
     }
   } else if (limits.depth) {
-    best = negamax(position, *limits.depth, ALPHA_INIT, BETA_INIT, 0, stats, &stop_flag);
-    if (!stop_flag.load()) {
-      push_report(SearchReport{
-          .kind = SearchReportKind::Iteration,
-          .best = best,
-          .depth = *limits.depth,
-          .stats = stats,
-      });
-    }
+    search_depth(*limits.depth);
   }
 
   const BestMove& final = (last_best.move) ? last_best : best;
+  const int final_depth = (last_completed_depth > 0) ? last_completed_depth : last_attempted_depth;
   push_report(SearchReport{
       .kind = SearchReportKind::Finish,
       .best = final,
-      .depth = limits.depth.value_or(0),
+      .depth = final_depth,
       .stats = stats,
   });
 }

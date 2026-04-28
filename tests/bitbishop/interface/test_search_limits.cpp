@@ -14,6 +14,39 @@ TEST(SearchLimitsTest, DefaultsAreEmptyAndNotInfinite) {
   EXPECT_FALSE(limits.infinite);
 }
 
+TEST(SearchLimitsTest, HasTimeLimitDetectsAnyClockField) {
+  Uci::SearchLimits limits;
+  EXPECT_FALSE(limits.has_time_limit());
+
+  limits.wtime = 10'000;
+  EXPECT_TRUE(limits.has_time_limit());
+}
+
+TEST(SearchLimitsTest, ThinkTimeUsesMovetimeWhenProvided) {
+  Uci::SearchLimits limits{
+      .movetime = 750,
+      .wtime = 10'000,
+      .btime = 8'000,
+      .winc = 100,
+      .binc = 200,
+  };
+
+  EXPECT_EQ(limits.think_time_ms(Color::WHITE), 750);
+  EXPECT_EQ(limits.think_time_ms(Color::BLACK), 750);
+}
+
+TEST(SearchLimitsTest, ThinkTimeUsesSideSpecificClockAndIncrement) {
+  Uci::SearchLimits limits{
+      .wtime = 10'000,
+      .btime = 8'000,
+      .winc = 100,
+      .binc = 200,
+  };
+
+  EXPECT_EQ(limits.think_time_ms(Color::WHITE), 550);
+  EXPECT_EQ(limits.think_time_ms(Color::BLACK), 530);
+}
+
 struct SearchLimitsFromUciTestCase {
   std::string test_name;
   std::vector<std::string> command_line;

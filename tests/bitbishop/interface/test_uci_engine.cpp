@@ -283,6 +283,12 @@ TEST_F(UciEngineTest, GoWithoutPositionProducesBestMove) {
   assert_output_contains(output, "bestmove ");
 }
 
+TEST_F(UciEngineTest, GoMovetimeProducesBestMove) {
+  input.write("go movetime 50\n");
+
+  assert_output_contains(output, "bestmove ");
+}
+
 TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
   // Clear the output containing the startup message.
   assert_output_contains(output, " by ");
