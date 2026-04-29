@@ -92,5 +92,5 @@ TEST(UciCommandChannelTest, StopDoesNotHangWhenReaderIsBlockedByInputStream) {
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 
   // If it took 0ms, it means we successfully detached instead of joining a hung thread.
-  EXPECT_LT(duration.count(), 5);
+  EXPECT_EQ(duration.count(), 0);
 }
