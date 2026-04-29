@@ -1,7 +1,6 @@
-#include <bitbishop/interface/search_worker.hpp>
-#include <bitbishop/tools/stop_timer.hpp>
-
 #include <algorithm>
+#include <bitbishop/interface/search_worker.hpp>
+#include <bitbishop/tools/time_guard.hpp>
 #include <limits>
 
 namespace {
@@ -107,9 +106,9 @@ void Uci::SearchWorker::run() {
 
   const std::optional<int> think_time_ms =
       limits.infinite ? std::nullopt : limits.think_time_ms(board.get_side_to_move());
-  std::optional<Tools::StopTimer> deadline;
+  std::optional<Tools::TimeGuard> timeguard;
   if (think_time_ms.has_value()) {
-    deadline.emplace(stop_flag, std::chrono::milliseconds(*think_time_ms));
+    timeguard.emplace(stop_flag, std::chrono::milliseconds(*think_time_ms));
   }
 
   auto publish_iteration = [&](const BestMove& completed_best, int depth) {
@@ -131,13 +130,8 @@ void Uci::SearchWorker::run() {
     }
   };
 
-  if (limits.infinite) {
+  if (limits.infinite || think_time_ms.has_value()) {
     for (int current_depth = 1; !stop_flag.load(); ++current_depth) {
-      search_depth(current_depth);
-    }
-  } else if (think_time_ms.has_value()) {
-    const int max_depth = limits.depth.value_or(std::numeric_limits<int>::max());
-    for (int current_depth = 1; current_depth <= max_depth && !stop_flag.load(); ++current_depth) {
       search_depth(current_depth);
     }
   } else if (limits.depth) {
