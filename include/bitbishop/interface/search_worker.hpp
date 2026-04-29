@@ -1,7 +1,7 @@
 #pragma once
 
-#include <bitbishop/engine/search.hpp>
 #include <atomic>
+#include <bitbishop/engine/search.hpp>
 #include <bitbishop/moves/position.hpp>
 #include <mutex>
 #include <optional>
@@ -30,6 +30,22 @@ struct SearchLimits {
    * @return The built SearchLimits object.
    */
   static SearchLimits from_uci_cmd(const std::vector<std::string>& line);
+
+  /**
+   * @brief Returns whether any time-based search limit was provided.
+   */
+  [[nodiscard]] bool has_time_limit() const;
+
+  /**
+   * @brief Estimates how much time the current side should spend on this move.
+   *
+   * `movetime` takes precedence when present. Otherwise the estimate is derived
+   * from the side-to-move remaining clock and increment.
+   *
+   * @param side_to_move Side that is currently searching.
+   * @return Think time budget in milliseconds, or std::nullopt if no clock is available.
+   */
+  [[nodiscard]] std::optional<int> think_time_ms(Color side_to_move) const;
 };
 
 /**
@@ -86,7 +102,7 @@ class SearchWorker {
    * @brief Starts the search process with given parameters.
    *
    * Initializes the search controller with a new worker thread and parameters.
-   * If no depth is specified, switches to infinite search mode.
+   * If no search limit is specified, switches to infinite search mode.
    */
   void start();
 

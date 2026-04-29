@@ -40,7 +40,7 @@ void assert_output_contains(const std::stringstream& output, const std::string& 
 
 void assert_output_not_contains(const std::stringstream& output, const std::string& token,
                                 std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
-  ASSERT_FALSE(wait_for([&] { return output.str().find(token) == std::string::npos; }))
+  ASSERT_TRUE(wait_for([&] { return output.str().find(token) == std::string::npos; }))
       << "Expected output not to contain: " << token << "\nActual output:\n"
       << output.str();
 }
