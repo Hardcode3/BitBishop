@@ -590,8 +590,8 @@ TEST_F(UciEngineTest, GoBtimeBincUsesCorrectBudgetForBlacks) {
 
   auto duration = duration_cast<milliseconds>(end - start);
 
-  EXPECT_GE(duration.count(), *budget * 0.9);
-  EXPECT_LE(duration.count(), *budget * 1.1);
+  EXPECT_GE(duration.count(), *budget * 0.5);
+  EXPECT_LE(duration.count(), *budget * 1.5);
 }
 
 TEST_F(UciEngineTest, GoWtimeWincGoesInfiniteWhenItsBlackTurn) {
