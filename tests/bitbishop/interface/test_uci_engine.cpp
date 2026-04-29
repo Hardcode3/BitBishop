@@ -6,6 +6,7 @@
 #include <bitbishop/interface/uci_engine.hpp>
 
 using namespace Squares;
+using namespace std::chrono;
 
 /**
  * @brief GoogleTest fixture for exercising UciEngine in a realistic threaded setup.
@@ -159,7 +160,7 @@ TEST_F(UciEngineTest, IsReadyBeforeUciStillWorks) {
 TEST_F(UciEngineTest, PositionCommandWithOneArgDoesNothing) {
   input.write("position\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
@@ -168,7 +169,7 @@ TEST_F(UciEngineTest, PositionCommandWithMissingFenArgDoesNothing) {
   // Invalid fen: missing color to play (FEN has 5 components instead of 6)
   input.write("position fen rnkqnbbr/pppppppp/8/8/8/8/PPPPPPPP/RNKQNBBR - - 0 1\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
@@ -177,7 +178,7 @@ TEST_F(UciEngineTest, PositionCommandWithInvalidSecondaryKeyworkDoesNothing) {
   // Invalid command: fren instead of fen
   input.write("position fren ...\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
@@ -221,7 +222,7 @@ TEST_F(UciEngineTest, PositionStartposMovesWithSpacesAppliesMoves) {
 TEST_F(UciEngineTest, PositionStartposWithEmptyMovesDoesNothing) {
   input.write("position startpos moves\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
@@ -229,7 +230,7 @@ TEST_F(UciEngineTest, PositionStartposWithEmptyMovesDoesNothing) {
 TEST_F(UciEngineTest, CommandWithoutNewlineDoesNotApply) {
   input.write("position startpos moves e2e4");  // no '\n'
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  std::this_thread::sleep_for(milliseconds(50));
 
   ASSERT_EQ(engine->get_board(), Board::StartingPosition());
 }
@@ -297,7 +298,7 @@ TEST_F(UciEngineTest, UnknownCommandProducesNoOutput) {
 
   input.write("this_is_not_a_uci_command\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   EXPECT_TRUE(output.str().empty());
 }
@@ -356,7 +357,7 @@ TEST_F(UciEngineTest, GoInfiniteThenStopProducesBestmove) {
 TEST_F(UciEngineTest, GoWithoutDepthIsInfinite) {
   input.write("go\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  std::this_thread::sleep_for(milliseconds(50));
 
   ASSERT_TRUE(output.str().find("bestmove ") == std::string::npos);
 }
@@ -388,7 +389,7 @@ TEST_F(UciEngineTest, StopWithoutGoDoesNothing) {
 
   input.write("stop\n");
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::this_thread::sleep_for(milliseconds(20));
 
   EXPECT_TRUE(output.str().empty());
 }
@@ -484,4 +485,36 @@ TEST_F(UciEngineTest, BenchCanBeStopped) {
       "stop\n");
 
   assert_output_contains(output, "bench nodes ");
+}
+
+TEST_F(UciEngineTest, ZeroMoveTimeUsesDefaultMinThinkTimeInstead) {
+  input.write("go movetime 0\n");
+
+  assert_output_contains(output, "bestmove ", milliseconds(10));
+}
+
+TEST_F(UciEngineTest, InvalidNegativeMoveTimeUsesDefaultMinThinkTimeInstead) {
+  input.write("go movetime -642\n");
+
+  assert_output_contains(output, "bestmove ", milliseconds(10));
+}
+
+TEST_F(UciEngineTest, MoveTimeComputesRightAmountOfTime) {
+  input.write("go movetime 100\n");
+
+  assert_output_contains(output, "bestmove ", milliseconds(110));
+}
+
+TEST_F(UciEngineTest, MoveTimeCanBeStoppedWhenTooLong) {
+  input.write(
+      "go movetime 1000000000\n"
+      "stop\n");
+
+  assert_output_contains(output, "bestmove ", milliseconds(10));
+}
+
+TEST_F(UciEngineTest, MoveTimeTooLongDoesNotDisplayResults) {
+  input.write("go movetime 1000000000\n");
+
+  assert_output_not_contains(output, "bestmove ", milliseconds(50));
 }
