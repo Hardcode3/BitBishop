@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <bitbishop/interface/search_worker.hpp>
 #include <bitbishop/tools/time_guard.hpp>
-#include <experimental/scope>
 #include <limits>
 
 namespace {
@@ -96,7 +95,13 @@ void Uci::SearchWorker::push_report(SearchReport report) {
 void Uci::SearchWorker::run() {
   using namespace Search;
 
-  const auto guard = std::experimental::scope_exit([this] { finished.store(true); });
+  // scope_exit function  is not yet shipped in all stdlibs (linux is fine, not windows nor macos - 2026-04-29)
+  // const auto guard = std::experimental::scope_exit([this] { finished.store(true); });
+  // Replacing it by a struct with custom destructor.
+  struct FinishGuard {
+    std::atomic<bool>& finished_ref;
+    ~FinishGuard() { finished_ref.store(true); }
+  } guard{finished};
 
   SearchStats stats{};
   SearchReport current_best_report{.kind = SearchReportKind::Iteration};
