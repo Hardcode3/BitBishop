@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace MoveGen {
-enum class Scope {
+enum class Scope : std::uint8_t {
   AllMoves,
   CapturesOnly,
 };
