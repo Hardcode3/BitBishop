@@ -10,8 +10,6 @@ using namespace Tools;
 TEST(TimeGuardTest, SetsFlagOnTimeout) {
   std::atomic_bool should_stop{false};
   {
-    // Use a small timeout for speed, but the join in the destructor
-    // ensures we wait until the thread is actually finished.
     TimeGuard guard(should_stop, std::chrono::milliseconds(10));
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
   }
