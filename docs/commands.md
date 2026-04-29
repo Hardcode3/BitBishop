@@ -125,8 +125,16 @@ Implemented behavior (current state):
 
 - `depth <n>`: fixed-depth search.
 - `infinite`: iterative deepening until `stop`.
-- If `depth` is not provided, search defaults to infinite mode.
-- If `depth` and `infinite` are both present, `infinite` takes precedence.
+- `movetime <ms>`: iterative deepening search limited by a per-move budget in milliseconds.
+- Non-positive `movetime` values are clamped to `1` ms.
+- `movetime` takes precedence over `wtime`/`btime`/`winc`/`binc`.
+- `infinite` takes precedence over every other limit, including `movetime` and `depth`.
+- If both `depth` and a time-based limit are provided, the current implementation runs the timed search path.
+- When `movetime` is not provided, time is estimated from the side-to-move clock:
+  roughly remaining time divided across future moves, with increment added and a safety reserve kept aside.
+
+- If no argument is provided behind `go`, search defaults to infinite mode.
+- If `depth` is not provided and no time control is provided either, search defaults to infinite mode.
 
 Response when search ends:
 
@@ -205,6 +213,7 @@ Implemented behavior (current state):
 
 - Uses the same limit parser as `go`.
 - `depth <n>` runs a fixed-depth benchmark.
+- `movetime <ms>` runs a time-limited benchmark using the same semantics as `go`.
 - If `infinite` is provided, benchmark mode internally converts to `depth 10`.
 - A bare `bench` command (no limits) is parsed as `infinite`, then converted internally to `depth 10`.
 - `stop` can still interrupt a running benchmark early.
@@ -223,18 +232,3 @@ Not implemented yet.
 
 - The engine currently does not expose configurable UCI options.
 - No `option name ...` lines are emitted in `uci` response.
-
-### `go` time-control fields
-
-The following tokens are parsed but not yet enforced by search scheduling:
-
-- `movetime <ms>`
-- `wtime <ms>`
-- `btime <ms>`
-- `winc <ms>`
-- `binc <ms>`
-
-Today, practical stopping control is:
-
-- `go depth <n>` for bounded search
-- `go` or `go infinite`, then `stop` for unbounded search
