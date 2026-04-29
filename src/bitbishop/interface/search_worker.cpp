@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <bitbishop/interface/search_worker.hpp>
 #include <bitbishop/tools/time_guard.hpp>
+#include <experimental/scope>
 #include <limits>
 
 namespace {
@@ -8,6 +9,7 @@ namespace {
 constexpr int DEFAULT_MOVES_TO_GO = 20;
 constexpr int MIN_THINK_TIME_MS = 1;
 constexpr int SAFETY_BUFFER_MS = 50;
+constexpr int MAX_DEPTH = 50;
 
 [[nodiscard]] int estimate_clock_think_time_ms(int remaining_ms, int increment_ms) {
   remaining_ms = std::max(remaining_ms, 0);
@@ -93,59 +95,46 @@ void Uci::SearchWorker::push_report(SearchReport report) {
 
 void Uci::SearchWorker::run() {
   using namespace Search;
-  struct FinishGuard {
-    std::atomic<bool>& finished_ref;
-    ~FinishGuard() { finished_ref.store(true); }
-  } guard{finished};
+
+  const auto guard = std::experimental::scope_exit([this] { finished.store(true); });
 
   SearchStats stats{};
-  BestMove best;
-  BestMove last_best;
-  int last_completed_depth = 0;
-  int last_attempted_depth = 0;
+  SearchReport current_best_report{.kind = SearchReportKind::Iteration};
 
-  const std::optional<int> think_time_ms =
-      limits.infinite ? std::nullopt : limits.think_time_ms(board.get_side_to_move());
+  const auto side = board.get_side_to_move();
+  const auto think_time = limits.infinite ? std::nullopt : limits.think_time_ms(side);
   std::optional<Tools::TimeGuard> timeguard;
-  if (think_time_ms.has_value()) {
-    timeguard.emplace(stop_flag, std::chrono::milliseconds(*think_time_ms));
+  if (think_time) {
+    timeguard.emplace(stop_flag, std::chrono::milliseconds(*think_time));
   }
 
-  auto publish_iteration = [&](const BestMove& completed_best, int depth) {
-    last_best = completed_best;
-    last_completed_depth = depth;
-    push_report(SearchReport{
-        .kind = SearchReportKind::Iteration,
-        .best = last_best,
-        .depth = depth,
-        .stats = stats,
-    });
-  };
+  auto perform_search_at_depth = [&](int depth) {
+    auto result = negamax(position, depth, ALPHA_INIT, BETA_INIT, 0, stats, &stop_flag);
 
-  auto search_depth = [&](int depth) {
-    last_attempted_depth = depth;
-    best = negamax(position, depth, ALPHA_INIT, BETA_INIT, 0, stats, &stop_flag);
     if (!stop_flag.load()) {
-      publish_iteration(best, depth);
+      current_best_report.best = result;
+      current_best_report.depth = depth;
+      current_best_report.stats = stats;
+      push_report(current_best_report);
+      return true;
     }
+    return false;
   };
 
-  if (limits.infinite || think_time_ms.has_value()) {
-    for (int current_depth = 1; !stop_flag.load(); ++current_depth) {
-      search_depth(current_depth);
+  if (limits.depth && !limits.infinite && !think_time) {
+    // Case: Fixed depth search (e.g., "go depth 10")
+    perform_search_at_depth(*limits.depth);
+  } else {
+    // Case: Iterative deepening (Infinite or Time-limited)
+    for (int depth = 1; depth <= MAX_DEPTH && !stop_flag.load(); ++depth) {
+      if (!perform_search_at_depth(depth)) {
+        break;
+      }
     }
-  } else if (limits.depth) {
-    search_depth(*limits.depth);
   }
 
-  const BestMove& final = (last_best.move) ? last_best : best;
-  const int final_depth = (last_completed_depth > 0) ? last_completed_depth : last_attempted_depth;
-  push_report(SearchReport{
-      .kind = SearchReportKind::Finish,
-      .best = final,
-      .depth = final_depth,
-      .stats = stats,
-  });
+  current_best_report.kind = SearchReportKind::Finish;
+  push_report(current_best_report);
 }
 
 void Uci::SearchWorker::start() {
