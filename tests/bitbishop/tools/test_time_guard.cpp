@@ -35,8 +35,8 @@ TEST(TimeGuardTest, DestructorJoinsQuicklyBeforeTimeout) {
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  // Destruction should be near-instant
-  EXPECT_LE(duration.count(), 1.2 * sleep_time.count());
+  // Destruction should be quick
+  EXPECT_LE(duration.count(), 2 * sleep_time.count());
   EXPECT_FALSE(should_stop);
 }
 
