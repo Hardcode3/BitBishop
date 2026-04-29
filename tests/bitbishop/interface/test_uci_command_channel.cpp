@@ -76,3 +76,21 @@ TEST(UciCommandChannelTest, ReceivesCommandProducedAfterStart) {
   producer.join();
   channel.stop();
 }
+
+TEST(UciCommandChannelTest, StopDoesNotHangWhenReaderIsBlockedByInputStream) {
+  BlockingIStream input;  // needs input.close() to signal eof
+  Uci::UciCommandChannel channel(input);
+
+  channel.start();
+  // The thread is now stuck in std::getline
+  // Calling stop() should return immediately, not wait for a newline
+
+  auto start_time = std::chrono::steady_clock::now();
+  channel.stop();
+  auto end_time = std::chrono::steady_clock::now();
+
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+  // If it took 0ms, it means we successfully detached instead of joining a hung thread.
+  EXPECT_LT(duration.count(), 5);
+}

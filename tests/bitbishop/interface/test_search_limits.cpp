@@ -47,6 +47,16 @@ TEST(SearchLimitsTest, ThinkTimeUsesSideSpecificClockAndIncrement) {
   EXPECT_EQ(limits.think_time_ms(Color::BLACK), 530);
 }
 
+TEST(SearchLimitsTest, ThinkTimeUsesDefaultRemainingTimeIfInvalidLowerEqZero) {
+  Uci::SearchLimits limits{
+      .wtime = -10'000,
+      .btime = 0,
+  };
+
+  EXPECT_GT(limits.think_time_ms(Color::WHITE), 0);
+  EXPECT_GT(limits.think_time_ms(Color::BLACK), 0);
+}
+
 struct SearchLimitsFromUciTestCase {
   std::string test_name;
   std::vector<std::string> command_line;
