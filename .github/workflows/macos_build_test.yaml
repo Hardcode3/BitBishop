@@ -36,7 +36,7 @@ jobs:
             test_preset: quick-validation-clang-release
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup, configure, and build macOS CI
         uses: ./.github/actions/_setup_configure_build_macos

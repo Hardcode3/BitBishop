@@ -41,7 +41,7 @@ jobs:
             test_preset: quick-validation-msvc-release-arm64
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup, configure, and build Windows CI
         uses: ./.github/actions/_setup_configure_build_windows
