@@ -18,7 +18,7 @@ jobs:
     name: ubuntu-24.04-arm - quick-validation-clang-debug
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup, configure, and build Linux CI
         uses: ./.github/actions/_setup_configure_build_linux
