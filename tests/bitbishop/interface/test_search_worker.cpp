@@ -57,7 +57,8 @@ TEST(SearchControllerTest, MovetimeStopsSearchAutomatically) {
   ASSERT_FALSE(reports.empty());
   EXPECT_EQ(reports.back().kind, Uci::SearchReportKind::Finish);
   EXPECT_TRUE(reports.back().best.move.has_value());
-  EXPECT_LT(elapsed.count(), 1'000);
+  EXPECT_GE(elapsed.count(), 50);
+  EXPECT_LT(elapsed.count(), 55);
   EXPECT_TRUE(std::any_of(reports.begin(), reports.end(), [](const Uci::SearchReport& report) {
     return report.kind == Uci::SearchReportKind::Iteration;
   }));
