@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(
     BitBishop
-    VERSION 0.1.2
+    VERSION 0.1.3
     LANGUAGES CXX
     DESCRIPTION "BitBishop is a modern chess engine written in C++23, built as a personal learning project around bitboards, move generation, search, and engine architecture."
     HOMEPAGE_URL "https://github.com/Hardcode3/BitBishop"
