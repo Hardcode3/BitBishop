@@ -37,22 +37,15 @@
  */
 class Bitboard {
  private:
-  uint64_t m_bb;  ///< Raw 64-bit bitboard value
+  uint64_t m_bb = 0ULL;  ///< Raw 64-bit bitboard value (empty by default)
 
  public:
   /** @brief Constructs an empty bitboard (all bits = 0).
-   * Zero initialization of uint64_t m_bb granted by C++ standard
    */
-  CX_FN Bitboard() : m_bb() {}
+  CX_FN Bitboard() = default;
 
   /** @brief Constructs a bitboard from a raw 64-bit value. */
   CX_FN Bitboard(uint64_t value) : m_bb(value) {}
-
-  /** @brief Constructs a bitboard from another bitboard by copy. */
-  CX_FN Bitboard(const Bitboard& bitboard) noexcept = default;
-
-  /** @brief Move-constructs a bitboard. */
-  CX_FN explicit Bitboard(Bitboard&& other) noexcept = default;
 
   /** @brief Constructs a bitboard with the given square being the only bit set to one. */
   CX_FN Bitboard(Square square) : m_bb(0ULL) { set(square); }
@@ -160,8 +153,6 @@ class Bitboard {
     return *this;
   }
   CX_FN operator bool() const noexcept { return m_bb != 0ULL; }
-  CX_FN Bitboard& operator=(const Bitboard& other) noexcept = default;
-  CX_FN Bitboard& operator=(Bitboard&& other) noexcept = default;
 
   /**
    * @brief Counts the number of set bits in the bitboard.
