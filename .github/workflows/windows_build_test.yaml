@@ -24,11 +24,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: windows-2022
-            arch: x64
-            configure_preset: msvc_release
-            build_preset: msvc_release
-            test_preset: quick-validation-msvc-release
           - runner: windows-2025
             arch: x64
             configure_preset: msvc_release
