@@ -51,7 +51,7 @@
       "name": "msvc_debug",
       "inherits": "default",
       "description": "Debug build using MSVC",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_GENERATOR_PLATFORM": "x64",
@@ -67,7 +67,7 @@
       "name": "msvc_release",
       "inherits": "default",
       "description": "Release build using MSVC",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_GENERATOR_PLATFORM": "x64",
@@ -83,7 +83,7 @@
       "name": "msvc_release_arm64",
       "inherits": "default",
       "description": "Release build using MSVC for Windows ARM64",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_GENERATOR_PLATFORM": "ARM64",
