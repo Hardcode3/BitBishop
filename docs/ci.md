@@ -3,6 +3,10 @@
 This repository uses GitHub Actions to validate pull requests and publish
 coverage after changes land on `main`.
 
+Default runner images are used for CI (most of the softwares needed for configuration and compilation is
+already installed).
+See the [official GitHub runner images](https://github.com/actions/runner-images) for more information.
+
 ## Quick PR Checks (default)
 
 When a pull request targets `main`, the baseline checks run automatically.
@@ -35,7 +39,6 @@ macOS:
 
 Windows:
 
-- `windows-2022` x64, `msvc_release`, `quick-validation-msvc-release`
 - `windows-2025` x64, `msvc_release`, `quick-validation-msvc-release`
 - `windows-11-arm` arm64, `msvc_release_arm64`, `quick-validation-msvc-release-arm64`
 

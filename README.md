@@ -72,10 +72,10 @@ protocol coverage and search strength are not yet "finished engine" level.
 
 ### Prerequisites
 
-- CMake 3.27 or newer
-- Clang on Unix-like systems, or MSVC 2022 on Windows
+- CMake 3.10 or newer
+- Clang on Unix-like systems, or MSVC on Windows
 - vcpkg with `VCPKG_ROOT` configured
-- Ninja on Unix-like systems, or Visual Studio 2022 on Windows
+- Ninja on Unix-like systems, or Visual Studio 17/18 on Windows
 
 Optional developer tools:
 
