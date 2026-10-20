@@ -42,7 +42,7 @@ target_sources(${target_name}
 )
 
 # Link dependencies to the library
-target_link_libraries(${target_name} PRIVATE spdlog::spdlog fmt::fmt)
+target_link_libraries(${target_name} PRIVATE spdlog::spdlog)
 
 # Specify include directories for build and install interfaces separately
 # - BUILD_INTERFACE is used while building the library from source
