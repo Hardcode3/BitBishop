@@ -88,7 +88,7 @@ Uci::SearchWorker::SearchWorker(Board board, SearchLimits limits)
 Uci::SearchWorker::~SearchWorker() { stop(); }
 
 void Uci::SearchWorker::push_report(SearchReport report) {
-  std::lock_guard<std::mutex> lock(reports_mutex);
+  std::scoped_lock lock(reports_mutex);
   reports.push_back(report);
 }
 
@@ -147,7 +147,7 @@ void Uci::SearchWorker::start() {
   stop_flag.store(false);
   finished.store(false);
   {
-    std::lock_guard<std::mutex> lock(reports_mutex);
+    std::scoped_lock lock(reports_mutex);
     reports.clear();
   }
   worker = std::thread(&SearchWorker::run, this);
@@ -167,7 +167,7 @@ void Uci::SearchWorker::stop() {
 }
 
 std::vector<Uci::SearchReport> Uci::SearchWorker::drain_reports() {
-  std::lock_guard<std::mutex> lock(reports_mutex);
+  std::scoped_lock lock(reports_mutex);
   std::vector<SearchReport> drained;
   drained.swap(reports);
   return drained;
