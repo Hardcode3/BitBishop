@@ -2,7 +2,7 @@
 
 #include <bitbishop/interface/uci_engine.hpp>
 
-[[nodiscard]] std::vector<std::string> Uci::split(const std::string &str) {
+[[nodiscard]] std::vector<std::string> Uci::split(const std::string& str) {
   std::vector<std::string> tokens;
   std::istringstream token_stream{str};
   std::string token;
@@ -12,7 +12,7 @@
   return tokens;
 }
 
-Uci::UciEngine::UciEngine(std::istream &input, std::ostream &output)
+Uci::UciEngine::UciEngine(std::istream& input, std::ostream& output)
     : board(Board::StartingPosition()),
       position(Position(this->board)),
       command_channel(input),
@@ -112,8 +112,8 @@ void Uci::UciEngine::handle_position(const std::vector<std::string>& line) {
     return;
   }
 
-  std::size_t offset = 1;              // skip "position"
-  if (line[offset] == "startpos") {    // "position startpos ..."
+  std::size_t offset = 1;            // skip "position"
+  if (line[offset] == "startpos") {  // "position startpos ..."
     board = Board::StartingPosition();
     ++offset;
   } else if (line[offset] == "fen") {  // "position fen ..."
@@ -141,7 +141,7 @@ void Uci::UciEngine::handle_position(const std::vector<std::string>& line) {
     while (offset < line.size()) {
       try {
         position.apply_move(Move::from_uci(line[offset]));
-      } catch (const std::exception &) {
+      } catch (const std::exception&) {
         break;
       }
       ++offset;

@@ -23,7 +23,7 @@ void TimeGuard::start() {
 
 void TimeGuard::cancel() {
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
     m_cancelled = true;
   }
   m_cv.notify_one();

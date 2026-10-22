@@ -48,7 +48,7 @@ class Bitboard {
   CX_FN Bitboard(uint64_t value) : m_bb(value) {}
 
   /** @brief Constructs a bitboard with the given square being the only bit set to one. */
-  CX_FN Bitboard(Square square) : m_bb(0ULL) { set(square); }
+  CX_FN Bitboard(Square square) { set(square); }
 
   /** @brief Returns the raw 64-bit value of the bitboard. */
   [[nodiscard]] CX_FN uint64_t value() const { return m_bb; }

@@ -1,5 +1,4 @@
 #include <bitbishop/interface/search_session.hpp>
-
 #include <cassert>
 
 Uci::SearchSession::SearchSession(std::ostream& out_stream)

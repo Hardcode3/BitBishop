@@ -10,7 +10,7 @@ void Uci::UciCommandChannel::reader_loop(std::istream& input_stream, std::shared
   std::string line;
   while (!state->stop_requested.load() && std::getline(input_stream, line)) {
     {
-      std::lock_guard<std::mutex> lock(state->lines_mutex);
+      std::scoped_lock lock(state->lines_mutex);
       state->pending_lines.push_back(std::move(line));
     }
     state->lines_cv.notify_one();
