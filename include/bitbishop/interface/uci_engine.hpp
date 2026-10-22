@@ -30,14 +30,14 @@ namespace Uci {
  * game state management, and search control.
  */
 class UciEngine {
-  Board board;                  ///< Current chess board
-  Position position;            ///< Game position associated to the current chess board
-  UciCommandChannel command_channel;  ///< Command listener (input thread + queue)
-  SearchSession search_session;       ///< Search lifecycle owner (worker + reporter)
+  Board board;                          ///< Current chess board
+  Position position;                    ///< Game position associated to the current chess board
+  UciCommandChannel command_channel;    ///< Command listener (input thread + queue)
+  SearchSession search_session;         ///< Search lifecycle owner (worker + reporter)
   UciCommandRegistry command_registry;  ///< UCI command -> handler registry
   bool is_running;
 
-  std::ostream& out_stream;  ///< Output stream for UCI responses
+  std::ostream &out_stream;  ///< Output stream for UCI responses
 
  public:
   UciEngine() = delete;

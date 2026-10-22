@@ -186,25 +186,25 @@ void Board::set_piece(Square square, Piece piece) {
   // Use color to select white or black bitboards, then type for the specific piece
   if (piece.is_white()) {
     switch (piece.type()) {
-      // clang-format off
+        // clang-format off
       case Piece::PAWN:   m_w_pawns.set(square);   break;
       case Piece::KNIGHT: m_w_knights.set(square); break;
       case Piece::BISHOP: m_w_bishops.set(square); break;
       case Piece::ROOK:   m_w_rooks.set(square);   break;
       case Piece::QUEEN:  m_w_queens.set(square);  break;
       case Piece::KING:   m_w_king.set(square);    break;
-      // clang-format on
+        // clang-format on
     }
   } else {  // is_black()
     switch (piece.type()) {
-      // clang-format off
+        // clang-format off
       case Piece::PAWN:   m_b_pawns.set(square);   break;
       case Piece::KNIGHT: m_b_knights.set(square); break;
       case Piece::BISHOP: m_b_bishops.set(square); break;
       case Piece::ROOK:   m_b_rooks.set(square);   break;
       case Piece::QUEEN:  m_b_queens.set(square);  break;
       case Piece::KING:   m_b_king.set(square);    break;
-      // clang-format on
+        // clang-format on
     }
   }
 

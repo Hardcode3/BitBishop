@@ -22,4 +22,3 @@ inline void apply_knight_repetition_cycle(Position& pos) {
   pos.apply_move(Move::make(Squares::F3, Squares::G1));
   pos.apply_move(Move::make(Squares::F6, Squares::G8));
 }
-
