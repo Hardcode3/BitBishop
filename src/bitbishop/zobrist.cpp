@@ -1,15 +1,15 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/zobrist.hpp>
 
-void Zobrist::mutate_piece(Square square, Piece piece, Zobrist::Key& key) {
+void Zobrist::mutate_piece(Square square, Piece piece, Zobrist::Key& key) noexcept {
   const int sq_ind = square.flat_index();
   const int p_ind = piece_index(piece);
   key ^= tables.pieces[p_ind][sq_ind];
 }
 
-void Zobrist::mutate_side_to_move(Zobrist::Key& key) { key ^= tables.side; }
+void Zobrist::mutate_side_to_move(Zobrist::Key& key) noexcept { key ^= tables.side; }
 
-void Zobrist::mutate_castling_rights(const BoardState& state, Zobrist::Key& key) {
+void Zobrist::mutate_castling_rights(const BoardState& state, Zobrist::Key& key) noexcept {
   int castling = 0;
   if (state.m_white_castle_kingside) {
     castling |= 1;
@@ -26,7 +26,7 @@ void Zobrist::mutate_castling_rights(const BoardState& state, Zobrist::Key& key)
   key ^= tables.castling[castling];
 }
 
-void Zobrist::mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zobrist::Key& key) {
+void Zobrist::mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zobrist::Key& key) noexcept {
   if (prev.m_is_white_turn != next.m_is_white_turn) {
     mutate_side_to_move(key);
   }
@@ -57,9 +57,11 @@ void Zobrist::mutate_board_state_diff(const BoardState& prev, const BoardState& 
   }
 }
 
-void Zobrist::mutate_en_passant_square(Square epsq, Zobrist::Key& key) { key ^= tables.en_passant[epsq.file()]; }
+void Zobrist::mutate_en_passant_square(Square epsq, Zobrist::Key& key) noexcept {
+  key ^= tables.en_passant[epsq.file()];
+}
 
-Zobrist::Key Zobrist::compute_hash(const Board& board) {
+Zobrist::Key Zobrist::compute_hash(const Board& board) noexcept {
   using namespace Zobrist;
 
   Key key = NULL_HASH;
