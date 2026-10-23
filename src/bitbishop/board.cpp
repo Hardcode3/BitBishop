@@ -73,7 +73,7 @@ Board::Board(const std::string& fen) {
   m_zobrist_hash = Zobrist::compute_hash(*this);
 }
 
-std::ostream& operator<<(std::ostream& out, const Board& board) {
+std::ostream& operator<<(std::ostream& out, const Board& board) noexcept {
   using namespace Const;
 
   const std::string separator = "+---+---+---+---+---+---+---+---+\n";
@@ -98,7 +98,7 @@ std::ostream& operator<<(std::ostream& out, const Board& board) {
   return out;
 }
 
-Bitboard Board::white_pieces() const {
+Bitboard Board::white_pieces() const noexcept {
   Bitboard bitboard;
   bitboard |= m_w_pawns;
   bitboard |= m_w_rooks;
@@ -109,7 +109,7 @@ Bitboard Board::white_pieces() const {
   return bitboard;
 }
 
-Bitboard Board::black_pieces() const {
+Bitboard Board::black_pieces() const noexcept {
   Bitboard bitboard;
   bitboard |= m_b_pawns;
   bitboard |= m_b_rooks;
@@ -120,7 +120,7 @@ Bitboard Board::black_pieces() const {
   return bitboard;
 }
 
-Bitboard Board::occupied() const {
+Bitboard Board::occupied() const noexcept {
   Bitboard bitboard;
   bitboard |= m_b_pawns;
   bitboard |= m_b_rooks;
@@ -137,7 +137,7 @@ Bitboard Board::occupied() const {
   return bitboard;
 }
 
-std::optional<Piece> Board::get_piece(Square square) const {
+std::optional<Piece> Board::get_piece(Square square) const noexcept {
   // clang-format off
   if (m_w_pawns.test(square))   { return Pieces::WHITE_PAWN;    }
   if (m_w_knights.test(square)) { return Pieces::WHITE_KNIGHT;  }
@@ -157,7 +157,7 @@ std::optional<Piece> Board::get_piece(Square square) const {
   return std::nullopt;  // NO_PIECE
 }
 
-void Board::move_piece(Square from, Square to) {
+void Board::move_piece(Square from, Square to) noexcept {
   if (from == to) {
     return;
   }
@@ -176,7 +176,7 @@ void Board::move_piece(Square from, Square to) {
   set_piece(to, moving_piece.value());
 }
 
-void Board::set_piece(Square square, Piece piece) {
+void Board::set_piece(Square square, Piece piece) noexcept {
   // Remove any existing piece if existent
   const std::optional<Piece> existing_piece = get_piece(square);
   if (existing_piece.has_value()) {
@@ -211,7 +211,7 @@ void Board::set_piece(Square square, Piece piece) {
   Zobrist::mutate_piece(square, piece, m_zobrist_hash);
 }
 
-void Board::remove_piece(Square square) {
+void Board::remove_piece(Square square) noexcept {
   if (const std::optional<Piece> existing_piece = get_piece(square)) {
     Zobrist::mutate_piece(square, *existing_piece, m_zobrist_hash);
   }
@@ -232,7 +232,7 @@ void Board::remove_piece(Square square) {
   m_b_king.clear(square);
 }
 
-void Board::print() const { std::cout << *this; }
+void Board::print() const noexcept { std::cout << *this; }
 
 bool Board::can_castle_kingside(Color side) const noexcept {
   if (!this->has_kingside_castling_rights(side)) {
@@ -383,7 +383,7 @@ std::string Board::get_fen() const noexcept {
   return fen;
 }
 
-bool Board::operator==(const Board& other) const {
+bool Board::operator==(const Board& other) const noexcept {
   if (this == &other) {
     return true;
   }
@@ -409,4 +409,4 @@ bool Board::operator==(const Board& other) const {
          m_state.m_black_castle_queenside == other.m_state.m_black_castle_queenside;
 }
 
-bool Board::operator!=(const Board& other) const { return !this->operator==(other); }
+bool Board::operator!=(const Board& other) const noexcept { return !this->operator==(other); }

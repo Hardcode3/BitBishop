@@ -27,7 +27,7 @@ struct BoardState {
   // Move number (starts at 1, incremented after Black’s move)
   int m_fullmove_number;
 
-  bool operator==(const BoardState& other) const {
+  [[nodiscard]] bool operator==(const BoardState& other) const noexcept {
     if (this == &other) {
       return true;
     }
@@ -39,7 +39,7 @@ struct BoardState {
            m_fullmove_number == other.m_fullmove_number;
   }
 
-  bool operator!=(const BoardState& other) const { return !(*this == other); }
+  [[nodiscard]] bool operator!=(const BoardState& other) const noexcept { return !(*this == other); }
 };
 
 /**
@@ -99,7 +99,7 @@ class Board {
    * @param square The square to query.
    * @return Piece located on `sq' or std::nullopt if no piece lays on that square.
    */
-  [[nodiscard]] std::optional<Piece> get_piece(Square square) const;
+  [[nodiscard]] std::optional<Piece> get_piece(Square square) const noexcept;
 
   /**
    * @brief Moves a piece from one square to another.
@@ -112,20 +112,20 @@ class Board {
    * @param from Source square
    * @param to Destination square
    */
-  void move_piece(Square from, Square to);
+  void move_piece(Square from, Square to) noexcept;
 
   /**
    * @brief (Re)Places a piece on a given square.
    * @param square The square where the piece will be placed.
    * @param piece The piece type (including color).
    */
-  void set_piece(Square square, Piece piece);
+  void set_piece(Square square, Piece piece) noexcept;
 
   /**
    * @brief Removes any piece from a given square.
    * @param square The square to clear.
    */
-  void remove_piece(Square square);
+  void remove_piece(Square square) noexcept;
 
   /**
    * @brief Prints the board to std::cout.
@@ -143,31 +143,31 @@ class Board {
    * R N B Q K B N R
    * @endcode
    */
-  void print() const;
+  void print() const noexcept;
 
-  friend std::ostream& operator<<(std::ostream& out, const Board& board);
+  friend std::ostream& operator<<(std::ostream& out, const Board& board) noexcept;
 
   /**
    * @brief Returns a bitboard containing all white pieces.
    */
-  [[nodiscard]] Bitboard white_pieces() const;
+  [[nodiscard]] Bitboard white_pieces() const noexcept;
 
   /**
    * @brief Returns a bitboard containing all black pieces.
    */
-  [[nodiscard]] Bitboard black_pieces() const;
+  [[nodiscard]] Bitboard black_pieces() const noexcept;
 
   /**
    * @brief Returns a bitboard containing all occupied squares (both sides).
    */
-  [[nodiscard]] Bitboard occupied() const;
+  [[nodiscard]] Bitboard occupied() const noexcept;
 
   /**
    * @brief Returns a bitboard of all empty squares on the board.
    *
    * @return Bitboard with bits set where no piece occupies a square.
    */
-  [[nodiscard]] Bitboard unoccupied() const { return ~occupied(); }
+  [[nodiscard]] Bitboard unoccupied() const noexcept { return ~occupied(); }
 
   /**
    * @brief Returns the square of the king for the given color.
@@ -179,7 +179,7 @@ class Board {
    * @param us Color of the king
    * @return std::optional<Square> containing the king's square if present, std::nullopt otherwise
    */
-  [[nodiscard]] std::optional<Square> king_square(Color us) const { return king(us).pop_lsb(); }
+  [[nodiscard]] std::optional<Square> king_square(Color us) const noexcept { return king(us).pop_lsb(); }
 
   /**
    * @brief Returns a bitboard representing all pawns belonging to the given side to move.
@@ -187,7 +187,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's pawns.
    */
-  [[nodiscard]] Bitboard pawns(Color side) const { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
+  [[nodiscard]] Bitboard pawns(Color side) const noexcept { return (side == Color::WHITE) ? m_w_pawns : m_b_pawns; }
 
   /**
    * @brief Returns a bitboard representing the king belonging to the given side to move.
@@ -195,7 +195,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing the square occupied by that side's king.
    */
-  [[nodiscard]] Bitboard king(Color side) const { return (side == Color::WHITE) ? m_w_king : m_b_king; }
+  [[nodiscard]] Bitboard king(Color side) const noexcept { return (side == Color::WHITE) ? m_w_king : m_b_king; }
 
   /**
    * @brief Returns a bitboard representing all rooks belonging to the given side.
@@ -203,7 +203,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's rooks.
    */
-  [[nodiscard]] Bitboard rooks(Color side) const { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
+  [[nodiscard]] Bitboard rooks(Color side) const noexcept { return (side == Color::WHITE) ? m_w_rooks : m_b_rooks; }
 
   /**
    * @brief Returns a bitboard representing all knights belonging to the given side.
@@ -211,7 +211,9 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's knights.
    */
-  [[nodiscard]] Bitboard knights(Color side) const { return (side == Color::WHITE) ? m_w_knights : m_b_knights; }
+  [[nodiscard]] Bitboard knights(Color side) const noexcept {
+    return (side == Color::WHITE) ? m_w_knights : m_b_knights;
+  }
 
   /**
    * @brief Returns a bitboard representing all bishops belonging to the given side.
@@ -219,7 +221,9 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's bishop.
    */
-  [[nodiscard]] Bitboard bishops(Color side) const { return (side == Color::WHITE) ? m_w_bishops : m_b_bishops; }
+  [[nodiscard]] Bitboard bishops(Color side) const noexcept {
+    return (side == Color::WHITE) ? m_w_bishops : m_b_bishops;
+  }
 
   /**
    * @brief Returns a bitboard representing the queen(s) belonging to the given side.
@@ -227,7 +231,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard containing all squares occupied by that side's queen(s).
    */
-  [[nodiscard]] Bitboard queens(Color side) const { return (side == Color::WHITE) ? m_w_queens : m_b_queens; }
+  [[nodiscard]] Bitboard queens(Color side) const noexcept { return (side == Color::WHITE) ? m_w_queens : m_b_queens; }
 
   /**
    * @brief Returns a bitboard of all enemy pieces relative to the given side to move.
@@ -235,7 +239,9 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard of all opposing pieces.
    */
-  [[nodiscard]] Bitboard enemy(Color side) const { return (side == Color::WHITE) ? black_pieces() : white_pieces(); }
+  [[nodiscard]] Bitboard enemy(Color side) const noexcept {
+    return (side == Color::WHITE) ? black_pieces() : white_pieces();
+  }
 
   /**
    * @brief Returns a bitboard of all friendly pieces relative to the given side to move.
@@ -243,7 +249,9 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return Bitboard of all friendly pieces.
    */
-  [[nodiscard]] Bitboard friendly(Color side) const { return (side == Color::WHITE) ? white_pieces() : black_pieces(); }
+  [[nodiscard]] Bitboard friendly(Color side) const noexcept {
+    return (side == Color::WHITE) ? white_pieces() : black_pieces();
+  }
 
   /**
    * @brief Returns the number of pieces on the board.
@@ -252,8 +260,8 @@ class Board {
    */
   [[nodiscard]] std::size_t pieces_count() const noexcept { return occupied().count(); }
 
-  [[nodiscard]] BoardState get_state() const { return m_state; }
-  void set_state(BoardState state) {
+  [[nodiscard]] BoardState get_state() const noexcept { return m_state; }
+  void set_state(BoardState state) noexcept {
     Zobrist::mutate_board_state_diff(m_state, state, m_zobrist_hash);
     m_state = state;
   }
@@ -290,7 +298,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return true if kingside castling rights is available, false otherwise
    */
-  [[nodiscard]] bool has_kingside_castling_rights(Color side) const {
+  [[nodiscard]] bool has_kingside_castling_rights(Color side) const noexcept {
     return (side == Color::WHITE) ? m_state.m_white_castle_kingside : m_state.m_black_castle_kingside;
   }
 
@@ -299,7 +307,7 @@ class Board {
    * @param side The color corresponding to the side to move (Color::WHITE or Color::BLACK).
    * @return true if queenside castling rights is available, false otherwise
    */
-  [[nodiscard]] bool has_queenside_castling_rights(Color side) const {
+  [[nodiscard]] bool has_queenside_castling_rights(Color side) const noexcept {
     return (side == Color::WHITE) ? m_state.m_white_castle_queenside : m_state.m_black_castle_queenside;
   }
 
@@ -350,7 +358,7 @@ class Board {
    * @param other The board to compare against
    * @return true if positions are identical, false otherwise
    */
-  [[nodiscard]] bool operator==(const Board& other) const;
+  [[nodiscard]] bool operator==(const Board& other) const noexcept;
 
   /**
    * @brief Checks if two boards represent different positions.
@@ -360,5 +368,5 @@ class Board {
    * @param other The board to compare against
    * @return true if positions differ, false otherwise
    */
-  [[nodiscard]] bool operator!=(const Board& other) const;
+  [[nodiscard]] bool operator!=(const Board& other) const noexcept;
 };
