@@ -51,7 +51,7 @@ struct Move {
    *
    * @see https://www.chessprogramming.org/Algebraic_Chess_Notation
    */
-  static Move from_uci(const std::string& str);
+  [[nodiscard]] static Move from_uci(const std::string& str);
 
   /**
    * @brief Creates a normal (non-special) move.
@@ -60,7 +60,7 @@ struct Move {
    * @param is_capture True if the move captures an opponent's piece; false otherwise.
    * @return A Move instance representing the normal move.
    */
-  static Move make(Square from, Square to, bool is_capture = false) noexcept;
+  [[nodiscard]] static Move make(Square from, Square to, bool is_capture = false) noexcept;
 
   /**
    * @brief Creates a pawn promotion move.
@@ -70,7 +70,7 @@ struct Move {
    * @param is_capture True if the move captures an opponent's piece; false otherwise.
    * @return A Move instance representing the promotion move.
    */
-  static Move make_promotion(Square from, Square to, Piece piece, bool is_capture = false) noexcept;
+  [[nodiscard]] static Move make_promotion(Square from, Square to, Piece piece, bool is_capture = false) noexcept;
 
   /**
    * @brief Creates an en passant capture move.
@@ -78,7 +78,7 @@ struct Move {
    * @param to The target square where the capturing pawn lands.
    * @return A Move instance representing the en passant capture.
    */
-  static Move make_en_passant(Square from, Square to) noexcept;
+  [[nodiscard]] static Move make_en_passant(Square from, Square to) noexcept;
 
   /**
    * @brief Creates a castling move.
@@ -86,5 +86,5 @@ struct Move {
    * @param to The target square of the king during castling.
    * @return A Move instance representing the castling move.
    */
-  static Move make_castling(Square from, Square to) noexcept;
+  [[nodiscard]] static Move make_castling(Square from, Square to) noexcept;
 };

@@ -18,11 +18,7 @@
  */
 class Piece {
  public:
-  /**
-   * @brief Enum of all supported piece types.
-   *
-   * Stored in a compact underlying type to ensure `Piece` remains lightweight.
-   */
+  /** Enum of all supported piece types. */
   enum Type : std::uint8_t { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 
   /**
@@ -67,51 +63,6 @@ class Piece {
   explicit CX_FN Piece(char character) {
     m_type = Piece::type_from_char(character);
     m_color = Piece::color_from_char(character);
-  }
-
-  /**
-   * @brief Returns the piece type.
-   * @return Type enum
-   */
-  [[nodiscard]] CX_FN Type type() const noexcept { return m_type; }
-
-  /**
-   * @brief Returns the piece color.
-   * @return Color enum
-   */
-  [[nodiscard]] CX_FN Color color() const noexcept { return m_color; }
-
-  /**
-   * @brief Checks if the piece is white.
-   * @return true if white, false otherwise
-   */
-  [[nodiscard]] CX_FN bool is_white() const noexcept { return m_color == Color::WHITE; }
-
-  /**
-   * @brief Checks if the piece is black.
-   * @return true if black, false otherwise
-   */
-  [[nodiscard]] CX_FN bool is_black() const noexcept { return m_color == Color::BLACK; }
-
-  /** @brief Checks if the piece is a pawn. */
-  [[nodiscard]] CX_FN bool is_pawn() const noexcept { return m_type == Type::PAWN; }
-  /** @brief Checks if the piece is a knight. */
-  [[nodiscard]] CX_FN bool is_knight() const noexcept { return m_type == Type::KNIGHT; }
-  /** @brief Checks if the piece is a bishop. */
-  [[nodiscard]] CX_FN bool is_bishop() const noexcept { return m_type == Type::BISHOP; }
-  /** @brief Checks if the piece is a rook. */
-  [[nodiscard]] CX_FN bool is_rook() const noexcept { return m_type == Type::ROOK; }
-  /** @brief Checks if the piece is a queen. */
-  [[nodiscard]] CX_FN bool is_queen() const noexcept { return m_type == Type::QUEEN; }
-  /** @brief Checks if the piece is a king. */
-  [[nodiscard]] CX_FN bool is_king() const noexcept { return m_type == Type::KING; }
-
-  /**
-   * @brief Checks if the piece is a sliding piece (bishop, rook, queen).
-   * @return true if sliding, false otherwise
-   */
-  [[nodiscard]] CX_FN bool is_slider() const noexcept {
-    return m_type == Piece::BISHOP || m_type == Piece::ROOK || m_type == Piece::QUEEN;
   }
 
   /**
@@ -197,6 +148,51 @@ class Piece {
     static CX_CONST std::array<char, TYPE_COUNT> whiteSymbols = {'P', 'N', 'B', 'R', 'Q', 'K'};
     static CX_CONST std::array<char, TYPE_COUNT> blackSymbols = {'p', 'n', 'b', 'r', 'q', 'k'};
     return (color == Color::WHITE) ? whiteSymbols[type] : blackSymbols[type];
+  }
+
+  /**
+   * @brief Returns the piece type.
+   * @return Type enum
+   */
+  [[nodiscard]] CX_FN Type type() const noexcept { return m_type; }
+
+  /**
+   * @brief Returns the piece color.
+   * @return Color enum
+   */
+  [[nodiscard]] CX_FN Color color() const noexcept { return m_color; }
+
+  /**
+   * @brief Checks if the piece is white.
+   * @return true if white, false otherwise
+   */
+  [[nodiscard]] CX_FN bool is_white() const noexcept { return m_color == Color::WHITE; }
+
+  /**
+   * @brief Checks if the piece is black.
+   * @return true if black, false otherwise
+   */
+  [[nodiscard]] CX_FN bool is_black() const noexcept { return m_color == Color::BLACK; }
+
+  /** @brief Checks if the piece is a pawn. */
+  [[nodiscard]] CX_FN bool is_pawn() const noexcept { return m_type == Type::PAWN; }
+  /** @brief Checks if the piece is a knight. */
+  [[nodiscard]] CX_FN bool is_knight() const noexcept { return m_type == Type::KNIGHT; }
+  /** @brief Checks if the piece is a bishop. */
+  [[nodiscard]] CX_FN bool is_bishop() const noexcept { return m_type == Type::BISHOP; }
+  /** @brief Checks if the piece is a rook. */
+  [[nodiscard]] CX_FN bool is_rook() const noexcept { return m_type == Type::ROOK; }
+  /** @brief Checks if the piece is a queen. */
+  [[nodiscard]] CX_FN bool is_queen() const noexcept { return m_type == Type::QUEEN; }
+  /** @brief Checks if the piece is a king. */
+  [[nodiscard]] CX_FN bool is_king() const noexcept { return m_type == Type::KING; }
+
+  /**
+   * @brief Checks if the piece is a sliding piece (bishop, rook, queen).
+   * @return true if sliding, false otherwise
+   */
+  [[nodiscard]] CX_FN bool is_slider() const noexcept {
+    return m_type == Piece::BISHOP || m_type == Piece::ROOK || m_type == Piece::QUEEN;
   }
 
   /**

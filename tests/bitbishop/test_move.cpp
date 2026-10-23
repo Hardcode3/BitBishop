@@ -201,10 +201,14 @@ TEST(MoveTest, FromUciPromotionBlack) {
 }
 
 TEST(MoveTest, FromUciInvalidLengthThrows) {
-  EXPECT_THROW(Move::from_uci("e2e"), std::runtime_error);
-  EXPECT_THROW(Move::from_uci("e2e4q1"), std::runtime_error);
+  EXPECT_THROW(std::ignore = Move::from_uci("e2e"), std::runtime_error);
+  EXPECT_THROW(std::ignore = Move::from_uci("e2e4q1"), std::runtime_error);
 }
 
-TEST(MoveTest, FromUciInvalidPromotionPieceThrows) { EXPECT_THROW(Move::from_uci("e7e8p"), std::runtime_error); }
+TEST(MoveTest, FromUciInvalidPromotionPieceThrows) {
+  EXPECT_THROW(std::ignore = Move::from_uci("e7e8p"), std::runtime_error);
+}
 
-TEST(MoveTest, FromUciInvalidPromotionRankThrows) { EXPECT_THROW(Move::from_uci("e2e4q"), std::runtime_error); }
+TEST(MoveTest, FromUciInvalidPromotionRankThrows) {
+  EXPECT_THROW(std::ignore = Move::from_uci("e2e4q"), std::runtime_error);
+}
