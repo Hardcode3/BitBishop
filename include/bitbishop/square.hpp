@@ -3,7 +3,6 @@
 #include <bitbishop/color.hpp>
 #include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
-#include <bitbishop/square.hpp>
 #include <format>
 #include <stdexcept>
 #include <string>
@@ -41,8 +40,7 @@ class Square {
   // clang-format on
 
  private:
-  /// @brief The internal linearized square value (0–63).
-  Value m_value;
+  Value m_value;  ///< @brief The internal linearized square value (0–63).
 
  public:
   /**
@@ -229,7 +227,7 @@ class Square {
    * @brief Convert the square to algebraic notation.
    * @return Lowercase string like "a1", "e4", "h8".
    */
-  [[nodiscard]] std::string to_string() const noexcept {
+  [[nodiscard]] CX_FN std::string to_string() const noexcept {
     return {static_cast<char>('a' + file()), static_cast<char>('1' + rank())};
   }
 
@@ -257,14 +255,14 @@ class Square {
    * @param other Another Square.
    * @return true if both refer to the same square.
    */
-  CX_FN bool operator==(const Square& other) const noexcept { return m_value == other.m_value; }
+  [[nodiscard]] CX_FN bool operator==(const Square& other) const noexcept { return m_value == other.m_value; }
 
   /**
    * @brief Inequality operator.
    * @param other Another Square.
    * @return true if the squares differ.
    */
-  CX_FN bool operator!=(const Square& other) const noexcept { return m_value != other.m_value; }
+  [[nodiscard]] CX_FN bool operator!=(const Square& other) const noexcept { return m_value != other.m_value; }
 };
 
 namespace Squares {
