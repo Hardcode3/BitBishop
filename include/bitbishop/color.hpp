@@ -37,7 +37,7 @@ namespace ColorUtil {
  * @param color The color to convert
  * @return 0 for Color::BLACK, 1 for Color::WHITE
  */
-CX_FN std::size_t to_index(Color color) { return static_cast<std::size_t>(color); }
+[[nodiscard]] CX_FN std::size_t to_index(Color color) noexcept { return static_cast<std::size_t>(color); }
 
 /**
  * @brief Returns the opposite color.
@@ -45,7 +45,7 @@ CX_FN std::size_t to_index(Color color) { return static_cast<std::size_t>(color)
  * @param color The input color
  * @return Color::WHITE if color is Color::BLACK, otherwise Color::BLACK
  */
-CX_FN Color opposite(Color color) { return color == Color::WHITE ? Color::BLACK : Color::WHITE; }
+[[nodiscard]] CX_FN Color opposite(Color color) noexcept { return color == Color::WHITE ? Color::BLACK : Color::WHITE; }
 
 /**
  * @brief Valid Color values.
