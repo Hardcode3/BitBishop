@@ -4,7 +4,7 @@
 UciReporter::UciReporter(std::ostream& out) : out_stream(out) {}
 
 void UciReporter::on_finish(const Search::BestMove& best, const Search::SearchStats& stats) {
-  const std::string best_move_str = (best.move) ? (*best.move).to_uci() : "0000";
+  const std::string best_move_str = best.move ? (*best.move).to_uci() : "0000";
   out_stream << "bestmove " << best_move_str << "\n";
   out_stream << std::flush;
 }

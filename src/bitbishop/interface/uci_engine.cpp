@@ -125,7 +125,7 @@ void Uci::UciEngine::handle_position(const std::vector<std::string>& line) {
     fen.reserve(FEN_NOTATION_MAX_CHAR_COUNT);
     fen += line[offset];
     for (int i = 1; i < FEN_NOTATION_COMPONENT_COUNT; ++i) {
-      fen += " ";
+      fen += ' ';
       fen += line[offset + i];
     }
     offset += FEN_NOTATION_COMPONENT_COUNT;

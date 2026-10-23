@@ -37,16 +37,18 @@ void scan_pin_ray(Square king_sq, const PinRay& ray_info, const Board& board, Co
 PinResult compute_pins(Square king_sq, const Board& board, Color us) {
   PinResult result;
 
-  const std::array<PinRay, 8> ray_infos = {{
-      PinRay{.ray = Lookups::ROOK_NORTH_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::N},
-      PinRay{.ray = Lookups::ROOK_SOUTH_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::S},
-      PinRay{.ray = Lookups::ROOK_EAST_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::E},
-      PinRay{.ray = Lookups::ROOK_WEST_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::W},
-      PinRay{.ray = Lookups::BISHOP_NORTHEAST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::NE},
-      PinRay{.ray = Lookups::BISHOP_NORTHWEST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::NW},
-      PinRay{.ray = Lookups::BISHOP_SOUTHEAST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::SE},
-      PinRay{.ray = Lookups::BISHOP_SOUTHWEST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::SW},
-  }};
+  const std::array<PinRay, 8> ray_infos = {
+      {
+          PinRay{.ray = Lookups::ROOK_NORTH_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::N},
+          PinRay{.ray = Lookups::ROOK_SOUTH_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::S},
+          PinRay{.ray = Lookups::ROOK_EAST_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::E},
+          PinRay{.ray = Lookups::ROOK_WEST_RAYS[king_sq.value()], .type = RayType::ROOK, .dir = RayDir::W},
+          PinRay{.ray = Lookups::BISHOP_NORTHEAST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::NE},
+          PinRay{.ray = Lookups::BISHOP_NORTHWEST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::NW},
+          PinRay{.ray = Lookups::BISHOP_SOUTHEAST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::SE},
+          PinRay{.ray = Lookups::BISHOP_SOUTHWEST_RAYS[king_sq.value()], .type = RayType::BISHOP, .dir = RayDir::SW},
+      },
+  };
 
   for (const auto& ray_info : ray_infos) {
     scan_pin_ray(king_sq, ray_info, board, us, result);

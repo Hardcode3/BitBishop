@@ -26,7 +26,7 @@ CX_FN uint64_t rook_north_ray(int square) {
   int file = square % BOARD_WIDTH;
 
   for (int r = rank + 1; r < BOARD_WIDTH; ++r) {
-    ray |= (1ULL << (file + r * BOARD_WIDTH));
+    ray |= (1ULL << (file + (r * BOARD_WIDTH)));
   }
   return ray;
 }
@@ -48,7 +48,7 @@ CX_FN uint64_t rook_south_ray(int square) {
   int file = square % BOARD_WIDTH;
 
   for (int r = rank - 1; r >= 0; --r) {
-    ray |= (1ULL << (file + r * BOARD_WIDTH));
+    ray |= (1ULL << (file + (r * BOARD_WIDTH)));
   }
   return ray;
 }
@@ -70,7 +70,7 @@ CX_FN uint64_t rook_east_ray(int square) {
   int file = square % BOARD_WIDTH;
 
   for (int f = file + 1; f < BOARD_WIDTH; ++f) {
-    ray |= (1ULL << (f + rank * BOARD_WIDTH));
+    ray |= (1ULL << (f + (rank * BOARD_WIDTH)));
   }
   return ray;
 }
@@ -92,7 +92,7 @@ CX_FN uint64_t rook_west_ray(int square) {
   int file = square % BOARD_WIDTH;
 
   for (int f = file - 1; f >= 0; --f) {
-    ray |= (1ULL << (f + rank * BOARD_WIDTH));
+    ray |= (1ULL << (f + (rank * BOARD_WIDTH)));
   }
   return ray;
 }
@@ -117,7 +117,7 @@ CX_FN uint64_t rook_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -133,7 +133,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -149,7 +149,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_NORTH_RAYS = []() CX_EXEC
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -165,7 +165,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_SOUTH_RAYS = []() CX_EXEC
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -181,7 +181,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_EAST_RAYS = []() CX_EXEC 
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};

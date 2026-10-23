@@ -10,10 +10,18 @@
 #include <utility>
 #include <vector>
 
-CX_INLINE std::array<Piece, 4> WHITE_PROMOTIONS = {Pieces::WHITE_QUEEN, Pieces::WHITE_ROOK, Pieces::WHITE_BISHOP,
-                                                   Pieces::WHITE_KNIGHT};
-CX_INLINE std::array<Piece, 4> BLACK_PROMOTIONS = {Pieces::BLACK_QUEEN, Pieces::BLACK_ROOK, Pieces::BLACK_BISHOP,
-                                                   Pieces::BLACK_KNIGHT};
+CX_INLINE std::array<Piece, 4> WHITE_PROMOTIONS = {
+    Pieces::WHITE_QUEEN,
+    Pieces::WHITE_ROOK,
+    Pieces::WHITE_BISHOP,
+    Pieces::WHITE_KNIGHT,
+};
+CX_INLINE std::array<Piece, 4> BLACK_PROMOTIONS = {
+    Pieces::BLACK_QUEEN,
+    Pieces::BLACK_ROOK,
+    Pieces::BLACK_BISHOP,
+    Pieces::BLACK_KNIGHT,
+};
 
 /**
  * @brief Checks if a square is on the pawn's starting rank.

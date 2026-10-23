@@ -71,7 +71,7 @@ struct Tables {
  *
  * @return Fully initialized Zobrist key tables.
  */
-CX_FN Tables generate() {
+CX_FN Tables generate() noexcept {
   using namespace Random;
   using namespace Const;
 
@@ -133,7 +133,7 @@ CX_INLINE Tables tables = generate();
  * @param piece Piece to convert.
  * @return Index into Tables::pieces.
  */
-CX_FN int piece_index(Piece piece) {
+[[nodiscard]] CX_FN int piece_index(Piece piece) noexcept {
   const int base = (piece.color() == Color::WHITE) ? 0 : 6;  // NOLINT: (readability-magic-numbers)
   const int piece_type_index = static_cast<int>(piece.type());
   return base + piece_type_index;
@@ -161,7 +161,7 @@ CX_FN int piece_index(Piece piece) {
  * @param piece Piece whose contribution should be toggled.
  * @param key Zobrist hash key to mutate.
  */
-void mutate_piece(Square square, Piece piece, Zobrist::Key& key);
+void mutate_piece(Square square, Piece piece, Zobrist::Key& key) noexcept;
 
 /**
  * @brief Toggles the Zobrist key representing the side to move.
@@ -174,7 +174,7 @@ void mutate_piece(Square square, Piece piece, Zobrist::Key& key);
  *
  * @param key Zobrist hash key to mutate.
  */
-void mutate_side_to_move(Zobrist::Key& key);
+void mutate_side_to_move(Zobrist::Key& key) noexcept;
 
 /**
  * @brief Applies the Zobrist hash delta between two board states.
@@ -195,7 +195,7 @@ void mutate_side_to_move(Zobrist::Key& key);
  * @param next Next board state.
  * @param key Zobrist hash key to mutate.
  */
-void mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zobrist::Key& key);
+void mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zobrist::Key& key) noexcept;
 
 /**
  * @brief XORs the Zobrist key encoding the board's castling rights.
@@ -221,7 +221,7 @@ void mutate_board_state_diff(const BoardState& prev, const BoardState& next, Zob
  * @param state Board state containing castling rights.
  * @param key Zobrist hash key to mutate.
  */
-void mutate_castling_rights(const BoardState& state, Zobrist::Key& key);
+void mutate_castling_rights(const BoardState& state, Zobrist::Key& key) noexcept;
 
 /**
  * @brief XORs the Zobrist key representing the en-passant file.
@@ -238,7 +238,7 @@ void mutate_castling_rights(const BoardState& state, Zobrist::Key& key);
  * @param epsq En-passant square.
  * @param key Zobrist hash key to mutate.
  */
-void mutate_en_passant_square(Square epsq, Zobrist::Key& key);
+void mutate_en_passant_square(Square epsq, Zobrist::Key& key) noexcept;
 
 /**
  * @brief Computes the Zobrist hash of an entire board position.
@@ -272,6 +272,6 @@ void mutate_en_passant_square(Square epsq, Zobrist::Key& key);
  * @param board Board position to hash.
  * @return Zobrist hash key representing the position.
  */
-Zobrist::Key compute_hash(const Board& board);
+[[nodiscard]] Zobrist::Key compute_hash(const Board& board) noexcept;
 
 }  // namespace Zobrist

@@ -50,7 +50,7 @@ CX_FN uint64_t king_attacks_for_square(int square) {
  * For each square, contains a bitboard with all destination squares a king can attack from that square.
  * Uses king_attacks_for_square() to fill the table at compile time.
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
