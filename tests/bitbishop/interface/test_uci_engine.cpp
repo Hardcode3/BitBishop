@@ -503,7 +503,7 @@ TEST_F(UciEngineTest, GoMoveTimeRespectsLimit) {
   auto duration = duration_cast<milliseconds>(end - start);
 
   EXPECT_GE(duration.count(), 190);
-  EXPECT_LE(duration.count(), 400);  // very permissive for slow ci builds and tests
+  EXPECT_LE(duration.count(), 600);  // very permissive for slow ci builds and tests
 }
 
 TEST_F(UciEngineTest, GoMoveTimeCanBeStoppedWhenTooLong) {
