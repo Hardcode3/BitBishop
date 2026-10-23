@@ -39,7 +39,6 @@ class Bitboard {
   uint64_t m_bb = 0ULL;  ///< Raw 64-bit bitboard value (empty by default)
 
  public:
-  // Constructors //
   /** @brief Constructs an empty bitboard (all bits = 0). */
   CX_FN Bitboard() = default;
 
@@ -49,14 +48,12 @@ class Bitboard {
   /** @brief Constructs a bitboard with the given square being the only bit set to one. */
   explicit CX_FN Bitboard(Square square) noexcept { set(square); }
 
-  // Static methods //
   /** @brief Returns a Bitboard instance with all bits set to zero. */
   [[nodiscard]] static CX_FN Bitboard Zeros() noexcept { return Bitboard(0ULL); }
 
   /** @brief Returns a Bitbaord instance with all bits set to one. */
   [[nodiscard]] static CX_FN Bitboard Ones() noexcept { return Bitboard(~0ULL); }
 
-  // Member methods //
   /** @brief Returns the raw 64-bit value of the bitboard. */
   [[nodiscard]] CX_FN uint64_t value() const noexcept { return m_bb; }
 
@@ -339,7 +336,6 @@ class Bitboard {
     return square;
   }
 
-  // Operator overloads //
   [[nodiscard]] CX_FN bool operator==(const Bitboard& other) const noexcept { return m_bb == other.m_bb; }
   [[nodiscard]] CX_FN bool operator!=(const Bitboard& other) const noexcept { return m_bb != other.m_bb; }
   [[nodiscard]] CX_FN Bitboard operator^(const Bitboard& other) const noexcept { return Bitboard(m_bb ^ other.m_bb); }
@@ -362,7 +358,6 @@ class Bitboard {
   }
   [[nodiscard]] CX_FN operator bool() const noexcept { return m_bb != 0ULL; }
 
-  // Iterator //
   /**
    * @brief Iterator for traversing all set bits (squares) in a Bitboard.
    *
@@ -391,14 +386,12 @@ class Bitboard {
     uint64_t bits;  ///< Internal copy of the bitboard bits being iterated.
 
    public:
-    // Constructors
     /**
      * @brief Constructs an iterator for a given bit pattern.
      * @param bitboard The 64-bit bitboard value to iterate over.
      */
     explicit CX_FN Iterator(uint64_t bitboard) noexcept : bits(bitboard) {}
 
-    // Operator overloads //
     /**
      * @brief Inequality comparison for iterators.
      * @param other Another iterator to compare to.

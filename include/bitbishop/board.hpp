@@ -22,10 +22,8 @@ struct BoardState {
   bool m_black_castle_queenside;  ///< Black may castle queenside
 
   // 50-move rule state
-  int m_halfmove_clock;  ///< Counts halfmoves since last pawn move or capture
-
-  // Move number (starts at 1, incremented after Black’s move)
-  int m_fullmove_number;
+  int m_halfmove_clock;   ///< Counts halfmoves since last pawn move or capture
+  int m_fullmove_number;  ///< Move number (starts at 1, incremented after Black’s move)
 
   [[nodiscard]] bool operator==(const BoardState& other) const noexcept {
     if (this == &other) {
@@ -86,13 +84,13 @@ class Board {
    *
    * @see https://www.chess.com/terms/fen-chess
    */
-  Board(const std::string& fen);
+  explicit Board(const std::string& fen);
 
   [[nodiscard]] static Board StartingPosition() noexcept {
-    return {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+    return Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   }
 
-  [[nodiscard]] static Board Empty() noexcept { return {"8/8/8/8/8/8/8/8 b - - 0 1"}; }
+  [[nodiscard]] static Board Empty() noexcept { return Board("8/8/8/8/8/8/8/8 b - - 0 1"); }
 
   /**
    * @brief Retrieves the piece on a given square.
@@ -144,8 +142,6 @@ class Board {
    * @endcode
    */
   void print() const noexcept;
-
-  friend std::ostream& operator<<(std::ostream& out, const Board& board) noexcept;
 
   /**
    * @brief Returns a bitboard containing all white pieces.
@@ -348,6 +344,8 @@ class Board {
    * @return FEN built from to the internal board representation.
    */
   [[nodiscard]] std::string get_fen() const noexcept;
+
+  friend std::ostream& operator<<(std::ostream& out, const Board& board) noexcept;
 
   /**
    * @brief Checks if two boards represent the same chess position.
