@@ -54,7 +54,7 @@ class Piece {
    * @param type Piece type
    * @param color Piece color
    */
-  explicit CX_FN Piece(Type type, Color color) : m_type(type), m_color(color) {}
+  explicit CX_FN Piece(Type type, Color color) noexcept : m_type(type), m_color(color) {}
 
   /**
    * @brief Constructs a piece from a character representation.
