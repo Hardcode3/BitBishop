@@ -1,6 +1,6 @@
 #include <bitbishop/bitboard.hpp>
 
-void Bitboard::print() const {
+void Bitboard::print() const noexcept {
   // defined in cpp to allow usage inside debugger
 
   using namespace Const;

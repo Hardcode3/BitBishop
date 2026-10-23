@@ -45,7 +45,7 @@ TEST(BitboardTest, PopMsbDecreasesCount) {
   bb.set(Square::C5);  // 34
 
   int before = bb.count();
-  bb.pop_msb();
+  std::ignore = bb.pop_msb();
   EXPECT_EQ(bb.count(), before - 1);
 }
 
