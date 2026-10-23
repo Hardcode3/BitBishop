@@ -7,6 +7,7 @@
 #include <format>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 /**
  * @brief Represents a square on the chess board.
@@ -40,7 +41,7 @@ class Square {
   // clang-format on
 
  private:
-  /// @brief The internal square value (0–63).
+  /// @brief The internal linearized square value (0–63).
   Value m_value;
 
  public:
@@ -75,15 +76,15 @@ class Square {
    * Square sq(42);  // Calls a different constructor
    * ```
    */
-  CX_FN Square(int square_index, std::in_place_t tag) noexcept : m_value(static_cast<Value>(square_index)) {
-    (void)tag;
+  CX_FN explicit Square(int square_index, std::in_place_t tag) noexcept : m_value(static_cast<Value>(square_index)) {
+    std::ignore = tag;
   }
 
   /**
    * @brief Construct a Square directly from an enum value.
    * @param square_value A valid Value from the Square::Value enum.
    */
-  CX_FN explicit Square(Value square_value) : m_value(square_value) {}
+  CX_FN explicit Square(Value square_value) noexcept : m_value(square_value) {}
 
   /**
    * @brief Construct a Square from file and rank coordinates.
@@ -134,19 +135,19 @@ class Square {
    * @brief Get the underlying enum value.
    * @return Square::Value corresponding to this square.
    */
-  [[nodiscard]] CX_FN Value value() const { return m_value; }
+  [[nodiscard]] CX_FN Value value() const noexcept { return m_value; }
 
   /**
    * @brief Get the underlying flqttened square index.
    * @return std::uint8_t Flattened index corresponding to this square.
    */
-  [[nodiscard]] CX_FN std::uint8_t flat_index() const { return static_cast<std::uint8_t>(m_value); }
+  [[nodiscard]] CX_FN std::uint8_t flat_index() const noexcept { return static_cast<std::uint8_t>(m_value); }
 
   /**
    * @brief Get the file index (column).
    * @return Integer 0–7, where 0 = 'a' and 7 = 'h'.
    */
-  [[nodiscard]] CX_FN int file() const {
+  [[nodiscard]] CX_FN int file() const noexcept {
     using namespace Const;
     return static_cast<int>(m_value) % BOARD_WIDTH;
   }
@@ -155,7 +156,7 @@ class Square {
    * @brief Get the rank index (row).
    * @return Integer 0–7, where 0 = '1' and 7 = '8'.
    */
-  [[nodiscard]] CX_FN int rank() const {
+  [[nodiscard]] CX_FN int rank() const noexcept {
     using namespace Const;
     return static_cast<int>(m_value) / BOARD_WIDTH;
   }
@@ -164,13 +165,13 @@ class Square {
    * @brief Tells if two squares lays on the same file.
    * @return True if two squares lays on the same file, false otherwise.
    */
-  [[nodiscard]] CX_FN bool same_file(const Square& other) const { return this->file() == other.file(); }
+  [[nodiscard]] CX_FN bool same_file(const Square& other) const noexcept { return this->file() == other.file(); }
 
   /**
    * @brief Tells if two squares lays on the same rank.
    * @return True if two squares lays on the same rank, false otherwise.
    */
-  [[nodiscard]] CX_FN bool same_rank(const Square& other) const { return this->rank() == other.rank(); }
+  [[nodiscard]] CX_FN bool same_rank(const Square& other) const noexcept { return this->rank() == other.rank(); }
 
   /**
    * @brief Checks whether this square lies on the same NE–SW diagonal as another square.
@@ -186,7 +187,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares share the same NE–SW diagonal, false otherwise.
    */
-  [[nodiscard]] CX_FN bool same_ne_sw_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_ne_sw_diag(const Square& other) const noexcept {
     return (this->file() - this->rank()) == (other.file() - other.rank());
   }
 
@@ -203,7 +204,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares share the same NW–SE diagonal, false otherwise.
    */
-  [[nodiscard]] CX_FN bool same_nw_se_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_nw_se_diag(const Square& other) const noexcept {
     return (this->file() + this->rank()) == (other.file() + other.rank());
   }
 
@@ -220,7 +221,7 @@ class Square {
    * @param other The square to compare against.
    * @return true if both squares are aligned on a common diagonal, false otherwise.
    */
-  [[nodiscard]] CX_FN bool same_diag(const Square& other) const {
+  [[nodiscard]] CX_FN bool same_diag(const Square& other) const noexcept {
     return same_ne_sw_diag(other) || same_nw_se_diag(other);
   }
 
@@ -228,7 +229,9 @@ class Square {
    * @brief Convert the square to algebraic notation.
    * @return Lowercase string like "a1", "e4", "h8".
    */
-  [[nodiscard]] std::string to_string() const { return {char('a' + file()), char('1' + rank())}; }
+  [[nodiscard]] std::string to_string() const noexcept {
+    return {static_cast<char>('a' + file()), static_cast<char>('1' + rank())};
+  }
 
   /**
    * @brief Returns the color of this square.
@@ -238,28 +241,30 @@ class Square {
    *
    * @return Color::White or Color::Black.
    */
-  [[nodiscard]] CX_FN Color color() const { return ((file() + rank()) % 2 == 0) ? Color::WHITE : Color::BLACK; }
+  [[nodiscard]] CX_FN Color color() const noexcept {
+    return ((file() + rank()) % 2 == 0) ? Color::WHITE : Color::BLACK;
+  }
 
   /**
    * @brief Checks whether this square is the same color as another.
    * @param other Another Square.
    * @return true if both squares share the same color.
    */
-  [[nodiscard]] CX_FN bool same_color(const Square& other) const { return color() == other.color(); }
+  [[nodiscard]] CX_FN bool same_color(const Square& other) const noexcept { return color() == other.color(); }
 
   /**
    * @brief Equality operator.
    * @param other Another Square.
    * @return true if both refer to the same square.
    */
-  CX_FN bool operator==(const Square& other) const { return m_value == other.m_value; }
+  CX_FN bool operator==(const Square& other) const noexcept { return m_value == other.m_value; }
 
   /**
    * @brief Inequality operator.
    * @param other Another Square.
    * @return true if the squares differ.
    */
-  CX_FN bool operator!=(const Square& other) const { return m_value != other.m_value; }
+  CX_FN bool operator!=(const Square& other) const noexcept { return m_value != other.m_value; }
 };
 
 namespace Squares {
