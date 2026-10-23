@@ -54,7 +54,7 @@ Move Move::from_uci(const std::string& str) {
   return move;
 }
 
-Move Move::make(Square from, Square to, bool is_capture) {
+Move Move::make(Square from, Square to, bool is_capture) noexcept {
   return {
       .from = from,
       .to = to,
@@ -65,7 +65,7 @@ Move Move::make(Square from, Square to, bool is_capture) {
   };
 }
 
-Move Move::make_promotion(Square from, Square to, Piece piece, bool is_capture) {
+Move Move::make_promotion(Square from, Square to, Piece piece, bool is_capture) noexcept {
   return {
       .from = from,
       .to = to,
@@ -76,7 +76,7 @@ Move Move::make_promotion(Square from, Square to, Piece piece, bool is_capture) 
   };
 }
 
-Move Move::make_en_passant(Square from, Square to) {
+Move Move::make_en_passant(Square from, Square to) noexcept {
   return {
       .from = from,
       .to = to,
@@ -87,7 +87,7 @@ Move Move::make_en_passant(Square from, Square to) {
   };
 }
 
-Move Move::make_castling(Square from, Square to) {
+Move Move::make_castling(Square from, Square to) noexcept {
   return {
       .from = from,
       .to = to,
