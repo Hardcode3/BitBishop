@@ -51,10 +51,10 @@ Board::Board(const std::string& fen) {
 
   // Third token: Castling Rights
   iss >> token;
-  m_state.m_white_castle_kingside = token.find('K') != std::string::npos;
-  m_state.m_white_castle_queenside = token.find('Q') != std::string::npos;
-  m_state.m_black_castle_kingside = token.find('k') != std::string::npos;
-  m_state.m_black_castle_queenside = token.find('q') != std::string::npos;
+  m_state.m_white_castle_kingside = token.contains('K');
+  m_state.m_white_castle_queenside = token.contains('Q');
+  m_state.m_black_castle_kingside = token.contains('k');
+  m_state.m_black_castle_queenside = token.contains('q');
 
   // Fourth token: en passant
   iss >> token;
@@ -349,14 +349,14 @@ std::string Board::get_fen() const noexcept {
       fen += std::to_string(empty);
     }
     if (rank != RANK_1_IND) {
-      fen += "/";
+      fen += '/';
     }
   }
-  fen += " ";
+  fen += ' ';
 
   // Side to move
   fen += (m_state.m_is_white_turn ? "w" : "b");
-  fen += " ";
+  fen += ' ';
 
   // Castling availability
   bool has_castling = false;
@@ -367,15 +367,15 @@ std::string Board::get_fen() const noexcept {
   if (m_state.m_black_castle_queenside) { fen += 'q'; has_castling = true; }
   if (!has_castling) { fen += '-'; }
   // clang-format on
-  fen += " ";
+  fen += ' ';
 
   // En passant target
   fen += (m_state.m_en_passant_sq ? m_state.m_en_passant_sq->to_string() : "-");
-  fen += " ";
+  fen += ' ';
 
   // Halfmove clock
   fen += std::to_string(m_state.m_halfmove_clock);
-  fen += " ";
+  fen += ' ';
 
   // Fullmove number
   fen += std::to_string(m_state.m_fullmove_number);

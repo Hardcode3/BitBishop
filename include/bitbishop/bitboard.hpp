@@ -411,7 +411,7 @@ class Bitboard {
      * @brief Dereferences the iterator to return the current square.
      * @return A `Square` corresponding to the current least significant set bit.
      */
-    CX_FN Square operator*() const noexcept { return {std::countr_zero(bits), std::in_place}; }
+    CX_FN Square operator*() const noexcept { return Square(std::countr_zero(bits), std::in_place); }
 
     /**
      * @brief Advances the iterator to the next set bit.

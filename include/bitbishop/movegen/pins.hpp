@@ -14,8 +14,8 @@
  * determining which enemy sliders can produce a pin.
  */
 enum class RayType : std::uint8_t {
-  ROOK,   ///< Orthogonal rays (rook / queen)
-  BISHOP  ///< Diagonal rays (bishop / queen)
+  ROOK,    ///< Orthogonal rays (rook / queen)
+  BISHOP,  ///< Diagonal rays (bishop / queen)
 };
 
 /**
@@ -32,7 +32,7 @@ enum class RayDir : std::uint8_t {
   NE,
   NW,
   SE,
-  SW  ///< Diagonal directions
+  SW,  ///< Diagonal directions
 };
 
 /**

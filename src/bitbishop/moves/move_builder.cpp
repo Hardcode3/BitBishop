@@ -75,7 +75,7 @@ void MoveBuilder::handle_rook_castling() {
   using namespace Const;
   const bool is_kingside = move.to.value() > move.from.value();
   const int from_rank = move.from.rank();
-  Color color = (prev_state.m_is_white_turn) ? Color::WHITE : Color::BLACK;
+  Color color = prev_state.m_is_white_turn ? Color::WHITE : Color::BLACK;
   Piece rook_piece = Piece(Piece::Type::ROOK, color);
 
   if (is_kingside) {

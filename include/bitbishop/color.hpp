@@ -15,7 +15,7 @@
  */
 enum class Color : std::uint8_t {
   BLACK,  ///< Black pieces / player
-  WHITE   ///< White pieces / player
+  WHITE,  ///< White pieces / player
 };
 
 /**

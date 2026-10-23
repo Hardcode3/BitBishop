@@ -30,7 +30,7 @@ CX_FN uint64_t bishop_northeast_ray(int square) {
   int index = 1;
 
   while ((rank + index <= RANK_8_IND) && (file + index <= FILE_H_IND)) {
-    ray |= (1ULL << ((file + index) + (rank + index) * BOARD_WIDTH));
+    ray |= (1ULL << ((file + index) + ((rank + index) * BOARD_WIDTH)));
     ++index;
   }
 
@@ -55,7 +55,7 @@ CX_FN uint64_t bishop_northwest_ray(int square) {
   int index = 1;
 
   while ((rank + index <= RANK_8_IND) && (file - index >= FILE_A_IND)) {
-    ray |= (1ULL << ((file - index) + (rank + index) * BOARD_WIDTH));
+    ray |= (1ULL << ((file - index) + ((rank + index) * BOARD_WIDTH)));
     ++index;
   }
 
@@ -80,7 +80,7 @@ CX_FN uint64_t bishop_southeast_ray(int square) {
   int index = 1;
 
   while ((rank - index >= RANK_1_IND) && (file + index <= FILE_H_IND)) {
-    ray |= (1ULL << ((file + index) + (rank - index) * BOARD_WIDTH));
+    ray |= (1ULL << ((file + index) + ((rank - index) * BOARD_WIDTH)));
     ++index;
   }
 
@@ -105,7 +105,7 @@ CX_FN uint64_t bishop_southwest_ray(int square) {
   int index = 1;
 
   while ((rank - index >= RANK_1_IND) && (file - index >= FILE_A_IND)) {
-    ray |= (1ULL << ((file - index) + (rank - index) * BOARD_WIDTH));
+    ray |= (1ULL << ((file - index) + ((rank - index) * BOARD_WIDTH)));
     ++index;
   }
 
@@ -134,7 +134,7 @@ CX_FN uint64_t bishop_rays_for_square(int square) {
  *
  * Indexed by square (0–63).
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -149,7 +149,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_RAYS = []() CX_EXEC {
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -164,7 +164,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHEAST_RAYS = []() C
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -179,7 +179,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_NORTHWEST_RAYS = []() C
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};
@@ -194,7 +194,7 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHEAST_RAYS = []() C
  *
  * Indexed by square (0–63). Board occupancy is ignored.
  */
-CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = []() CX_EXEC {
+CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = [] CX_EXEC {
   using namespace Const;
 
   std::array<Bitboard, BOARD_SIZE> table{};

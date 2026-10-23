@@ -55,37 +55,45 @@ Move Move::from_uci(const std::string& str) {
 }
 
 Move Move::make(Square from, Square to, bool is_capture) {
-  return {.from = from,
-          .to = to,
-          .promotion = std::nullopt,
-          .is_capture = is_capture,
-          .is_en_passant = false,
-          .is_castling = false};
+  return {
+      .from = from,
+      .to = to,
+      .promotion = std::nullopt,
+      .is_capture = is_capture,
+      .is_en_passant = false,
+      .is_castling = false,
+  };
 }
 
 Move Move::make_promotion(Square from, Square to, Piece piece, bool is_capture) {
-  return {.from = from,
-          .to = to,
-          .promotion = piece,
-          .is_capture = is_capture,
-          .is_en_passant = false,
-          .is_castling = false};
+  return {
+      .from = from,
+      .to = to,
+      .promotion = piece,
+      .is_capture = is_capture,
+      .is_en_passant = false,
+      .is_castling = false,
+  };
 }
 
 Move Move::make_en_passant(Square from, Square to) {
-  return {.from = from,
-          .to = to,
-          .promotion = std::nullopt,
-          .is_capture = true,
-          .is_en_passant = true,
-          .is_castling = false};
+  return {
+      .from = from,
+      .to = to,
+      .promotion = std::nullopt,
+      .is_capture = true,
+      .is_en_passant = true,
+      .is_castling = false,
+  };
 }
 
 Move Move::make_castling(Square from, Square to) {
-  return {.from = from,
-          .to = to,
-          .promotion = std::nullopt,
-          .is_capture = false,
-          .is_en_passant = false,
-          .is_castling = true};
+  return {
+      .from = from,
+      .to = to,
+      .promotion = std::nullopt,
+      .is_capture = false,
+      .is_en_passant = false,
+      .is_castling = true,
+  };
 }

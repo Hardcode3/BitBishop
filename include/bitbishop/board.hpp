@@ -80,9 +80,6 @@ class Board {
    */
   Board();
 
-  Board(const Board&) noexcept = default;
-  explicit Board(Board&& other) noexcept = default;
-
   /**
    * @brief Constructs a board from a FEN string.
    * @param fen Forsyth–Edwards Notation describing a chess position.
@@ -262,7 +259,7 @@ class Board {
   }
 
   [[nodiscard]] Color get_side_to_move() const noexcept {
-    return (m_state.m_is_white_turn) ? Color::WHITE : Color::BLACK;
+    return m_state.m_is_white_turn ? Color::WHITE : Color::BLACK;
   }
   void set_side_to_move(Color us) noexcept {
     const bool next_is_white_turn = (us == Color::WHITE);
@@ -343,9 +340,6 @@ class Board {
    * @return FEN built from to the internal board representation.
    */
   [[nodiscard]] std::string get_fen() const noexcept;
-
-  Board& operator=(const Board& other) noexcept = default;
-  Board& operator=(Board&& other) noexcept = default;
 
   /**
    * @brief Checks if two boards represent the same chess position.
