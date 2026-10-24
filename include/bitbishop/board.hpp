@@ -9,6 +9,8 @@
 #include <optional>
 #include <vector>
 
+namespace bitbishop {
+
 struct BoardState {
   bool m_is_white_turn;                   ///< True if it is White's turn
   std::optional<Square> m_en_passant_sq;  ///< En passant target square, or nullopt if none
@@ -368,3 +370,5 @@ class Board {
    */
   [[nodiscard]] bool operator!=(const Board& other) const noexcept;
 };
+
+}  // namespace bitbishop

@@ -2,6 +2,8 @@
 
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Eval;
 
 TEST(FlipIndex, IsInvolution) {
@@ -31,3 +33,5 @@ TEST(FlipIndex, FlipsCornersCorrectly) {
   EXPECT_EQ(flip_index_vertically(56), 0);  // A1 -> A8
   EXPECT_EQ(flip_index_vertically(63), 7);  // H1 -> H8
 }
+
+}  // namespace bitbishop::testing

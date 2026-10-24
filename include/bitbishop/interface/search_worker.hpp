@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-namespace Uci {
+namespace bitbishop::Uci {
 
 /**
  * @brief Represents search limits for the UCI interface.
@@ -141,4 +141,4 @@ class SearchWorker {
   [[nodiscard]] std::vector<SearchReport> drain_reports();
 };
 
-}  // namespace Uci
+}  // namespace bitbishop::Uci

@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -437,3 +439,5 @@ TEST(BoardMovePieceTest, CaptureUpdatesBothColors) {
   EXPECT_EQ(white_rooks_after.count(), 1);
   EXPECT_EQ(black_rooks_after.count(), 0);
 }
+
+}  // namespace bitbishop::testing

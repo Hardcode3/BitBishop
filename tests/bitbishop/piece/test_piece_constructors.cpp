@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies construction from Type and Color.
  */
@@ -195,3 +197,5 @@ TEST(PieceTest, TypeColorConstructorSetsCorrectProperties) {
   EXPECT_TRUE(white_queen.is_white());
   EXPECT_FALSE(white_queen.is_black());
 }
+
+}  // namespace bitbishop::testing

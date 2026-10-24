@@ -8,6 +8,8 @@
 #include <bitbishop/square.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 // bitbishop/board.hpp uses Zobrist features and the current Zobrist implementation also uses Board & BoardState.
 // Forward declaration below and include inside bitbishop/zobrist.cpp solves this circular dependency.
 struct BoardState;
@@ -275,3 +277,5 @@ void mutate_en_passant_square(Square epsq, Zobrist::Key& key) noexcept;
 [[nodiscard]] Zobrist::Key compute_hash(const Board& board) noexcept;
 
 }  // namespace Zobrist
+
+}  // namespace bitbishop

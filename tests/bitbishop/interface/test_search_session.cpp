@@ -7,6 +7,8 @@
 #include <sstream>
 #include <thread>
 
+namespace bitbishop::testing {
+
 using namespace std::chrono_literals;
 
 bool wait_until_idle(Uci::SearchSession& session, std::chrono::milliseconds timeout = 1000ms) {
@@ -87,3 +89,5 @@ TEST(SearchSessionTest, StartBenchWithInfiniteLimitCompletesWithoutManualStop) {
   ASSERT_TRUE(wait_until_idle(session, 1500ms));
   EXPECT_NE(output.str().find("bench nodes "), std::string::npos);
 }
+
+}  // namespace bitbishop::testing

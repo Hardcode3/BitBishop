@@ -5,7 +5,7 @@
 #include <memory>
 #include <ostream>
 
-namespace Uci {
+namespace bitbishop::Uci {
 
 /**
  * @brief Owns the lifecycle of one active search and its reporter.
@@ -66,4 +66,4 @@ class SearchSession {
   [[nodiscard]] bool is_idle() const { return worker == nullptr; }
 };
 
-}  // namespace Uci
+}  // namespace bitbishop::Uci

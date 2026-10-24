@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.Occupied
  * @brief Validates that occupied() returns all populated squares.
@@ -21,3 +23,5 @@ TEST(BoardTest, OccupiedBoardSquares) {
     EXPECT_TRUE(populated.test(Square(sq_index)));
   }
 }
+
+}  // namespace bitbishop::testing

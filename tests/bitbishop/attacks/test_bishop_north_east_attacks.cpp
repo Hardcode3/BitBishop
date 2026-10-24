@@ -4,6 +4,8 @@
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test bishop_north_east_attacks() with no blockers
  * @brief Verifies that bishop_north_east_attacks returns all squares in the NE diagonal when unobstructed.
@@ -114,3 +116,5 @@ TEST(BishopMoveGeneratorTest, NorthEastRayFromEdgeSquares) {
   Bitboard ne_result = bishop_north_east_attacks(Squares::H8, occupied);
   EXPECT_EQ(ne_result.count(), 0);
 }
+
+}  // namespace bitbishop::testing

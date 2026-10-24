@@ -2,6 +2,8 @@
 
 #include <bitbishop/board.hpp>
 
+namespace bitbishop::testing {
+
 TEST(BoardTestOStreamOverload, EmptyBoardProvidesCorrectFormatting) {
   std::ostringstream oss;
 
@@ -94,3 +96,5 @@ TEST(BoardTestOStreamOverload, RandomPositionBoardProvidesCorrectFormatting) {
 
   ASSERT_EQ(oss.str(), expected);
 }
+
+}  // namespace bitbishop::testing

@@ -5,6 +5,8 @@
 #include <bitbishop/helpers/blocking_stream.hpp>
 #include <bitbishop/interface/uci_engine.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace std::chrono;
 
@@ -623,3 +625,5 @@ TEST_F(UciEngineTest, GoBtimeBincGoesInfiniteWhenItsWhiteTurn) {
 
   assert_output_not_contains(output, "bestmove ", milliseconds(*budget * 2));
 }
+
+}  // namespace bitbishop::testing

@@ -5,6 +5,8 @@
 #include <bitbishop/lookups/knight_attacks.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Lookups;
 
 TEST(KnightAttackTest, CornerA1) {
@@ -52,3 +54,5 @@ TEST(KnightAttackTest, CenterD4) {
 
   EXPECT_EQ(KNIGHT_ATTACKS[Square::D4], expected);
 }
+
+}  // namespace bitbishop::testing

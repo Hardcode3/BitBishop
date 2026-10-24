@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitwise OR operator.
  * @brief Combines two bitboards, keeping all occupied squares.
@@ -110,3 +112,5 @@ TEST(BitboardTest, NotOperatorInvertsBits) {
   EXPECT_FALSE(b.test(Square::A1));
   EXPECT_TRUE(b.test(Square::B1));  // square that wasn’t set
 }
+
+}  // namespace bitbishop::testing

@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies equality operator for same pieces.
  */
@@ -38,3 +40,5 @@ TEST(PieceTest, SameTypeDifferentColorsNotEqual) {
   EXPECT_NE(white_pawn.color(), black_pawn.color());
   EXPECT_NE(white_pawn, black_pawn);
 }
+
+}  // namespace bitbishop::testing

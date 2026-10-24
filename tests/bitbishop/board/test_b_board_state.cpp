@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 
 /**
@@ -326,3 +328,5 @@ TEST(BoardStateTest, CopyProducesEqualState) {
   EXPECT_TRUE(state1 == state2);
   EXPECT_FALSE(state1 != state2);
 }
+
+}  // namespace bitbishop::testing

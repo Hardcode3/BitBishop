@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Count operator for bits set to one
  * @brief Confirms count works as intended on an empty bitboard.
@@ -37,3 +39,5 @@ TEST(BitboardTest, CountMultipleBits) {
 
   EXPECT_EQ(bb.count(), 3);
 }
+
+}  // namespace bitbishop::testing

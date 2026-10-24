@@ -2,6 +2,8 @@
 #include <mutex>
 #include <sstream>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Thread-safe blocking stream buffer.
  *
@@ -101,3 +103,5 @@ class BlockingIStream : public std::istream {
  private:
   BlockingStreamBuf buf_;  ///< Underlying buffer
 };
+
+}  // namespace bitbishop::testing

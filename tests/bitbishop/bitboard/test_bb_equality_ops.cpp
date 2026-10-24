@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Equality and inequality operators.
  * @brief Confirms bitboards compare equal only when they have identical bits.
@@ -19,3 +21,5 @@ TEST(BitboardTest, EqualityOperators) {
   EXPECT_FALSE(a == b);
   EXPECT_TRUE(a != b);
 }
+
+}  // namespace bitbishop::testing

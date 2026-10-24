@@ -7,6 +7,8 @@
 #include <bitbishop/movegen/castling_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -484,3 +486,5 @@ TEST(GenerateCastlingMovesTest, CastlingRightsButEmptyBoard) {
   // Should generate no moves because can_castle_kingside/queenside will fail
   EXPECT_EQ(moves.size(), 0);
 }
+
+}  // namespace bitbishop::testing

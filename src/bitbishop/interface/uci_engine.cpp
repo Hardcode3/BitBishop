@@ -2,6 +2,8 @@
 
 #include <bitbishop/interface/uci_engine.hpp>
 
+namespace bitbishop {
+
 [[nodiscard]] std::vector<std::string> Uci::split(const std::string& str) {
   std::vector<std::string> tokens;
   std::istringstream token_stream{str};
@@ -190,3 +192,5 @@ void Uci::UciEngine::handle_bench(const std::vector<std::string>& line) {
   SearchLimits limits = SearchLimits::from_uci_cmd(line);
   search_session.start_bench(board, limits);
 }
+
+}  // namespace bitbishop

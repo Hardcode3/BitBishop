@@ -1,6 +1,8 @@
 #include <bitbishop/interface/search_reporter.hpp>
 #include <utility>
 
+namespace bitbishop {
+
 UciReporter::UciReporter(std::ostream& out) : out_stream(out) {}
 
 void UciReporter::on_finish(const Search::BestMove& best, const Search::SearchStats& stats) {
@@ -27,3 +29,5 @@ void BenchReporter::on_finish(const Search::BestMove& best, const Search::Search
              << stats.quiescence_nodes << " time(s) " << seconds << "s" << " nps " << nps << "\n"
              << std::flush;
 }
+
+}  // namespace bitbishop

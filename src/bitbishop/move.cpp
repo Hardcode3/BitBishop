@@ -1,5 +1,7 @@
 #include <bitbishop/move.hpp>
 
+namespace bitbishop {
+
 [[nodiscard]] std::string Move::to_uci() const {
   std::string uci;
   uci.reserve(UCI_MOVE_PROMOTION_CHAR_REPR_SIZE);
@@ -97,3 +99,5 @@ Move Move::make_castling(Square from, Square to) noexcept {
       .is_castling = true,
   };
 }
+
+}  // namespace bitbishop

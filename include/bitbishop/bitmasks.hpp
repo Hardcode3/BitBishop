@@ -35,7 +35,7 @@
  *
  * Hence: 0000 0000 0000 0000 ... 0000 0000 1111 1111 = 0x00000000000000FF
  */
-namespace Bitmasks {
+namespace bitbishop::Bitmasks {
 
 /**
  * uint64_t mask with ones on file A.
@@ -117,4 +117,4 @@ CX_INLINE uint64_t RANK_7 = 0x00FF000000000000ULL;
  */
 CX_INLINE uint64_t RANK_8 = 0xFF00000000000000ULL;
 
-}  // namespace Bitmasks
+}  // namespace bitbishop::Bitmasks

@@ -5,6 +5,8 @@
 #include <optional>
 #include <stop_token>
 
+namespace bitbishop {
+
 class Position;
 
 namespace Search {
@@ -96,3 +98,5 @@ struct BestMove {
                                std::atomic<bool>* stop_flag = nullptr);
 
 }  // namespace Search
+
+}  // namespace bitbishop

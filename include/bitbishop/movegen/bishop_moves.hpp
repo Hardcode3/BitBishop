@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+namespace bitbishop {
+
 /**
  * @brief Generate all legal bishop moves for the side to move.
  *
@@ -70,3 +72,5 @@ inline void generate_bishop_legal_moves(std::vector<Move>& moves, const Board& b
     }
   }
 }
+
+}  // namespace bitbishop

@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.EnemyBitboard
  * @brief Confirms that enemy() returns the opposing side’s occupied squares.
@@ -24,3 +26,5 @@ TEST(BoardTest, EnemyBitboard) {
     EXPECT_TRUE(white_enemy.test(Square(sq_index)));
   }
 }
+
+}  // namespace bitbishop::testing

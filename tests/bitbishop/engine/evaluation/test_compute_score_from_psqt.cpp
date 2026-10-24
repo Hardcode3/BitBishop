@@ -2,8 +2,11 @@
 
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Eval;
 using namespace Squares;
+using namespace Pieces;
 
 class TestComputeScoreFromPSqT : public ::testing::Test {
  protected:
@@ -98,3 +101,5 @@ TEST_F(TestComputeScoreFromPSqT, FullFileFlip) {
 
   EXPECT_EQ(score, expected);
 }
+
+}  // namespace bitbishop::testing

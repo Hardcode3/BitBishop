@@ -1,6 +1,8 @@
 #include <bitbishop/constants.hpp>
 #include <bitbishop/moves/move_builder.hpp>
 
+namespace bitbishop {
+
 MoveBuilder::MoveBuilder(const Board& board, const Move& move) : board(board), move(move) {
   moving_piece = *board.get_piece(move.from);
   opt_captured_piece = board.get_piece(move.to);
@@ -170,3 +172,5 @@ void MoveBuilder::update_full_move_number() {
 void MoveBuilder::flip_side_to_move() { next_state.m_is_white_turn = !prev_state.m_is_white_turn; }
 
 void MoveBuilder::reset_en_passant_square() { next_state.m_en_passant_sq = std::nullopt; }
+
+}  // namespace bitbishop

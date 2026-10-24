@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+namespace bitbishop {
+
 /**
  * @brief Represents a square on the chess board.
  *
@@ -304,3 +306,5 @@ DEFINE_SQUARE(E8); DEFINE_SQUARE(F8); DEFINE_SQUARE(G8); DEFINE_SQUARE(H8);
 
 #undef DEFINE_SQUARE
 }  // namespace Squares
+
+}  // namespace bitbishop

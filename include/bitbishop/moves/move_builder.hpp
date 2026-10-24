@@ -2,6 +2,8 @@
 
 #include <bitbishop/moves/move_execution.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Constructs a sequence of low-level effects for a move.
  *
@@ -65,3 +67,5 @@ class MoveBuilder {
   void flip_side_to_move();          ///< Flips active player
   void reset_en_passant_square();    ///< Clears en passant square if move doesn't set one
 };
+
+}  // namespace bitbishop

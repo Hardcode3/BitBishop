@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/rook_rays.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 TEST(RookAttacksTest, CornerA1) {
   Bitboard bb = Lookups::ROOK_RAYS[Square::A1];
 
@@ -53,3 +55,5 @@ TEST(RookAttacksTest, CenterD4) {
 
   EXPECT_EQ(bb, expected);
 }
+
+}  // namespace bitbishop::testing

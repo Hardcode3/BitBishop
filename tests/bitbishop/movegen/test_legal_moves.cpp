@@ -7,6 +7,8 @@
 #include <bitbishop/movegen/legal_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -572,3 +574,5 @@ TEST(GenerateLegalMovesTest, PinnedKnightNoMoves) {
     EXPECT_NE(move.from, E3);
   }
 }
+
+}  // namespace bitbishop::testing

@@ -4,6 +4,8 @@
 #include <format>
 #include <string>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Test fixture for Color enum formatting tests.
  */
@@ -61,3 +63,5 @@ TEST(ColorUtilsTest, HasCorrectNumberOfColors) {
 
   EXPECT_EQ(nb_colors, 2);
 }
+
+}  // namespace bitbishop::testing

@@ -2,6 +2,8 @@
 
 #include <bitbishop/board.hpp>
 
+namespace bitbishop::testing {
+
 TEST(BoardTest, TwoKingsIsInsufficientMaterial) {
   Board board("8/8/8/8/4k3/8/8/2K5 w KQkq - 0 1");
   EXPECT_TRUE(board.has_insufficient_material());
@@ -44,3 +46,5 @@ TEST(BoardTest, StartingPosIsNotInsufficientMaterial) {
   Board board = Board::StartingPosition();
   EXPECT_FALSE(board.has_insufficient_material());
 }
+
+}  // namespace bitbishop::testing

@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes bishop attacks along the northeast diagonal.
  *
@@ -67,3 +69,5 @@ Bitboard bishop_south_west_attacks(Square from, const Bitboard& occupied);
  * @return Bitboard of all squares attacked by the bishop
  */
 Bitboard bishop_attacks(Square from, const Bitboard& occupied);
+
+}  // namespace bitbishop

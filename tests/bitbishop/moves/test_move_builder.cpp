@@ -7,6 +7,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -666,3 +668,5 @@ TEST(MoveExecutionTest, FullMoveNumberRestoredOnRevert) {
   EXPECT_EQ(board.get_state().m_fullmove_number, before.m_fullmove_number);
   EXPECT_EQ(board.get_state().m_is_white_turn, before.m_is_white_turn);
 }
+
+}  // namespace bitbishop::testing

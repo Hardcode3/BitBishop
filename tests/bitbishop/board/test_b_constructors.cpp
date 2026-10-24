@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -132,3 +134,5 @@ TEST(BoardCopyTest, IndependenceAfterCopy) {
   EXPECT_EQ(original.get_piece(E2), std::nullopt);
   EXPECT_EQ(copy.get_piece(E2), WHITE_PAWN);
 }
+
+}  // namespace bitbishop::testing

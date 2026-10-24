@@ -6,7 +6,7 @@
 #include <bitbishop/config.hpp>
 #include <cstdint>
 
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Computes the attack bitboard for a king on a given square.
@@ -77,4 +77,4 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKS = [] CX_EXEC {
  */
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KING_ATTACKERS = KING_ATTACKS;
 
-}  // namespace Lookups
+}  // namespace bitbishop::Lookups

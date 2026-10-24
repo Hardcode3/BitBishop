@@ -10,6 +10,8 @@
 #include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 Bitboard compute_checkers(const Board& board, Square king_sq, Color attacker) {
   using namespace Lookups;
 
@@ -44,3 +46,5 @@ Bitboard compute_checkers(const Board& board, Square king_sq, Color attacker) {
 
   return checkers;
 }
+
+}  // namespace bitbishop

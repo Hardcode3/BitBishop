@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/pawn_attacks.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Lookups;
 
 /**
@@ -117,3 +119,5 @@ TEST(PawnAttackTest, BlackPawnAttacksFromA5) {
 
   EXPECT_EQ(BLACK_PAWN_ATTACKS[Square::A5], expected);
 }
+
+}  // namespace bitbishop::testing

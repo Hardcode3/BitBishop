@@ -4,6 +4,8 @@
 #include <bitbishop/moves/move_effect.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -405,3 +407,5 @@ TEST(MoveEffectTest, RevertRemoveDoesNotAffectOtherPieces) {
   EXPECT_EQ(board.get_piece(D4), WHITE_KNIGHT);
   EXPECT_EQ(board.get_piece(F4), WHITE_BISHOP);
 }
+
+}  // namespace bitbishop::testing

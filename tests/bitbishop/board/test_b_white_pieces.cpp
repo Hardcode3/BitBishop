@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.GetWhitePieces
  * @brief Confirms that white_pieces() returns the right squares using the standard fen opening.
@@ -18,3 +20,5 @@ TEST(BoardTest, GetWhitePieces) {
     EXPECT_TRUE(white_pieces.test(Square(sq_index)));
   }
 }
+
+}  // namespace bitbishop::testing

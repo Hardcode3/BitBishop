@@ -9,7 +9,7 @@
 #include <bitbishop/lookups/rook_rays.hpp>
 #include <cstdint>
 
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Generates all queen rays from a given square, independent of board occupancy.
@@ -60,4 +60,4 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = [] CX_EXEC {
  */
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
 
-}  // namespace Lookups
+}  // namespace bitbishop::Lookups

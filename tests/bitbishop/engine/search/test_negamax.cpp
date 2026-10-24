@@ -6,6 +6,8 @@
 #include <bitbishop/moves/position.hpp>
 #include <tuple>
 
+namespace bitbishop::testing {
+
 using namespace Search;
 using namespace Pieces;
 using namespace Squares;
@@ -178,3 +180,5 @@ TEST(NegaMaxTest, FiftyMoveRuleIsDraw) {
 
   EXPECT_EQ(quiesce(pos, ALPHA_INIT, BETA_INIT, stats), 0);
 }
+
+}  // namespace bitbishop::testing

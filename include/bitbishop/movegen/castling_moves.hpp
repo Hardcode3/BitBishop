@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+namespace bitbishop {
+
 /**
  * @brief Generates all legal castling moves for the given side.
  *
@@ -55,3 +57,5 @@ inline void generate_castling_moves(std::vector<Move>& moves, const Board& board
     }
   }
 }
+
+}  // namespace bitbishop

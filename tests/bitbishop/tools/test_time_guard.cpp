@@ -3,7 +3,9 @@
 #include <bitbishop/tools/time_guard.hpp>
 #include <functional>
 
-using namespace Tools;
+namespace bitbishop::testing {
+
+using Tools::TimeGuard;
 
 /**
  * @brief Repeatedly evaluates the predicate until it returns true or timeout is reached.
@@ -53,3 +55,5 @@ TEST(TimeGuardTest, StopFlagIsNotSetWhenTimeGuardIsDestroyedEarly) {
   }
   EXPECT_FALSE(should_stop.load());
 }
+
+}  // namespace bitbishop::testing

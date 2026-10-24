@@ -1,6 +1,8 @@
 
 #include <bitbishop/movegen/pins.hpp>
 
+namespace bitbishop {
+
 void scan_pin_ray(Square king_sq, const PinRay& ray_info, const Board& board, Color us, PinResult& result) {
   const Bitboard occupied = board.occupied();
   const Bitboard own = board.friendly(us);
@@ -56,3 +58,5 @@ PinResult compute_pins(Square king_sq, const Board& board, Color us) {
 
   return result;
 }
+
+}  // namespace bitbishop

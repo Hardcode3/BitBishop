@@ -4,6 +4,8 @@
 #include <bitbishop/moves/move_execution.hpp>
 #include <vector>
 
+namespace bitbishop {
+
 /**
  * @brief Represents a chess position and move history.
  *
@@ -97,3 +99,5 @@ class Position {
    */
   [[nodiscard]] bool is_in_check() const;
 };
+
+}  // namespace bitbishop

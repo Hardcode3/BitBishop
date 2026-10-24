@@ -2,6 +2,8 @@
 
 #include <bitbishop/attacks/generate_attacks.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -497,3 +499,5 @@ TEST(GenerateAttacksTest, NoKingOnBoard) {
   EXPECT_TRUE(attacks.test(E1));
   EXPECT_TRUE(attacks.test(A4));
 }
+
+}  // namespace bitbishop::testing

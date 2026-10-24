@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -83,3 +85,5 @@ TEST(BoardKingSquareTest, KingMoved) {
   EXPECT_TRUE(white_king_sq.has_value());
   EXPECT_EQ(white_king_sq.value(), G1);
 }
+
+}  // namespace bitbishop::testing

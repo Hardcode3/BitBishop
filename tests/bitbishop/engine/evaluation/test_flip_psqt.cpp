@@ -2,6 +2,8 @@
 
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Eval;
 
 class TestFlipPSqT : public ::testing::Test {
@@ -29,3 +31,5 @@ TEST_F(TestFlipPSqT, UsesFlipIndexMapping) {
     EXPECT_EQ(psqt[i], psqt_flipped[flip_index_vertically(i)]) << "at index " << i;
   }
 }
+
+}  // namespace bitbishop::testing

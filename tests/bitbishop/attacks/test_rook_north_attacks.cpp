@@ -4,6 +4,8 @@
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test rook_north_attacks() with no blockers
  * @brief Verifies that rook_north_attacks returns all squares to the north when unobstructed.
@@ -158,3 +160,5 @@ TEST(RookMoveGeneratorTest, NorthRayFromNearEdgePositions) {
   EXPECT_TRUE(result.test(Square::C8));
   EXPECT_EQ(result.count(), 2);
 }
+
+}  // namespace bitbishop::testing

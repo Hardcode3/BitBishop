@@ -1,5 +1,7 @@
 #include <bitbishop/interface/uci_command_registry.hpp>
 
+namespace bitbishop {
+
 void Uci::UciCommandRegistry::register_handler(std::string command, Handler handler) {
   handlers.insert_or_assign(std::move(command), std::move(handler));
 }
@@ -17,3 +19,5 @@ bool Uci::UciCommandRegistry::dispatch(const std::vector<std::string>& line) con
   it->second(line);
   return true;
 }
+
+}  // namespace bitbishop

@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Eval;
 using namespace Squares;
 using namespace Pieces;
@@ -129,3 +131,5 @@ TEST(MaterialEvaluationTest, SymmetricColorSetupProvidesSameScore) {
 
   EXPECT_EQ(score_white, score_black);
 }
+
+}  // namespace bitbishop::testing

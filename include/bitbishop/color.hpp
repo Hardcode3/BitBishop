@@ -4,6 +4,8 @@
 #include <bitbishop/config.hpp>
 #include <format>
 
+namespace bitbishop {
+
 /**
  * @brief Depicts possible piece colors in the chess game.
  *
@@ -59,6 +61,8 @@ CX_VALUE static std::size_t SIZE = 2;
 
 }  // namespace ColorUtil
 
+}  // namespace bitbishop
+
 /**
  * @brief Custom formatter for Color enum to enable std::format support.
  *
@@ -74,7 +78,7 @@ CX_VALUE static std::size_t SIZE = 2;
  * @endcode
  */
 template <>
-struct std::formatter<Color> {
+struct std::formatter<bitbishop::Color> {
   /**
    * @brief Parses the format specification (currently no custom format options).
    *
@@ -94,12 +98,12 @@ struct std::formatter<Color> {
    * @param ctx The format context
    * @return Iterator to the end of the formatted output
    */
-  auto static format(Color color, format_context& ctx) {
+  auto static format(bitbishop::Color color, format_context& ctx) {
     string_view name = "unknown";
     switch (color) {
         // clang-format off
-    case Color::BLACK: name = "black"; break;
-    case Color::WHITE: name = "white"; break;
+    case bitbishop::Color::BLACK: name = "black"; break;
+    case bitbishop::Color::WHITE: name = "white"; break;
         // clang-format on
     }
     return std::format_to(ctx.out(), "{}", name);

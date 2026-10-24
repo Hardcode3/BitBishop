@@ -10,7 +10,7 @@
  * @return Exit code (0 on normal termination).
  */
 int main() {
-  Uci::UciEngine engine(std::cin, std::cout);
+  bitbishop::Uci::UciEngine engine(std::cin, std::cout);
   engine.loop();
   return 0;
 }

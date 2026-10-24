@@ -2,6 +2,8 @@
 
 #include <bitbishop/board.hpp>
 
+namespace bitbishop::testing {
+
 struct FenTestCase {
   std::string name;
   std::string fen;
@@ -54,8 +56,10 @@ INSTANTIATE_TEST_SUITE_P(
             "8/8/3p4/8/8/4P3/8/8 w - - 0 1"
         }
     ),
-    [](const testing::TestParamInfo<FenTestCase>& info) {
+    [](const ::testing::TestParamInfo<FenTestCase>& info) {
         return info.param.name;
     }
 );
 // clang-format on
+
+}  // namespace bitbishop::testing

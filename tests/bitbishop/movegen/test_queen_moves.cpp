@@ -8,6 +8,8 @@
 #include <bitbishop/movegen/queen_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -510,3 +512,5 @@ TEST(GenerateQueenLegalMovesTest, QueenOnEdge) {
   EXPECT_TRUE(contains_move(moves, {A4, D7, std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {A4, D1, std::nullopt, false, false, false}));
 }
+
+}  // namespace bitbishop::testing

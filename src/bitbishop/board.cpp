@@ -4,6 +4,8 @@
 #include <format>
 #include <sstream>
 
+namespace bitbishop {
+
 Board::Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {}
 
 Board::Board(const std::string& fen) {
@@ -410,3 +412,5 @@ bool Board::operator==(const Board& other) const noexcept {
 }
 
 bool Board::operator!=(const Board& other) const noexcept { return !this->operator==(other); }
+
+}  // namespace bitbishop

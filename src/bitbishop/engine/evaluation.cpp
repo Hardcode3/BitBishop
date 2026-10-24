@@ -1,5 +1,7 @@
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop {
+
 int Eval::evaluate_material(const Board& board, Color side) noexcept {
   int score = 0;
   score += board.pawns(side).count() * MaterialValue::PAWN;
@@ -47,3 +49,5 @@ int Eval::evaluate(const Board& board) noexcept {
 
   return white_score - black_score;
 }
+
+}  // namespace bitbishop

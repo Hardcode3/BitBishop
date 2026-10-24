@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitboard iterator iterates over all set bits in order
  * @brief Verifies that iterating over a bitboard with multiple set bits
@@ -79,3 +81,5 @@ TEST(BitboardIteratorTest, IteratorDereferenceIsConstexprCompatible) {
   ASSERT_EQ(indices.size(), 2);
   EXPECT_LT(indices[0], indices[1]);  // Should iterate in ascending order
 }
+
+}  // namespace bitbishop::testing

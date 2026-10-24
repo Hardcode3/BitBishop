@@ -1,5 +1,7 @@
 #include <bitbishop/bitboard.hpp>
 
+namespace bitbishop {
+
 void Bitboard::print() const noexcept {
   // defined in cpp to allow usage inside debugger
 
@@ -13,3 +15,5 @@ void Bitboard::print() const noexcept {
     std::cout << "\n";
   }
 }
+
+}  // namespace bitbishop

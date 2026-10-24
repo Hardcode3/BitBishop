@@ -12,6 +12,8 @@
 #include <bitbishop/lookups/rook_rays.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes the geometric attackers to a target square for a given color.
  *
@@ -98,3 +100,5 @@ CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> A
 
   return table;
 }();
+
+}  // namespace bitbishop

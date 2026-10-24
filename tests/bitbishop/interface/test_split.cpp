@@ -2,6 +2,8 @@
 
 #include <bitbishop/interface/uci_engine.hpp>
 
+namespace bitbishop::testing {
+
 TEST(UciSplitTest, BasicTokens) {
   const auto tokens = Uci::split("position startpos moves e2e4 e7e5");
 
@@ -21,3 +23,5 @@ TEST(UciSplitTest, CollapsesWhitespace) {
   EXPECT_EQ(tokens[1], "depth");
   EXPECT_EQ(tokens[2], "3");
 }
+
+}  // namespace bitbishop::testing

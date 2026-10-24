@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/tools/perft.hpp>
 
+namespace bitbishop::testing {
+
 struct PerftTestCase {
   std::string test_name;
   std::string fen;
@@ -12,7 +14,7 @@ struct PerftTestCase {
 
 struct PerftParamName {
   template <class ParamType>
-  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
+  std::string operator()(const ::testing::TestParamInfo<ParamType>& info) const {
     return info.param.test_name;
   }
 };
@@ -314,3 +316,5 @@ TEST(PerftTest, SymmetricPositionsEqual) {
 
   EXPECT_EQ(white_nodes, black_nodes);
 }
+
+}  // namespace bitbishop::testing

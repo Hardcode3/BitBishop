@@ -14,6 +14,8 @@
 #include <optional>
 #include <vector>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Counts moves that satisfy a predicate.
  * @param moves Vector of moves to analyze.
@@ -217,3 +219,5 @@ std::size_t count_rook_queenside_castling(const std::vector<Move>& moves, Color 
 std::vector<Move> find_moves_between(const std::vector<Move>& moves, Square from, Square to) {
   return filter_moves(moves, [&](const Move& m) { return m.from == from && m.to == to; });
 }
+
+}  // namespace bitbishop::testing

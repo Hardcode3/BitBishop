@@ -1,6 +1,8 @@
 #include <bitbishop/lookups/between_squares.hpp>
 #include <bitbishop/movegen/check_mask.hpp>
 
+namespace bitbishop {
+
 Bitboard compute_check_mask(Square king_sq, const Bitboard& checkers, const Board& board) {
   if (!checkers) {
     return Bitboard::Ones();
@@ -21,3 +23,5 @@ Bitboard compute_check_mask(Square king_sq, const Bitboard& checkers, const Boar
 
   return Lookups::ray_between(checker_sq, king_sq) | checkers;
 }
+
+}  // namespace bitbishop

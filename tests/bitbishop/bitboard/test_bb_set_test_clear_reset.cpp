@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Set and test a square.
  * @brief After setting E2, it should be occupied, and E4 should remain empty.
@@ -83,3 +85,5 @@ TEST(BitboardTest, ResetClearsAllSquares) {
   }
   EXPECT_EQ(bb.value(), 0ULL);
 }
+
+}  // namespace bitbishop::testing

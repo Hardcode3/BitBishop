@@ -6,6 +6,8 @@
 #include <bitbishop/movegen/legal_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -110,3 +112,5 @@ TEST(GenerateLegalCaptureMovesTest, MovesVectorIsAppendedNotCleared) {
   EXPECT_EQ(moves.size(), 1);
   EXPECT_TRUE(contains_move(moves, Move::make(A1, A2)));
 }
+
+}  // namespace bitbishop::testing

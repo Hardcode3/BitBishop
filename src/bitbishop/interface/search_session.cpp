@@ -1,6 +1,8 @@
 #include <bitbishop/interface/search_session.hpp>
 #include <cassert>
 
+namespace bitbishop {
+
 Uci::SearchSession::SearchSession(std::ostream& out_stream)
     : out_stream(out_stream), worker(nullptr), reporter(nullptr) {}
 
@@ -74,3 +76,5 @@ void Uci::SearchSession::stop_and_join() {
   }
   reporter.reset();
 }
+
+}  // namespace bitbishop

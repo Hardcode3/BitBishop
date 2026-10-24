@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+namespace bitbishop {
+
 CX_INLINE std::array<Piece, 4> WHITE_PROMOTIONS = {
     Pieces::WHITE_QUEEN,
     Pieces::WHITE_ROOK,
@@ -280,3 +282,5 @@ inline void generate_pawn_legal_moves(std::vector<Move>& moves, const Board& boa
     generate_en_passant(moves, from, us, board, king_sq, check_mask, pin_mask);
   }
 }
+
+}  // namespace bitbishop

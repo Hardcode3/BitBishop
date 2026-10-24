@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/between_squares.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Lookups;
 
@@ -64,3 +66,5 @@ TEST(LookupsTest, DirectionWithInvalidFromAndToSquares) {
   EXPECT_EQ(direction(A1, B6), 0);
   EXPECT_EQ(direction(F4, H8), 0);
 }
+
+}  // namespace bitbishop::testing

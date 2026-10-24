@@ -4,6 +4,8 @@
 #include <bitbishop/color.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.CanCastleKingsideWhiteSuccess
  * @brief Validates that White can castle kingside when all conditions are met.
@@ -215,3 +217,5 @@ TEST(BoardTest, CanCastleKingsideRookReplacedByQueen) {
   Board board("r3k2r/8/8/8/8/8/8/R3K2Q w KQkq - 0 1");
   EXPECT_FALSE(board.can_castle_kingside(Color::WHITE));
 }
+
+}  // namespace bitbishop::testing

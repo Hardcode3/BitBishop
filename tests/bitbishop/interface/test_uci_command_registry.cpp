@@ -2,6 +2,8 @@
 
 #include <bitbishop/interface/uci_command_registry.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Uci;
 
 TEST(UciCommandRegistryTest, RegistersCorreclyHandlerFunction) {
@@ -73,3 +75,5 @@ TEST(UciCommandRegistryTest, DispatchesDoesNothingWithNonExistingCommand) {
   EXPECT_FALSE(dispatch_result);
   EXPECT_EQ(counter, 0);
 }
+
+}  // namespace bitbishop::testing

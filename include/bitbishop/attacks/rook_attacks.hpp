@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes rook attacks along the north direction.
  *
@@ -73,3 +75,5 @@ Bitboard rook_west_attacks(Square from, const Bitboard& occupied);
  * @return Bitboard of all squares attacked by the rook
  */
 Bitboard rook_attacks(Square from, const Bitboard& occupied);
+
+}  // namespace bitbishop

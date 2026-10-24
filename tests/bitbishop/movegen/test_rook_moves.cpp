@@ -8,6 +8,8 @@
 #include <bitbishop/movegen/rook_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -496,3 +498,5 @@ TEST(GenerateRookLegalMovesTest, RookCompletelyBlocked) {
 
   EXPECT_EQ(moves.size(), 0);
 }
+
+}  // namespace bitbishop::testing

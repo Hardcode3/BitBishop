@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Uci {
+namespace bitbishop::Uci {
 
 /**
  * @brief Registry mapping UCI command names to handlers.
@@ -38,4 +38,4 @@ class UciCommandRegistry {
   [[nodiscard]] std::size_t get_handlers_count() const noexcept { return handlers.size(); }
 };
 
-}  // namespace Uci
+}  // namespace bitbishop::Uci

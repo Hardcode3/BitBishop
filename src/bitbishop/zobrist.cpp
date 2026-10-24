@@ -1,6 +1,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/zobrist.hpp>
 
+namespace bitbishop {
+
 void Zobrist::mutate_piece(Square square, Piece piece, Zobrist::Key& key) noexcept {
   const int sq_ind = square.flat_index();
   const int p_ind = piece_index(piece);
@@ -87,3 +89,5 @@ Zobrist::Key Zobrist::compute_hash(const Board& board) noexcept {
 
   return key;
 }
+
+}  // namespace bitbishop

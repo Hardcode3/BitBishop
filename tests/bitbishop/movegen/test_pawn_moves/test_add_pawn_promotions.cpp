@@ -3,6 +3,8 @@
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/movegen/pawn_moves.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Test fixture for pawn promotion move generation.
  *
@@ -403,3 +405,5 @@ TEST_F(PawnPromotionTest, AllPromotionMovesHavePromotionPiece) {
     EXPECT_TRUE(move.promotion.has_value()) << "All promotion moves must have a promotion piece";
   }
 }
+
+}  // namespace bitbishop::testing

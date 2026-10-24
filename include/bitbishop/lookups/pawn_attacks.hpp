@@ -8,7 +8,7 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Precomputed bitboards for white pawn single pushes (1 square forward).
@@ -296,4 +296,4 @@ CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> P
   return table;
 }();
 
-}  // namespace Lookups
+}  // namespace bitbishop::Lookups

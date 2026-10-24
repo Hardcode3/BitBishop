@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test any() method
  * @brief Confirms any() returns false for an empty bitboard.
@@ -72,3 +74,5 @@ TEST(BitboardTest, AnyEquivalentToCountGtZero) {
   bb_set.set(Square::C3);
   EXPECT_EQ(bb_set.count() > 0, static_cast<bool>(bb_set));
 }
+
+}  // namespace bitbishop::testing

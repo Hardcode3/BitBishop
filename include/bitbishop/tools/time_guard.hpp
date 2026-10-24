@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 
-namespace Tools {
+namespace bitbishop::Tools {
 
 /**
  * @class TimeGuard
@@ -75,4 +75,4 @@ class TimeGuard {
   void cancel();
 };
 
-}  // namespace Tools
+}  // namespace bitbishop::Tools

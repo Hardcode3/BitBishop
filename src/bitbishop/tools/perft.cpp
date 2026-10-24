@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <iostream>
 
-uint64_t Tools::perft(Board& board, std::size_t depth) {
+namespace bitbishop::Tools {
+
+uint64_t perft(Board& board, std::size_t depth) {
   uint64_t nodes = 0;
 
   if (depth == 0) {
@@ -23,7 +25,7 @@ uint64_t Tools::perft(Board& board, std::size_t depth) {
   return nodes;
 }
 
-void Tools::perft_divide(Board& board, std::size_t depth) {
+void perft_divide(Board& board, std::size_t depth) {
   uint64_t total_nodes = 0;
 
   std::vector<Move> moves;
@@ -41,3 +43,5 @@ void Tools::perft_divide(Board& board, std::size_t depth) {
 
   std::cout << "\nNodes searched: " << total_nodes << "\n";
 }
+
+}  // namespace bitbishop::Tools

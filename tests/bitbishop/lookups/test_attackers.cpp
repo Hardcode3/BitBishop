@@ -5,6 +5,8 @@
 #include <bitbishop/lookups/attackers.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 
 /**
@@ -302,3 +304,5 @@ TEST(AttackersTest, GeometricIgnoresBoardState) {
   EXPECT_EQ(call1, call2);
   EXPECT_EQ(call2, call3);
 }
+
+}  // namespace bitbishop::testing

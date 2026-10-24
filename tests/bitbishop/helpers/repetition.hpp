@@ -9,6 +9,8 @@
 #include <bitbishop/moves/position.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Reaches the same position again after 4 plies from the starting position.
  *
@@ -22,3 +24,5 @@ inline void apply_knight_repetition_cycle(Position& pos) {
   pos.apply_move(Move::make(Squares::F3, Squares::G1));
   pos.apply_move(Move::make(Squares::F6, Squares::G8));
 }
+
+}  // namespace bitbishop::testing

@@ -5,6 +5,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -508,3 +510,5 @@ TEST(ComputeCheckersTest, AllPieceTypesAsCheckers) {
   EXPECT_TRUE(checkers.test(H7));
   EXPECT_TRUE(checkers.test(H4));
 }
+
+}  // namespace bitbishop::testing

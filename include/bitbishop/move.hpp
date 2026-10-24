@@ -10,6 +10,8 @@
 #include <stdexcept>
 #include <string>
 
+namespace bitbishop {
+
 /**
  * @struct Move
  * @brief Represents a chess move, including metadata about its properties.
@@ -88,3 +90,5 @@ struct Move {
    */
   [[nodiscard]] static Move make_castling(Square from, Square to) noexcept;
 };
+
+}  // namespace bitbishop

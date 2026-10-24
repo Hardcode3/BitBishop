@@ -5,7 +5,7 @@
 #include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Computes the directional step between two aligned squares.
@@ -116,4 +116,4 @@ CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE>
   return table;
 }();
 
-}  // namespace Lookups
+}  // namespace bitbishop::Lookups

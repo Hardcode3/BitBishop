@@ -18,6 +18,8 @@
 #include <bitbishop/movegen/rook_moves.hpp>
 #include <vector>
 
+namespace bitbishop {
+
 namespace MoveGen {
 enum class Scope : std::uint8_t {
   AllMoves,
@@ -73,3 +75,5 @@ inline void generate_legal_moves(std::vector<Move>& moves, const Board& board) {
 inline void generate_legal_capture_moves(std::vector<Move>& moves, const Board& board) {
   generate_legal_moves_with_scope(moves, board, MoveGen::Scope::CapturesOnly);
 }
+
+}  // namespace bitbishop

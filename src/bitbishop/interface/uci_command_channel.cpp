@@ -1,6 +1,8 @@
 #include <bitbishop/interface/uci_command_channel.hpp>
 #include <utility>
 
+namespace bitbishop {
+
 Uci::UciCommandChannel::UciCommandChannel(std::istream& input_stream) : input_stream(input_stream), state(nullptr) {}
 
 Uci::UciCommandChannel::~UciCommandChannel() { stop(); }
@@ -72,3 +74,5 @@ bool Uci::UciCommandChannel::wait_and_pop_line(std::string& line, std::chrono::m
 }
 
 bool Uci::UciCommandChannel::eof() const { return state && state->eof_reached.load(); }
+
+}  // namespace bitbishop

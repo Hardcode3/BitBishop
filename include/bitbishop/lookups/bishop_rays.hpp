@@ -7,7 +7,7 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Returns the full northeast diagonal ray from a square.
@@ -222,4 +222,4 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = [] CX_
  */
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
 
-}  // namespace Lookups
+}  // namespace bitbishop::Lookups

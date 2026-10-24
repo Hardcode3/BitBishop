@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 TEST(PieceTest, IsPromotionReturnsTrueOnPromotionPieces) {
   EXPECT_TRUE(Pieces::BLACK_BISHOP.is_promotion());
   EXPECT_TRUE(Pieces::BLACK_KNIGHT.is_promotion());
@@ -21,3 +23,5 @@ TEST(PieceTest, IsPromotionReturnsFalseOnNonPromotionPieces) {
   EXPECT_FALSE(Pieces::WHITE_KING.is_promotion());
   EXPECT_FALSE(Pieces::WHITE_PAWN.is_promotion());
 }
+
+}  // namespace bitbishop::testing

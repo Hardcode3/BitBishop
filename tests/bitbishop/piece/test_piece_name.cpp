@@ -2,7 +2,7 @@
 
 #include <bitbishop/piece.hpp>
 
-using namespace Pieces;
+namespace bitbishop::testing {
 
 TEST(PieceTest, NameFromTypeHasCorrectName) {
   struct TestCase {
@@ -21,3 +21,5 @@ TEST(PieceTest, NameFromTypeHasUnknownType) {
   Piece::Type invalid_type = static_cast<Piece::Type>(155);
   EXPECT_STREQ(Piece::name(invalid_type), "unknown");
 }
+
+}  // namespace bitbishop::testing
