@@ -2,6 +2,8 @@
 
 #include <bitbishop/movegen/pawn_moves.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies is_starting_rank returns true for White pawns on rank 2 (A2-H2).
  */
@@ -47,3 +49,5 @@ TEST(PawnMoveGeneratorTest, IsStartingRankFromNotSartingRankForBlack) {
     ASSERT_FALSE(is_starting_rank(Square(sq), Color::BLACK)) << "for square " << Square(sq).to_string();
   }
 }
+
+}  // namespace bitbishop::testing

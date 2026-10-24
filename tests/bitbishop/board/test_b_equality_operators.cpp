@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -268,3 +270,5 @@ TEST(BoardEqualityTest, AllSquaresChecked) {
   EXPECT_FALSE(board1 == board2);
   EXPECT_TRUE(board1 != board2);
 }
+
+}  // namespace bitbishop::testing

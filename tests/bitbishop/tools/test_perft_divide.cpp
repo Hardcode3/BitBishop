@@ -4,6 +4,8 @@
 #include <ranges>
 #include <sstream>
 
+namespace bitbishop::testing {
+
 using PerftDivideMap = std::unordered_map<std::string, std::uint64_t>;
 
 /**
@@ -48,7 +50,7 @@ struct PerftDivideTestCase {
 
 struct PerftDivideParamName {
   template <class ParamType>
-  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
+  std::string operator()(const ::testing::TestParamInfo<ParamType>& info) const {
     return info.param.test_name;
   }
 };
@@ -198,3 +200,5 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 // clang-format on
+
+}  // namespace bitbishop::testing

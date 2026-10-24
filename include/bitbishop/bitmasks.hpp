@@ -3,6 +3,8 @@
 #include <bitbishop/config.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 /**
  * @namespace Bitmasks
  * @brief Defines precomputed bitmasks that can be applied during move generation.
@@ -118,3 +120,5 @@ CX_INLINE uint64_t RANK_7 = 0x00FF000000000000ULL;
 CX_INLINE uint64_t RANK_8 = 0xFF00000000000000ULL;
 
 }  // namespace Bitmasks
+
+}  // namespace bitbishop

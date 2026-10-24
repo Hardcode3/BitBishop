@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies same piece type for both colors.
  */
@@ -38,3 +40,5 @@ TEST(PieceTest, GetAllPieceTypes) {
 
   EXPECT_EQ(types, expected);
 }
+
+}  // namespace bitbishop::testing

@@ -2,6 +2,8 @@
 
 #include <bitbishop/movegen/pawn_moves.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies is_promotion_rank returns true for White pawns on rank 8 (A8-H8).
  */
@@ -37,3 +39,5 @@ TEST(PawnMoveGeneratorTest, IsPromotionRankNotFromPromotionRankForBlack) {
     ASSERT_FALSE(is_promotion_rank(Square(sq), Color::BLACK)) << "for square " << Square(sq).to_string();
   }
 }
+
+}  // namespace bitbishop::testing

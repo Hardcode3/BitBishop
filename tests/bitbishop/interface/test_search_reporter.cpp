@@ -4,6 +4,8 @@
 #include <sstream>
 #include <thread>
 
+namespace bitbishop::testing {
+
 using namespace Search;
 
 class SearchReporterTest : public ::testing::Test {
@@ -64,3 +66,5 @@ TEST_F(SearchReporterTest, BenchHandlesZeroTimeGracefully) {
   EXPECT_NE(result.find("bench nodes "), std::string::npos);
   EXPECT_NE(result.find("nps "), std::string::npos);
 }
+
+}  // namespace bitbishop::testing

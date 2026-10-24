@@ -2,6 +2,8 @@
 
 #include <bitbishop/movegen/pawn_moves.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Test case structure for en passant validation.
  */
@@ -99,3 +101,5 @@ TEST(PawnMoveGeneratorTest, BlackCannotCaptureEnPassant_InvalidCombinations) {
         << "from=" << c.from.to_string() << " en_passant=" << c.en_passant.to_string() << " color=BLACK";
   }
 }
+
+}  // namespace bitbishop::testing

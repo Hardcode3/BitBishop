@@ -6,6 +6,8 @@
 #include <functional>
 #include <thread>
 
+namespace bitbishop::testing {
+
 /**
  * @brief Wait until a condition becomes true or timeout expires.
  *
@@ -44,3 +46,5 @@ void assert_output_not_contains(const std::stringstream& output, const std::stri
       << "Expected output not to contain: " << token << "\nActual output:\n"
       << output.str();
 }
+
+}  // namespace bitbishop::testing

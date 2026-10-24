@@ -5,6 +5,8 @@
 #include <memory>
 #include <ostream>
 
+namespace bitbishop {
+
 namespace Uci {
 
 /**
@@ -67,3 +69,5 @@ class SearchSession {
 };
 
 }  // namespace Uci
+
+}  // namespace bitbishop

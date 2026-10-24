@@ -10,6 +10,8 @@
 #include <string>
 #include <thread>
 
+namespace bitbishop {
+
 namespace Uci {
 
 /**
@@ -72,3 +74,5 @@ class UciCommandChannel {
 };
 
 }  // namespace Uci
+
+}  // namespace bitbishop

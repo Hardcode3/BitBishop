@@ -6,6 +6,7 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
 using namespace Squares;
 using namespace Pieces;
 
@@ -113,3 +114,5 @@ TEST(MoveExecutionTest, DoubleApplyDoubleRevertRestoresBoard) {
 
   EXPECT_EQ(board, original);
 }
+
+}  // namespace bitbishop::testing

@@ -6,6 +6,8 @@
 #include <bitbishop/config.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -71,3 +73,5 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KNIGHT_ATTACKS = [] CX_EXEC {
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> KNIGHT_ATTACKERS = KNIGHT_ATTACKS;
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

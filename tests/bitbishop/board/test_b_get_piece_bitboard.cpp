@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.PawnsBitboard
  * @brief Ensures that pawns() correctly returns the bitboard for each side.
@@ -107,3 +109,5 @@ TEST(BoardTest, QueensBitboard) {
   EXPECT_TRUE(white_queens.test(Squares::D1));
   EXPECT_TRUE(black_queens.test(Square::D8));
 }
+
+}  // namespace bitbishop::testing

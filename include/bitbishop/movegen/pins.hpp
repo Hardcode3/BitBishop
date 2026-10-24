@@ -7,6 +7,8 @@
 #include <bitbishop/lookups/rook_rays.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Enumeration of sliding ray types used for pin detection.
  *
@@ -131,3 +133,5 @@ void scan_pin_ray(Square king_sq, const PinRay& ray_info, const Board& board, Co
  * @return PinResult containing pinned pieces and their pin rays
  */
 PinResult compute_pins(Square king_sq, const Board& board, Color us);
+
+}  // namespace bitbishop

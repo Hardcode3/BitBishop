@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+namespace bitbishop {
+
 /**
  * @brief Generate all legal rook moves for the side to move.
  *
@@ -71,3 +73,5 @@ inline void generate_rook_legal_moves(std::vector<Move>& moves, const Board& boa
     }
   }
 }
+
+}  // namespace bitbishop

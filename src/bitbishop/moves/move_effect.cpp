@@ -1,6 +1,8 @@
 #include <bitbishop/moves/move_effect.hpp>
 #include <utility>
 
+namespace bitbishop {
+
 MoveEffect MoveEffect::place(Square sq, Piece piece) {
   MoveEffect effect{.type = Type::Place, .square = sq, .piece = piece, .prev_state = {}, .next_state = {}};
   return effect;
@@ -43,3 +45,5 @@ void MoveEffect::revert(Board& board) const {
       break;
   }
 }
+
+}  // namespace bitbishop

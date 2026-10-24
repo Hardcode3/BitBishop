@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitboard::lsb() on an empty bitboard
  * @brief Ensures lsb() returns std::nullopt when called on an empty bitboard.
@@ -42,3 +44,5 @@ TEST(BitboardTest, LsbDoesNotModifyBitboard) {
   auto _ = bb.lsb();
   EXPECT_EQ(bb.count(), before);
 }
+
+}  // namespace bitbishop::testing

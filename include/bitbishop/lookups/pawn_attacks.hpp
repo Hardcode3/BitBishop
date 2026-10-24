@@ -8,6 +8,8 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -297,3 +299,5 @@ CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, ColorUtil::SIZE> P
 }();
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

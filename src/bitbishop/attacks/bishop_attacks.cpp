@@ -1,6 +1,8 @@
 #include <bitbishop/attacks/bishop_attacks.hpp>
 #include <bitbishop/lookups/bishop_rays.hpp>
 
+namespace bitbishop {
+
 Bitboard bishop_north_east_attacks(Square from, const Bitboard& occupied) {
   Bitboard ne_ray = Lookups::BISHOP_NORTHEAST_RAYS[from.value()];
   Bitboard blockers = ne_ray & occupied;
@@ -73,3 +75,5 @@ Bitboard bishop_attacks(Square from, const Bitboard& occupied) {
   attacks |= bishop_north_west_attacks(from, occupied);
   return attacks;
 }
+
+}  // namespace bitbishop

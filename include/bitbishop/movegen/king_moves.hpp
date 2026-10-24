@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+namespace bitbishop {
+
 inline void generate_legal_king_moves(std::vector<Move>& moves, const Board& board, Color us, Square king_sq,
                                       const Bitboard& enemy_attacks,
                                       const Bitboard& allowed_targets = Bitboard::Ones()) {
@@ -24,3 +26,5 @@ inline void generate_legal_king_moves(std::vector<Move>& moves, const Board& boa
     moves.emplace_back(Move::make(king_sq, to, is_capture));
   }
 }
+
+}  // namespace bitbishop

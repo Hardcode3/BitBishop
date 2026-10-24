@@ -4,6 +4,8 @@
 #include <bitbishop/moves/position.hpp>
 #include <cassert>
 
+namespace bitbishop {
+
 void Position::apply_move(const Move& move) {
   MoveBuilder builder(board, move);
   MoveExecution exec = builder.build();
@@ -80,3 +82,5 @@ void Position::reset() {
   const Bitboard checkers = compute_checkers(board, king_square, them);
   return checkers.any();
 }
+
+}  // namespace bitbishop

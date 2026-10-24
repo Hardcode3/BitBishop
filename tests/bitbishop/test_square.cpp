@@ -2,6 +2,8 @@
 
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 
 // --- Construction Tests ---
@@ -328,3 +330,5 @@ TEST(SquareTest, DiagonalSquaresHaveSameColors) {
     EXPECT_TRUE(a.same_color(b));
   }
 }
+
+}  // namespace bitbishop::testing

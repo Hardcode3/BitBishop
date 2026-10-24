@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitboard::msb() on an empty bitboard
  * @brief Ensures msb() returns std::nullopt when called on an empty bitboard.
@@ -86,3 +88,5 @@ TEST(BitboardTest, MsbAndLsbReturnSameOnSingleBit) {
   EXPECT_EQ(lowest->value(), highest->value());
   EXPECT_EQ(lowest->value(), Square::D4);
 }
+
+}  // namespace bitbishop::testing

@@ -5,6 +5,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -151,3 +153,5 @@ TEST(PinRayTest, FirstBlockerSouthwestDirection) {
 
   EXPECT_EQ(blocker, F6);
 }
+
+}  // namespace bitbishop::testing

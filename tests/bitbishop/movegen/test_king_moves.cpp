@@ -7,6 +7,8 @@
 #include <bitbishop/movegen/king_moves.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -387,3 +389,5 @@ TEST(GenerateLegalKingMovesTest, CaptureUndefendedOnly) {
   // E5 should not be in moves
   EXPECT_FALSE(contains_move(moves, {E4, E5, std::nullopt, true, false, false}));
 }
+
+}  // namespace bitbishop::testing

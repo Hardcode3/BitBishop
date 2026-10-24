@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.Unoccupied
  * @brief Validates that unoccupied() returns all unoccupied squares.
@@ -19,3 +21,5 @@ TEST(BoardTest, UnoccupiedBoardSquares) {
     EXPECT_TRUE(empty.test(Square(sq_index)));
   }
 }
+
+}  // namespace bitbishop::testing

@@ -4,6 +4,8 @@
 #include <bitbishop/square.hpp>
 #include <sstream>
 
+namespace bitbishop::testing {
+
 /**
  * @test Print function.
  * @brief Verifies that the bitboard prints as an 8×8 grid with correct layout.
@@ -51,3 +53,5 @@ TEST(BitboardTest, PrintOutputsCorrectBoard) {
   }
   EXPECT_EQ(line_count, 8);
 }
+
+}  // namespace bitbishop::testing

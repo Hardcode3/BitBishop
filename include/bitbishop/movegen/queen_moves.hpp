@@ -8,6 +8,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <vector>
 
+namespace bitbishop {
+
 /**
  * @brief Generate all legal queen moves for the side to move.
  *
@@ -71,3 +73,5 @@ inline void generate_queen_legal_moves(std::vector<Move>& moves, const Board& bo
     }
   }
 }
+
+}  // namespace bitbishop

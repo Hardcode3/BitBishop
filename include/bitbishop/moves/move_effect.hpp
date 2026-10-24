@@ -5,6 +5,8 @@
 #include <bitbishop/square.hpp>
 #include <bitbishop/zobrist.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Represents a single low-level board modification.
  *
@@ -60,3 +62,5 @@ struct MoveEffect {
    */
   void revert(Board& board) const;
 };
+
+}  // namespace bitbishop

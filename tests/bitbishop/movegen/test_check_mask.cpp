@@ -5,6 +5,8 @@
 #include <bitbishop/movegen/check_mask.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -412,3 +414,5 @@ TEST(CheckMaskTest, CheckerSquareAlwaysIncluded) {
     EXPECT_TRUE(mask.test(checker_squares[i])) << "Checker square not included for piece type " << i;
   }
 }
+
+}  // namespace bitbishop::testing

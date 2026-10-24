@@ -4,6 +4,8 @@
 #include <bitbishop/helpers/moves.hpp>
 #include <bitbishop/move.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test bishop_south_west_attacks() with no blockers
  * @brief Verifies that bishop_south_west_attacks returns all squares in the SW diagonal when unobstructed.
@@ -96,3 +98,5 @@ TEST(BishopMoveGeneratorTest, SouthWestRayFromEdgeSquares) {
   Bitboard sw_result = bishop_south_west_attacks(Squares::A1, occupied);
   EXPECT_EQ(sw_result.count(), 0);
 }
+
+}  // namespace bitbishop::testing

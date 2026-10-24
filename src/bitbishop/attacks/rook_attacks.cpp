@@ -1,6 +1,8 @@
 #include <bitbishop/attacks/rook_attacks.hpp>
 #include <bitbishop/lookups/rook_rays.hpp>
 
+namespace bitbishop {
+
 Bitboard rook_north_attacks(Square from, const Bitboard& occupied) {
   Bitboard n_ray = Lookups::ROOK_NORTH_RAYS[from.value()];
   Bitboard blockers = n_ray & occupied;
@@ -73,3 +75,5 @@ Bitboard rook_attacks(Square from, const Bitboard& occupied) {
   attacks |= rook_west_attacks(from, occupied);
   return attacks;
 }
+
+}  // namespace bitbishop

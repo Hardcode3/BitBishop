@@ -5,6 +5,8 @@
 #include <bitbishop/lookups/king_attacks.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Lookups;
 
 /**
@@ -85,3 +87,5 @@ TEST(KingAttackTest, CenterD4) {
 
   EXPECT_EQ(KING_ATTACKS[Square::D4], expected);
 }
+
+}  // namespace bitbishop::testing

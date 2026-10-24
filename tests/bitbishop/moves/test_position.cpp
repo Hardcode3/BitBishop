@@ -6,6 +6,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -109,3 +111,5 @@ TEST(PositionTest, RepetitionCountRollsBackOnRevert) {
   EXPECT_EQ(pos.repetition_count(), 2);
   EXPECT_FALSE(pos.is_threefold_repetition());
 }
+
+}  // namespace bitbishop::testing

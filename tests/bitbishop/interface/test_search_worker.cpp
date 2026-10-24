@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 
+namespace bitbishop::testing {
+
 TEST(SearchControllerTest, StartPublishesFinishReportWithDepth1) {
   Board board = Board::StartingPosition();
   Uci::SearchLimits limits;
@@ -63,3 +65,5 @@ TEST(SearchControllerTest, MovetimeStopsSearchAutomatically) {
     return report.kind == Uci::SearchReportKind::Iteration;
   }));
 }
+
+}  // namespace bitbishop::testing

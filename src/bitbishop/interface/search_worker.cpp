@@ -3,6 +3,8 @@
 #include <bitbishop/tools/time_guard.hpp>
 #include <limits>
 
+namespace bitbishop {
+
 namespace {
 
 constexpr int DEFAULT_MOVES_TO_GO = 20;
@@ -172,3 +174,5 @@ std::vector<Uci::SearchReport> Uci::SearchWorker::drain_reports() {
   drained.swap(reports);
   return drained;
 }
+
+}  // namespace bitbishop

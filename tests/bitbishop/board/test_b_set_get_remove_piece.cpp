@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.SetAndGetPiece
  * @brief Verifies placing and retrieving pieces.
@@ -65,3 +67,5 @@ TEST(BoardTest, ReplacePiece) {
   EXPECT_TRUE(board.black_pieces().test(Square(0, 0)));
   EXPECT_FALSE(board.white_pieces().test(Square(0, 0)));
 }
+
+}  // namespace bitbishop::testing

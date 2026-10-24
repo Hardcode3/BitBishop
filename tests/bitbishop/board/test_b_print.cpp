@@ -5,6 +5,8 @@
 #include <bitbishop/square.hpp>
 #include <sstream>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.PrintBoard
  * @brief Verifies that the board prints to std::cout correctly when called from a starting position.
@@ -45,3 +47,5 @@ TEST(BoardTest, PrintBoardStartingPos) {
 
   EXPECT_EQ(output, expected);
 }
+
+}  // namespace bitbishop::testing

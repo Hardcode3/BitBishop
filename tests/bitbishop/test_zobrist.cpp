@@ -5,6 +5,8 @@
 #include <bitbishop/square.hpp>
 #include <bitbishop/zobrist.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Zobrist;
 
 TEST(ZobristTest, MutatePieceIsReversible) {
@@ -281,3 +283,5 @@ TEST(ZobristTest, IncrementalHashMatchesFullRecompute) {
 
   EXPECT_EQ(incremental, recomputed);
 }
+
+}  // namespace bitbishop::testing

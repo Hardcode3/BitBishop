@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace bitbishop {
+
 namespace Uci {
 
 /**
@@ -39,3 +41,5 @@ class UciCommandRegistry {
 };
 
 }  // namespace Uci
+
+}  // namespace bitbishop

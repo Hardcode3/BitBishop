@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitboard::pop_lsb() on an empty bitboard
  * @brief Ensures pop_lsb() returns std::nullopt when called on an empty bitboard.
@@ -68,3 +70,5 @@ TEST(BitboardTest, PopLsbEventuallyEmptiesBoard) {
   EXPECT_TRUE(second.has_value());
   EXPECT_FALSE(third.has_value());
 }
+
+}  // namespace bitbishop::testing

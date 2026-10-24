@@ -5,6 +5,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -450,3 +452,5 @@ TEST(ScanPinRayTest, MultipleScansAccumulate) {
   EXPECT_TRUE(result.pinned.test(E6));
   EXPECT_TRUE(result.pinned.test(G4));
 }
+
+}  // namespace bitbishop::testing

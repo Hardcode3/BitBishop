@@ -8,6 +8,8 @@
 #include <thread>
 #include <vector>
 
+namespace bitbishop {
+
 namespace Uci {
 
 /**
@@ -142,3 +144,5 @@ class SearchWorker {
 };
 
 }  // namespace Uci
+
+}  // namespace bitbishop

@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Bitboard::pop_msb() on an empty bitboard
  * @brief Ensures pop_msb() returns std::nullopt when called on an empty bitboard.
@@ -106,3 +108,5 @@ TEST(BitboardTest, PopMsbAndPopLsbWorkInOppositeOrder) {
   EXPECT_EQ(msb2->value(), Square::D4);
   EXPECT_EQ(msb3->value(), Square::A1);
 }
+
+}  // namespace bitbishop::testing

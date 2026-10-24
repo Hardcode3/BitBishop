@@ -4,6 +4,8 @@
 #include <chrono>
 #include <functional>
 
+namespace bitbishop {
+
 /**
  * @brief Interface for reporting progress and results of a search.
  *
@@ -110,3 +112,5 @@ struct BenchReporter : SearchReporter {
    */
   void on_finish(const Search::BestMove& best, const Search::SearchStats& stats) override;
 };
+
+}  // namespace bitbishop

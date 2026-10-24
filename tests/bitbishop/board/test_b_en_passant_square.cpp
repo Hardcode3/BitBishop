@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.EnPassantSquare
  * @brief Ensures en_passant_square() works as intented when en passant square is set.
@@ -26,3 +28,5 @@ TEST(BoardTest, EnPassantSquareNotAvailable) {
   Board board2("8/8/8/8/8/8/8/8 w - - 0 1");
   EXPECT_FALSE(board2.en_passant_square().has_value());
 }
+
+}  // namespace bitbishop::testing

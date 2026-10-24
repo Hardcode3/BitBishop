@@ -3,6 +3,8 @@
 #include <array>
 #include <bitbishop/moves/move_effect.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Aggregates the individual effects of a single move.
  *
@@ -36,3 +38,5 @@ struct MoveExecution {
    */
   void revert(Board& board) const;
 };
+
+}  // namespace bitbishop

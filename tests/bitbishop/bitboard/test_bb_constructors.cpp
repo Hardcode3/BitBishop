@@ -4,6 +4,8 @@
 #include <bitbishop/config.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verify default constructor.
  * @brief Ensures a new Bitboard starts empty (all bits = 0).
@@ -106,3 +108,5 @@ TEST(BitboardConstructorsTest, SquareConstructorIsConstexpr) {
   EXPECT_TRUE(bb.test(Squares::A4));
   EXPECT_EQ(bb.count(), 1);
 }
+
+}  // namespace bitbishop::testing

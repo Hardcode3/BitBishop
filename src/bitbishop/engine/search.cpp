@@ -3,6 +3,8 @@
 #include <bitbishop/movegen/legal_moves.hpp>
 #include <bitbishop/moves/position.hpp>
 
+namespace bitbishop {
+
 // https://www.chessprogramming.org/Quiescence_Search
 int Search::quiesce(Position& position, int alpha, int beta, SearchStats& stats, std::atomic<bool>* stop_flag) {
   stats.quiescence_nodes++;
@@ -138,3 +140,5 @@ Search::BestMove Search::negamax(Position& position, std::size_t depth, int alph
   best.score = bestScore;
   return best;
 }
+
+}  // namespace bitbishop

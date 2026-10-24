@@ -4,6 +4,8 @@
 #include <bitbishop/config.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes the set of enemy pieces currently giving check to a king.
  *
@@ -21,3 +23,5 @@
  * @return Bitboard of checking piece squares
  */
 Bitboard compute_checkers(const Board& board, Square king_sq, Color attacker);
+
+}  // namespace bitbishop

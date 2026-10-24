@@ -11,6 +11,8 @@
 #include <string_view>
 #include <vector>
 
+namespace bitbishop {
+
 namespace Uci {
 
 /**
@@ -169,3 +171,5 @@ class UciEngine {
 };
 
 }  // namespace Uci
+
+}  // namespace bitbishop

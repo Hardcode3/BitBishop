@@ -5,6 +5,8 @@
 #include <bitbishop/config.hpp>
 #include <bitbishop/constants.hpp>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -117,3 +119,5 @@ CX_INLINE std::array<std::array<Bitboard, Const::BOARD_SIZE>, Const::BOARD_SIZE>
 }();
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

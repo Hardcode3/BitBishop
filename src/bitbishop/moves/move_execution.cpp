@@ -1,5 +1,7 @@
 #include <bitbishop/moves/move_execution.hpp>
 
+namespace bitbishop {
+
 void MoveExecution::add(const MoveEffect& effect) { effects[count++] = effect; }
 
 void MoveExecution::apply(Board& board) const {
@@ -13,3 +15,5 @@ void MoveExecution::revert(Board& board) const {
     effects[i].revert(board);
   }
 }
+
+}  // namespace bitbishop

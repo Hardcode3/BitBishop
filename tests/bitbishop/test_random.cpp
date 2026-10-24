@@ -3,11 +3,15 @@
 #include <bitbishop/random.hpp>
 #include <cstdint>
 
+namespace bitbishop::testing {
+
+namespace {
 static constexpr uint64_t INITIAL_SEED = 0xdd40af6e35fd248ULL;
 
 // Known-good values generated from the SplitMix64 reference implementation
 static constexpr uint64_t KNOWN_SEED_SEQUENCE[] = {0xbd9e4ea9d61be97bULL, 0x17da6008d8998017ULL, 0x4a5427b076bdfcb1ULL,
                                                    0x5df4deae0f2ad481ULL};
+}  // namespace
 
 TEST(SplitMix64Test, SameSeedProducesSameFirstValue) {
   uint64_t seed1 = INITIAL_SEED;
@@ -58,3 +62,5 @@ TEST(SplitMix64Test, MatchesReferenceSequence) {
     EXPECT_EQ(Random::splitmix64(seed), expected);
   }
 }
+
+}  // namespace bitbishop::testing

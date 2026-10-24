@@ -8,6 +8,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -537,3 +539,5 @@ TEST(GenerateBishopLegalMovesTest, BishopOnEdge) {
   EXPECT_TRUE(contains_move(moves, {A4, C2, std::nullopt, false, false, false}));
   EXPECT_TRUE(contains_move(moves, {A4, D1, std::nullopt, false, false, false}));
 }
+
+}  // namespace bitbishop::testing

@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes all queen attacks from a square, given board occupancy.
  *
@@ -24,3 +26,5 @@
  * @return Bitboard of all squares attacked by the queen
  */
 Bitboard queen_attacks(Square from, const Bitboard& occupied);
+
+}  // namespace bitbishop

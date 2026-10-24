@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/bishop_rays.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 TEST(BishopAttacksTest, CornerA1) {
   Bitboard bb = Lookups::BISHOP_RAYS[Square::A1];
 
@@ -76,3 +78,5 @@ TEST(BishopAttacksTest, CenterD4) {
   EXPECT_TRUE(bb.test(Square::B2));
   EXPECT_TRUE(bb.test(Square::A1));
 }
+
+}  // namespace bitbishop::testing

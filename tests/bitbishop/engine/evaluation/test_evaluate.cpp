@@ -3,6 +3,8 @@
 #include <bitbishop/board.hpp>
 #include <bitbishop/engine/evaluation.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Eval;
 using namespace Squares;
 using namespace Pieces;
@@ -38,3 +40,5 @@ TEST(TestScoreEvaluation, EmptyBoardEvaluatesToZero) {
   EXPECT_EQ(white_score, 0);
   EXPECT_EQ(black_score, 0);
 }
+
+}  // namespace bitbishop::testing

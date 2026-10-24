@@ -5,6 +5,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -151,3 +153,5 @@ TEST(PinRayTest, MatchesSliderWhiteRookAsEnemy) {
 
   EXPECT_TRUE(ray.matches_slider(piece_bb, board, piece.color()));
 }
+
+}  // namespace bitbishop::testing

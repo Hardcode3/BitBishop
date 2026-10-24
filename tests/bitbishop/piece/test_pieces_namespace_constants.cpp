@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies White piece constants are correctly defined.
  */
@@ -63,3 +65,5 @@ TEST(PieceTest, ConstantsCanBeUsedInComparisons) {
   EXPECT_NE(p, BLACK_PAWN);
   EXPECT_NE(p, WHITE_KNIGHT);
 }
+
+}  // namespace bitbishop::testing

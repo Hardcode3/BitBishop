@@ -9,6 +9,8 @@
 #include <bitbishop/lookups/rook_rays.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -61,3 +63,5 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_RAYS = [] CX_EXEC {
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> QUEEN_ATTACKER_RAYS = QUEEN_RAYS;
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

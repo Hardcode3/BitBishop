@@ -3,10 +3,14 @@
 #include <bitbishop/move.hpp>
 #include <regex>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
+namespace {
 static const std::regex uci_move_regex("^[a-z1-8]{4,5}$");
+}
 
 TEST(MoveTest, NormalMove_NoCapture) {
   Square from = E2;
@@ -212,3 +216,5 @@ TEST(MoveTest, FromUciInvalidPromotionPieceThrows) {
 TEST(MoveTest, FromUciInvalidPromotionRankThrows) {
   EXPECT_THROW(std::ignore = Move::from_uci("e2e4q"), std::runtime_error);
 }
+
+}  // namespace bitbishop::testing

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <optional>
 
+namespace bitbishop {
+
 /**
  * @class Bitboard
  * @brief Wrapper around a 64-bit unsigned integer to represent a bitboard.
@@ -438,3 +440,5 @@ class Bitboard {
    */
   [[nodiscard]] static CX_FN Iterator end() noexcept { return Iterator(0ULL); }
 };
+
+}  // namespace bitbishop

@@ -1,5 +1,7 @@
 #include <bitbishop/tools/time_guard.hpp>
 
+namespace bitbishop {
+
 namespace Tools {
 
 TimeGuard::TimeGuard(std::atomic<bool>& stop_flag, std::chrono::steady_clock::duration timeout)
@@ -34,3 +36,5 @@ void TimeGuard::cancel() {
 }
 
 }  // namespace Tools
+
+}  // namespace bitbishop

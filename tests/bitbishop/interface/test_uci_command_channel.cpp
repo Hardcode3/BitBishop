@@ -8,6 +8,8 @@
 #include <sstream>
 #include <thread>
 
+namespace bitbishop::testing {
+
 using namespace std::chrono_literals;
 
 TEST(UciCommandChannelTest, WaitAndPopReturnsFalseWhenNotStarted) {
@@ -94,3 +96,5 @@ TEST(UciCommandChannelTest, StopDoesNotHangWhenReaderIsBlockedByInputStream) {
   // If it took 0ms, it means we successfully detached instead of joining a hung thread.
   EXPECT_EQ(duration.count(), 0);
 }
+
+}  // namespace bitbishop::testing

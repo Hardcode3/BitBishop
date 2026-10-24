@@ -7,6 +7,8 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -210,3 +212,5 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = [] CX_EXEC {
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

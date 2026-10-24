@@ -4,6 +4,8 @@
 #include <bitbishop/piece.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test BoardTest.FriendlyBitboard
  * @brief Confirms that friendly() returns the current side’s occupied squares.
@@ -24,3 +26,5 @@ TEST(BoardTest, FriendlyBitboard) {
     EXPECT_TRUE(black_friends.test(Square(sq_index)));
   }
 }
+
+}  // namespace bitbishop::testing

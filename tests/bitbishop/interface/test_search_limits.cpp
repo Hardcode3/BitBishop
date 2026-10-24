@@ -2,6 +2,8 @@
 
 #include <bitbishop/interface/search_worker.hpp>
 
+namespace bitbishop::testing {
+
 TEST(SearchLimitsTest, DefaultsAreEmptyAndNotInfinite) {
   Uci::SearchLimits limits;
 
@@ -65,7 +67,7 @@ struct SearchLimitsFromUciTestCase {
 
 struct SearchLimitsParamName {
   template <class ParamType>
-  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
+  std::string operator()(const ::testing::TestParamInfo<ParamType>& info) const {
     return info.param.test_name;
   }
 };
@@ -228,3 +230,5 @@ INSTANTIATE_TEST_SUITE_P(
   SearchLimitsParamName{}
 );
 // clang-format on
+
+}  // namespace bitbishop::testing

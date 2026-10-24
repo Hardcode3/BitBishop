@@ -6,6 +6,8 @@
 #include <format>
 #include <stdexcept>
 
+namespace bitbishop {
+
 /**
  * @brief Represents a chess piece.
  *
@@ -250,3 +252,5 @@ DEFINE_PIECE(BLACK_KING, 'k');
 
 #undef DEFINE_PIECE
 }  // namespace Pieces
+
+}  // namespace bitbishop

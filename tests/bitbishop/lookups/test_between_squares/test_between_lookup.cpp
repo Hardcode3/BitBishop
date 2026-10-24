@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/between_squares.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Lookups;
 
@@ -71,3 +73,5 @@ TEST(BetweenLookupTest, BetweenTableDiagonalSameSquare) {
     EXPECT_EQ(BETWEEN[i][i], Bitboard::Zeros());
   }
 }
+
+}  // namespace bitbishop::testing

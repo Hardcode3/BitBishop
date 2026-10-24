@@ -2,6 +2,8 @@
 
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies to_char() round-trips correctly.
  */
@@ -13,3 +15,5 @@ TEST(PieceTest, ToCharRoundTrips) {
     EXPECT_EQ(p.to_char(), c);
   }
 }
+
+}  // namespace bitbishop::testing

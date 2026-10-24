@@ -11,6 +11,8 @@
 #include <bitbishop/lookups/knight_attacks.hpp>
 #include <bitbishop/lookups/pawn_attacks.hpp>
 
+namespace bitbishop {
+
 /**
  * @brief Computes the set of squares attacked by all pieces of a given side,
  *        assuming the opposing king is not present on the board.
@@ -76,3 +78,5 @@ inline Bitboard generate_attacks(const Board& board, Color enemy) {
 
   return attacks;
 }
+
+}  // namespace bitbishop

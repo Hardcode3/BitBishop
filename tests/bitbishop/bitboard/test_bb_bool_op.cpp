@@ -3,6 +3,8 @@
 #include <bitbishop/bitboard.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 /**
  * @test bool operator
  * @brief Confirms boolean works as intended when no square is populated.
@@ -36,3 +38,5 @@ TEST(BitboardTest, BoolOperatorTrueWhenMultipleBits) {
 
   EXPECT_TRUE(static_cast<bool>(bb));
 }
+
+}  // namespace bitbishop::testing

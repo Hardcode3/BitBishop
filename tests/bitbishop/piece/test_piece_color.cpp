@@ -3,6 +3,8 @@
 #include <bitbishop/piece.hpp>
 #include <tuple>
 
+namespace bitbishop::testing {
+
 /**
  * @test Verifies all White pieces return correct color.
  */
@@ -96,3 +98,5 @@ TEST(PieceTest, ColorFromImvalidCharsThrows) {
   EXPECT_THROW(std::ignore = Piece::color_from_char('@'), std::invalid_argument);
   EXPECT_THROW(std::ignore = Piece::color_from_char('.'), std::invalid_argument);
 }
+
+}  // namespace bitbishop::testing

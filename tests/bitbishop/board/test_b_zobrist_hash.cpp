@@ -4,6 +4,8 @@
 #include <bitbishop/square.hpp>
 #include <bitbishop/zobrist.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -218,3 +220,5 @@ TEST(BoardZobristTest, SetSideToMoveTogglesHash) {
   EXPECT_EQ(board.get_zobrist_hash(), reference_hash ^ expected_delta);
   EXPECT_EQ(board.get_zobrist_hash(), Zobrist::compute_hash(board));
 }
+
+}  // namespace bitbishop::testing

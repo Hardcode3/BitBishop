@@ -4,6 +4,8 @@
 #include <bitbishop/lookups/between_squares.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Lookups;
 
@@ -146,3 +148,5 @@ TEST(RayBetweenTest, RayBetweenNonAlignedSquareReturnsZeroBitboard) {
   EXPECT_EQ(ray_between(A1, B6).count(), 0);
   EXPECT_EQ(ray_between(A7, H3).count(), 0);
 }
+
+}  // namespace bitbishop::testing

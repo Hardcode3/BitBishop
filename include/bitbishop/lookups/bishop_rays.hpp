@@ -7,6 +7,8 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
+namespace bitbishop {
+
 namespace Lookups {
 
 /**
@@ -223,3 +225,5 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_SOUTHWEST_RAYS = [] CX_
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> BISHOP_ATTACKER_RAYS = BISHOP_RAYS;
 
 }  // namespace Lookups
+
+}  // namespace bitbishop

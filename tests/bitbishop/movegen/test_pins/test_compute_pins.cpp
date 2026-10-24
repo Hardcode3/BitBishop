@@ -5,6 +5,8 @@
 #include <bitbishop/movegen/pins.hpp>
 #include <bitbishop/square.hpp>
 
+namespace bitbishop::testing {
+
 using namespace Squares;
 using namespace Pieces;
 
@@ -380,3 +382,5 @@ TEST(ComputePinsTest, AdjacentSliderNotPinned) {
 
   EXPECT_EQ(result.pinned, Bitboard::Zeros());
 }
+
+}  // namespace bitbishop::testing

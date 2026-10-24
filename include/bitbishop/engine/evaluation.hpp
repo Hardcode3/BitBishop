@@ -4,6 +4,8 @@
 #include <bitbishop/constants.hpp>
 #include <bitbishop/piece.hpp>
 
+namespace bitbishop {
+
 namespace Eval {
 
 using PieceSquareTable = std::array<int, Const::BOARD_SIZE>;
@@ -208,3 +210,5 @@ CX_INLINE PieceSquareTable KING_MIDGAME_PSQT_BLACK = flip_psqt(KING_MIDGAME_PSQT
 [[nodiscard]] int evaluate(const Board& board) noexcept;
 
 }  // namespace Eval
+
+}  // namespace bitbishop
