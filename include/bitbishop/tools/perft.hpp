@@ -2,9 +2,7 @@
 
 #include <bitbishop/board.hpp>
 
-namespace bitbishop {
-
-namespace Tools {
+namespace bitbishop::Tools {
 
 /**
  * @brief Perft (Performance Test) debug function to walk through the move generation tree
@@ -28,6 +26,4 @@ uint64_t perft(Board& board, std::size_t depth);
  */
 void perft_divide(Board& board, std::size_t depth);
 
-}  // namespace Tools
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Tools

@@ -2,8 +2,6 @@
 
 #include <bitbishop/config.hpp>
 
-namespace bitbishop {
-
 /**
  * @namespace Const
  * @brief Core chess board constants for indexing and dimensions.
@@ -23,7 +21,7 @@ namespace bitbishop {
  * int file = e4.value() % Const::BOARD_WIDTH;  // file = 4 (file E)
  * @endcode
  */
-namespace Const {
+namespace bitbishop::Const {
 
 // Board dimensions
 CX_INLINE int BOARD_WIDTH = 8;                         // Chess board is 8x8
@@ -100,6 +98,4 @@ CX_INLINE int FEN_NOTATION_MAX_CHAR_COUNT = BOARD_SIZE  // 64 chessboard squares
                                             + 1         // fullmove
     ;
 
-}  // namespace Const
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Const

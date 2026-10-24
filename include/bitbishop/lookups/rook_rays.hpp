@@ -7,9 +7,7 @@
 #include <bitbishop/constants.hpp>
 #include <cstdint>
 
-namespace bitbishop {
-
-namespace Lookups {
+namespace bitbishop::Lookups {
 
 /**
  * @brief Generates the northward rook ray from a given square, independent of board occupancy.
@@ -211,6 +209,4 @@ CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_WEST_RAYS = [] CX_EXEC {
  */
 CX_INLINE std::array<Bitboard, Const::BOARD_SIZE> ROOK_ATTACKER_RAYS = ROOK_RAYS;
 
-}  // namespace Lookups
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Lookups

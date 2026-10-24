@@ -4,9 +4,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace bitbishop {
-
-namespace Tools {
+namespace bitbishop::Tools {
 
 uint64_t perft(Board& board, std::size_t depth) {
   uint64_t nodes = 0;
@@ -46,6 +44,4 @@ void perft_divide(Board& board, std::size_t depth) {
   std::cout << "\nNodes searched: " << total_nodes << "\n";
 }
 
-}  // namespace Tools
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Tools

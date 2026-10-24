@@ -3,9 +3,7 @@
 #include <bitbishop/config.hpp>
 #include <cstdint>
 
-namespace bitbishop {
-
-namespace Random {
+namespace bitbishop::Random {
 /**
  * @brief Generates a pseudo-random 64-bit integer using the SplitMix64 algorithm.
  *
@@ -36,6 +34,4 @@ namespace Random {
   // NOLINTEND(readability-magic-numbers)
 }
 
-}  // namespace Random
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Random

@@ -11,9 +11,7 @@
 #include <string_view>
 #include <vector>
 
-namespace bitbishop {
-
-namespace Uci {
+namespace bitbishop::Uci {
 
 /**
  * @brief Splits a string into a vector of tokens.
@@ -170,6 +168,4 @@ class UciEngine {
   void handle_bench(const std::vector<std::string> &line);
 };
 
-}  // namespace Uci
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Uci

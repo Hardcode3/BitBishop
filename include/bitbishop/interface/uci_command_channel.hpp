@@ -10,9 +10,7 @@
 #include <string>
 #include <thread>
 
-namespace bitbishop {
-
-namespace Uci {
+namespace bitbishop::Uci {
 
 /**
  * @brief Thread-safe command line channel for UCI input.
@@ -73,6 +71,4 @@ class UciCommandChannel {
   [[nodiscard]] bool eof() const;
 };
 
-}  // namespace Uci
-
-}  // namespace bitbishop
+}  // namespace bitbishop::Uci
