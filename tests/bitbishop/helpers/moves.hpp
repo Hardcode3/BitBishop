@@ -220,4 +220,4 @@ std::vector<Move> find_moves_between(const std::vector<Move>& moves, Square from
   return filter_moves(moves, [&](const Move& m) { return m.from == from && m.to == to; });
 }
 
-}  // namespace bitbishop
+}  // namespace bitbishop::testing

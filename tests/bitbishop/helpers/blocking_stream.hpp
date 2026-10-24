@@ -104,4 +104,4 @@ class BlockingIStream : public std::istream {
   BlockingStreamBuf buf_;  ///< Underlying buffer
 };
 
-}  // namespace bitbishop
+}  // namespace bitbishop::testing
